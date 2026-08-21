@@ -1,0 +1,32 @@
+{
+    "name": "mestiaque/merchandising-trace",
+    "description": "Merchandising module for Laravel (by M. Estiaque Ahmed Khan)",
+    "type": "library",
+    "keywords": [
+        "Laravel",
+        "MerchandisingTrace",
+        "Estiaque"
+    ],
+    "authors": [
+        {
+            "name": "M. Estiaque Ahmed Khan",
+            "email": "info@mestiaque.com",
+            "homepage": "https://mestiaque.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ME\\MerchandisingTrace\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ME\\MerchandisingTrace\\MerchandisingServiceProvider"
+            ]
+        }
+    },
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
