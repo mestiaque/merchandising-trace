@@ -33,5 +33,9 @@ return [
         // Inquiry & Style Development
         'merch_inquiry' => ['label' => 'Inquiries', 'permissions' => $crud],
         'merch_style' => ['label' => 'Styles', 'permissions' => $crud],
+
+        // Sample Management
+        'merch_sample' => ['label' => 'Samples', 'permissions' => $crud],
+        'merch_sample_type' => ['label' => 'Sample Types', 'permissions' => $crud],
     ],
 ];

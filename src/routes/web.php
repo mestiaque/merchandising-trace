@@ -10,6 +10,8 @@ use ME\MerchandisingTrace\Http\Controllers\InquiryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemCategoryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemController;
 use ME\MerchandisingTrace\Http\Controllers\ProductTypeController;
+use ME\MerchandisingTrace\Http\Controllers\SampleController;
+use ME\MerchandisingTrace\Http\Controllers\SampleTypeController;
 use ME\MerchandisingTrace\Http\Controllers\SeasonController;
 use ME\MerchandisingTrace\Http\Controllers\ShipModeController;
 use ME\MerchandisingTrace\Http\Controllers\SizeController;
@@ -50,4 +52,13 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
 
         // Style Development (§M03)
         Route::resource('styles', StyleController::class)->only(['index', 'store', 'update', 'destroy']);
+
+        // Sample Management (§M04)
+        Route::resource('samples', SampleController::class);
+        Route::post('samples/{sample}/submit', [SampleController::class, 'submit'])->name('samples.submit');
+        Route::post('samples/{sample}/approve', [SampleController::class, 'approve'])->name('samples.approve');
+        Route::post('samples/{sample}/reject', [SampleController::class, 'reject'])->name('samples.reject');
+        Route::post('samples/{sample}/comments', [SampleController::class, 'addComment'])->name('samples.comments.store');
+        Route::resource('sample-types', SampleTypeController::class)
+            ->only(['index', 'store', 'update', 'destroy'])->parameters(['sample-types' => 'sample_type']);
     });
