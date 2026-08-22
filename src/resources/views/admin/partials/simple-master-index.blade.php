@@ -68,6 +68,11 @@
                                     </span>
                                 </td>
                                 <td class="text-end">
+                                    @isset($viewRouteName)
+                                        @can($permPrefix . '.view')
+                                            <a href="{{ route($viewRouteName, $item) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></a>
+                                        @endcan
+                                    @endisset
                                     @can($permPrefix . '.edit')
                                         <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#edit{{ Str::studly($modalLabel) }}Modal{{ $item->id }}">
                                             <i class="fa-solid fa-pen"></i>

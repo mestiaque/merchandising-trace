@@ -12,4 +12,5 @@
         'productTypesOptions' => $productTypesOptions,
     ],
     'modalLabel' => 'Style',
+    'viewRouteName' => 'merchandising-trace.styles.show',
 ])

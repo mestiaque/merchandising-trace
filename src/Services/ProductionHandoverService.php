@@ -7,6 +7,7 @@ use ME\MerchandisingTrace\Models\Bridge\TrcPlanLine;
 use ME\MerchandisingTrace\Models\Bridge\TrcPlanLineSize;
 use ME\MerchandisingTrace\Models\Bridge\TrcPlanStyle;
 use ME\MerchandisingTrace\Models\Bridge\TrcProductionPlan;
+use ME\MerchandisingTrace\Models\Bridge\TrcStylePart;
 use ME\MerchandisingTrace\Models\Bom;
 use ME\MerchandisingTrace\Models\ProductionHandover;
 use ME\MerchandisingTrace\Models\Sample;
@@ -28,7 +29,7 @@ class ProductionHandoverService
     public function push(SalesContractPo $po, int $userId, ?string $overrideReason = null): ProductionHandover
     {
         if ($po->production_plan_line_id) {
-            throw new \RuntimeException('This PO has already been handed over.');
+            return $this->pushDelta($po, $userId);
         }
 
         $style = $po->style;
@@ -44,6 +45,48 @@ class ProductionHandoverService
         }
 
         return DB::transaction(fn () => $this->createHandover($po, $style, $userId, $overrideReason, $checks));
+    }
+
+    /**
+     * §M11 guard: "re-handover of the same PO is rejected; a qty increase
+     * creates a delta on the existing plan line, never a duplicate."
+     */
+    private function pushDelta(SalesContractPo $po, int $userId): ProductionHandover
+    {
+        $line = TrcPlanLine::find($po->production_plan_line_id);
+        if (! $line) {
+            throw new \RuntimeException('This PO has already been handed over, but its production plan line is missing.');
+        }
+
+        $newQty = $po->effectiveQty();
+        if ($newQty <= $line->total_order_qty) {
+            throw new \RuntimeException('This PO has already been handed over to production. Re-handover is rejected unless the quantity has increased.');
+        }
+
+        return DB::transaction(function () use ($po, $line, $newQty, $userId) {
+            $previousQty = $line->total_order_qty;
+
+            foreach ($po->sizes as $poSize) {
+                $lineSize = $line->sizes()->where('size_id', $poSize->size_id)->first();
+                if ($lineSize && $poSize->qty > $lineSize->order_qty) {
+                    $lineSize->update(['order_qty' => $poSize->qty]);
+                } elseif (! $lineSize) {
+                    TrcPlanLineSize::create(['plan_line_id' => $line->id, 'size_id' => $poSize->size_id, 'order_qty' => $poSize->qty]);
+                }
+            }
+
+            $line->update(['total_order_qty' => $newQty]);
+
+            return ProductionHandover::create([
+                'sales_contract_po_id' => $po->id,
+                'plan_line_id' => $line->id,
+                'handover_date' => now(),
+                'handed_over_by' => $userId,
+                'pcd_status' => $po->tnaPlan?->pcd_result === 'pass' ? 'pass' : 'fail',
+                'checklist_snapshot' => ['type' => 'delta', 'previous_qty' => $previousQty, 'new_qty' => $newQty],
+                'status' => 'handed_over',
+            ]);
+        });
     }
 
     private function createHandover(SalesContractPo $po, $style, int $userId, ?string $overrideReason, array $checks): ProductionHandover
@@ -62,6 +105,7 @@ class ProductionHandoverService
         $ppMeeting = $po->tnaPlan?->tasks()->where('task_code', 'pp_meeting')->first();
         $fileHandover = $po->tnaPlan?->tasks()->where('task_code', 'file_handover')->first();
         $pullout = $po->tnaPlan?->tasks()->where('task_code', 'pullout')->first();
+        $fri = $po->tnaPlan?->tasks()->where('task_code', 'fri')->first();
 
         $ppSampleApproved = Sample::query()->where('style_id', $style->id)->where('status', 'approved')
             ->whereHas('sampleType', fn ($q) => $q->where('code', 'PP1'))->exists();
@@ -86,6 +130,7 @@ class ProductionHandoverService
             'plan_cut_date' => $po->effectivePcd(),
             'plan_cut_close_date' => $pullout?->effectiveDate(),
             'sewing_start_date' => $fileHandover?->effectiveDate(),
+            'fri_date' => $fri?->effectiveDate(),
             'shipment_date' => $po->effectiveShipment(),
             'status' => 'pending',
         ]);
@@ -97,6 +142,8 @@ class ProductionHandoverService
                 'order_qty' => $size->qty,
             ]);
         }
+
+        $this->syncStyleParts($style, $po);
 
         $po->update(['production_plan_line_id' => $line->id, 'status' => 'in_production']);
 
@@ -112,6 +159,27 @@ class ProductionHandoverService
             'checklist_snapshot' => $checks,
             'status' => 'handed_over',
         ]);
+    }
+
+    /**
+     * §M11 step 5 / §14 field map: requires_embroidery/requires_print on
+     * the OTHER package's trc_style_parts, from the style's own part
+     * ticks OR the PO-level embellishment flags — never written from
+     * production-trace's side.
+     */
+    private function syncStyleParts($style, SalesContractPo $po): void
+    {
+        foreach ($style->parts as $part) {
+            TrcStylePart::updateOrCreate(
+                ['style_id' => $style->id, 'part_id' => $part->trc_part_id],
+                [
+                    'qty_per_garment' => $part->qty_per_garment,
+                    'requires_embroidery' => $part->requiresEmbroidery() || $po->emb_applique_ih === 'yes',
+                    'requires_print' => $part->requiresPrint() || $po->print_emb === 'yes' || $po->heat_seal_ih === 'yes',
+                    'is_critical' => $part->is_critical,
+                ]
+            );
+        }
     }
 
     public function rollback(SalesContractPo $po, string $reason): void

@@ -7,9 +7,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use ME\MerchandisingTrace\Http\Requests\StyleRequest;
+use ME\MerchandisingTrace\Models\Bridge\TrcPart;
 use ME\MerchandisingTrace\Models\Buyer;
 use ME\MerchandisingTrace\Models\ProductType;
 use ME\MerchandisingTrace\Models\Season;
+use ME\MerchandisingTrace\Models\Size;
 use ME\MerchandisingTrace\Models\Style;
 use ME\MerchandisingTrace\Models\WashType;
 
@@ -27,6 +29,23 @@ class StyleController extends Controller
             ->withQueryString();
 
         return view('merchandising-trace::admin.styles.index', ['styles' => $styles] + $this->formOptions());
+    }
+
+    /**
+     * §M03 — the tabbed detail page (Basic | Images | Measurement Chart |
+     * Parts & Embellishment | Operations/SMV).
+     */
+    public function show(Style $style): View
+    {
+        $this->authorize('merch_style.view');
+
+        $style->load(['images', 'measurements.sizes', 'parts', 'operations', 'buyer', 'season']);
+
+        return view('merchandising-trace::admin.styles.show', [
+            'style' => $style,
+            'trcPartsOptions' => TrcPart::query()->active()->orderBy('name')->get(),
+            'sizesOptions' => Size::query()->active()->orderBy('id')->get(),
+        ]);
     }
 
     public function store(StyleRequest $request): RedirectResponse

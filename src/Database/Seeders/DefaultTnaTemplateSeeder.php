@@ -52,6 +52,7 @@ class DefaultTnaTemplateSeeder extends Seeder
             ['Pilot Status', 'pilot_wash', 'Pilot Wash', 'date', -5, null, 'Production', false, false, 'production'],
             ['Pilot Status', 'pilot_review', 'Pilot Review', 'date', -3, null, 'Production', false, false, 'production'],
             ['Pilot Status', 'pp_meeting', 'PP Meeting', 'date', -2, null, 'Merchandiser', true, true, 'none'],
+            ['Pilot Status', 'fri', 'FRI', 'date', -3, 'shipment', 'Production', false, false, 'none'],
             ['Pilot Status', 'pilot_remarks', 'Remarks', 'text', 0, null, 'Production', false, false, 'none'],
 
             ['Fabric Status', 'fabric_yy', 'Fabric YY', 'number', -30, null, 'Fabric', false, false, 'none'],

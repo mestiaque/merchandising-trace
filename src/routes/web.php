@@ -27,6 +27,10 @@ use ME\MerchandisingTrace\Http\Controllers\ShipmentPlanController;
 use ME\MerchandisingTrace\Http\Controllers\ShipModeController;
 use ME\MerchandisingTrace\Http\Controllers\SizeController;
 use ME\MerchandisingTrace\Http\Controllers\StyleController;
+use ME\MerchandisingTrace\Http\Controllers\StyleImageController;
+use ME\MerchandisingTrace\Http\Controllers\StyleMeasurementController;
+use ME\MerchandisingTrace\Http\Controllers\StyleOperationController;
+use ME\MerchandisingTrace\Http\Controllers\StylePartController;
 use ME\MerchandisingTrace\Http\Controllers\SupplierController;
 use ME\MerchandisingTrace\Http\Controllers\TnaAlertController;
 use ME\MerchandisingTrace\Http\Controllers\TnaPlanController;
@@ -66,7 +70,15 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::post('inquiries/{inquiry}/convert-to-style', [InquiryController::class, 'convertToStyle'])->name('inquiries.convert-to-style');
 
         // Style Development (§M03)
-        Route::resource('styles', StyleController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('styles', StyleController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+        Route::post('styles/{style}/images', [StyleImageController::class, 'store'])->name('styles.images.store');
+        Route::delete('styles/{style}/images/{image}', [StyleImageController::class, 'destroy'])->name('styles.images.destroy');
+        Route::post('styles/{style}/measurements', [StyleMeasurementController::class, 'store'])->name('styles.measurements.store');
+        Route::delete('styles/{style}/measurements/{measurement}', [StyleMeasurementController::class, 'destroy'])->name('styles.measurements.destroy');
+        Route::post('styles/{style}/parts', [StylePartController::class, 'store'])->name('styles.parts.store');
+        Route::delete('styles/{style}/parts/{part}', [StylePartController::class, 'destroy'])->name('styles.parts.destroy');
+        Route::post('styles/{style}/operations', [StyleOperationController::class, 'store'])->name('styles.operations.store');
+        Route::delete('styles/{style}/operations/{operation}', [StyleOperationController::class, 'destroy'])->name('styles.operations.destroy');
 
         // Sample Management (§M04)
         Route::resource('samples', SampleController::class);

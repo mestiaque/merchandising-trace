@@ -86,4 +86,14 @@ class Style extends Model
     {
         return $this->hasMany(StyleMeasurement::class, 'style_id')->orderBy('sort_order');
     }
+
+    public function parts(): HasMany
+    {
+        return $this->hasMany(StylePart::class, 'style_id');
+    }
+
+    public function operations(): HasMany
+    {
+        return $this->hasMany(StyleOperation::class, 'style_id')->orderBy('sequence');
+    }
 }

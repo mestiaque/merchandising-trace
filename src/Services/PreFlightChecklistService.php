@@ -3,11 +3,11 @@
 namespace ME\MerchandisingTrace\Services;
 
 use ME\MerchandisingTrace\Models\Bom;
-use ME\MerchandisingTrace\Models\Bridge\TrcStylePart;
 use ME\MerchandisingTrace\Models\CostSheet;
 use ME\MerchandisingTrace\Models\MaterialBooking;
 use ME\MerchandisingTrace\Models\Sample;
 use ME\MerchandisingTrace\Models\SalesContractPo;
+use ME\MerchandisingTrace\Models\StylePart;
 
 /**
  * §M11 pre-flight checklist — every check is derived from data that already
@@ -56,7 +56,7 @@ class PreFlightChecklistService
             ],
             'style_parts_defined' => [
                 'label' => 'Style parts defined',
-                'pass' => TrcStylePart::query()->where('style_id', $po->style_id)->exists(),
+                'pass' => StylePart::query()->where('style_id', $po->style_id)->exists(),
             ],
         ];
 
