@@ -44,6 +44,13 @@ return [
                     ],
                 ],
                 [
+                    'title'      => 'Inquiries',
+                    'icon'       => 'fa-solid fa-magnifying-glass-dollar',
+                    'icon_color' => 'text-danger',
+                    'permission' => 'merch_inquiry',
+                    'route'      => "$base/inquiries",
+                ],
+                [
                     'title'      => 'Style Development',
                     'icon'       => 'fa-solid fa-vest-patches',
                     'icon_color' => 'text-warning',

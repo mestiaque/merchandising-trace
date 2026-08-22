@@ -23,6 +23,17 @@ class StyleRequest extends FormRequest
             'image' => ['nullable', 'string', 'max:255'],
             'buyer_id' => ['required', 'integer', 'exists:mer_buyers,id'],
             'brand_id' => ['nullable', 'integer', 'exists:mer_brands,id'],
+            'season_id' => ['nullable', 'integer', 'exists:mer_seasons,id'],
+            'merchandiser_id' => ['nullable', 'integer', 'exists:users,id'],
+            'wash_type_id' => ['nullable', 'integer', 'exists:mer_wash_types,id'],
+            'product_type_id' => ['nullable', 'integer', 'exists:mer_product_types,id'],
+            'smv' => ['nullable', 'numeric', 'min:0'],
+            'cost_smv' => ['nullable', 'numeric', 'min:0'],
+            'target_cm' => ['nullable', 'numeric', 'min:0'],
+            'fabric_description' => ['nullable', 'string'],
+            'development_status' => ['nullable', 'string', Rule::in(['new', 'in_development', 'sample_stage', 'approved', 'in_production', 'closed'])],
+            'is_repeat' => ['nullable', 'boolean'],
+            'parent_style_id' => ['nullable', 'integer', 'exists:mer_styles,id'],
             'is_active' => ['nullable', 'boolean'],
         ];
     }

@@ -88,6 +88,12 @@ return [
             'permissions' => $crud,
         ],
 
+        // Inquiry Management
+        'merch_inquiry' => [
+            'label'       => 'Inquiries',
+            'permissions' => $crud,
+        ],
+
         // Style Development
         'merch_style' => [
             'label'       => 'Styles',

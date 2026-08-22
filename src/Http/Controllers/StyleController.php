@@ -5,10 +5,14 @@ namespace ME\MerchandisingTrace\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\User;
 use ME\MerchandisingTrace\Http\Requests\StyleRequest;
 use ME\MerchandisingTrace\Models\Brand;
 use ME\MerchandisingTrace\Models\Buyer;
+use ME\MerchandisingTrace\Models\ProductType;
+use ME\MerchandisingTrace\Models\Season;
 use ME\MerchandisingTrace\Models\Style;
+use ME\MerchandisingTrace\Models\WashType;
 
 class StyleController extends Controller
 {
@@ -74,6 +78,10 @@ class StyleController extends Controller
         return [
             'buyersOptions' => Buyer::query()->active()->orderBy('name')->get(),
             'brandsOptions' => Brand::query()->active()->orderBy('name')->get(),
+            'seasonsOptions' => Season::query()->active()->orderBy('name')->get(),
+            'merchandisersOptions' => User::query()->orderBy('name')->get(),
+            'washTypesOptions' => WashType::query()->active()->orderBy('name')->get(),
+            'productTypesOptions' => ProductType::query()->active()->orderBy('name')->get(),
         ];
     }
 }

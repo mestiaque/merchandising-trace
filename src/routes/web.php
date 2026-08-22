@@ -12,6 +12,7 @@ use ME\MerchandisingTrace\Http\Controllers\DepartmentController;
 use ME\MerchandisingTrace\Http\Controllers\DocumentController;
 use ME\MerchandisingTrace\Http\Controllers\FactoryController;
 use ME\MerchandisingTrace\Http\Controllers\IncotermController;
+use ME\MerchandisingTrace\Http\Controllers\InquiryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemCategoryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemController;
 use ME\MerchandisingTrace\Http\Controllers\MaterialBookingController;
@@ -93,6 +94,10 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::get('item-categories/print', [ItemCategoryController::class, 'print'])->name('item-categories.print');
         Route::resource('items', ItemController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::get('items/print', [ItemController::class, 'print'])->name('items.print');
+
+        // Inquiry Management (Section M02)
+        Route::resource('inquiries', InquiryController::class);
+        Route::post('inquiries/{inquiry}/convert-to-style', [InquiryController::class, 'convertToStyle'])->name('inquiries.convert-to-style');
 
         // Style Development (Section 2)
         Route::resource('styles', StyleController::class)->only(['index', 'store', 'update', 'destroy']);
