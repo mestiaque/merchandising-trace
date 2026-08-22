@@ -54,7 +54,14 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h6 class="mb-0">PO Lines</h6>
             @can('merch_sales_contract.add')
-                <a href="{{ route('merchandising-trace.sales-contracts.pos.create', $salesContract) }}" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Add PO Line</a>
+                <div class="d-flex gap-2">
+                    <form method="POST" action="{{ route('merchandising-trace.sales-contracts.pos.import', $salesContract) }}" enctype="multipart/form-data" class="d-flex gap-1">
+                        @csrf
+                        <input type="file" name="file" class="form-control form-control-sm" accept=".xlsx,.xls,.csv" required>
+                        <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap" title="Columns: Style No, Color Code, PO No, PO Qty, Wash Type Code, PCD Date, Shipment Date, Unit Price, Ship Mode Code">Import Excel</button>
+                    </form>
+                    <a href="{{ route('merchandising-trace.sales-contracts.pos.create', $salesContract) }}" class="btn btn-sm btn-primary text-nowrap"><i class="fa-solid fa-plus"></i> Add PO Line</a>
+                </div>
             @endcan
         </div>
         <div class="table-responsive">

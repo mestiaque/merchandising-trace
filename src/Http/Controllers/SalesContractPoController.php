@@ -15,6 +15,8 @@ use ME\MerchandisingTrace\Models\ShipMode;
 use ME\MerchandisingTrace\Models\Size;
 use ME\MerchandisingTrace\Models\Style;
 use ME\MerchandisingTrace\Models\WashType;
+use ME\MerchandisingTrace\Imports\TnaGridImport;
+use ME\MerchandisingTrace\Services\SalesContractPoImportService;
 
 class SalesContractPoController extends Controller
 {
@@ -121,6 +123,31 @@ class SalesContractPoController extends Controller
         });
 
         return redirect()->route('merchandising-trace.sales-contracts.show', $salesContract)->with('success', 'PO line updated successfully.');
+    }
+
+    /**
+     * §M07 AC: "Excel import" for the PO grid.
+     */
+    public function importExcel(Request $request, SalesContract $salesContract, SalesContractPoImportService $importer): RedirectResponse
+    {
+        $this->authorize('merch_sales_contract.add');
+
+        $request->validate(['file' => ['required', 'file', 'mimes:xlsx,xls,csv']]);
+
+        $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new TnaGridImport(), $request->file('file'));
+
+        try {
+            $result = $importer->import($salesContract, $sheets[0] ?? [], auth()->id());
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        $message = "{$result['created']} PO line(s) imported.";
+        if ($result['skipped']) {
+            $message .= ' Skipped: ' . implode('; ', $result['skipped']);
+        }
+
+        return redirect()->route('merchandising-trace.sales-contracts.show', $salesContract)->with('success', $message);
     }
 
     public function destroy(SalesContract $salesContract, SalesContractPo $salesContractPo): RedirectResponse

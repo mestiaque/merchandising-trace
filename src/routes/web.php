@@ -108,6 +108,7 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::put('sales-contracts/{sales_contract}/pos/{sales_contract_po}', [SalesContractPoController::class, 'update'])->name('sales-contracts.pos.update');
         Route::delete('sales-contracts/{sales_contract}/pos/{sales_contract_po}', [SalesContractPoController::class, 'destroy'])->name('sales-contracts.pos.destroy');
         Route::post('sales-contracts/{sales_contract}/pos/{sales_contract_po}/revise', [SalesContractPoController::class, 'revise'])->name('sales-contracts.pos.revise');
+        Route::post('sales-contracts/{sales_contract}/pos/import', [SalesContractPoController::class, 'importExcel'])->name('sales-contracts.pos.import');
 
         // T&A (§M08 — the core module)
         Route::resource('tna-templates', TnaTemplateController::class)->only(['index', 'store', 'show']);
