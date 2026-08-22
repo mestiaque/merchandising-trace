@@ -32,19 +32,19 @@ class DefaultTnaTemplateSeeder extends Seeder
         $deptId = fn (string $name) => Department::firstOrCreate(['code' => strtoupper(substr($name, 0, 4))], ['name' => $name])->id;
 
         $rows = [
-            // group, code, name, value_type, offset_days, anchor_field, dept, mandatory, blocks_pcd, auto_source
-            ['Sample Status', 'fit_request', 'Fit Request date', 'date', -35, null, 'Sample', true, false, 'sample'],
-            ['Sample Status', 'fit_submission', 'Fit Submission', 'date', -32, null, 'Sample', true, false, 'sample'],
-            ['Sample Status', 'fit_approval', 'Fit Approval', 'date', -30, null, 'Sample', true, false, 'sample'],
-            ['Sample Status', 'fit_2nd_submission', '2nd Fit submission', 'date', -27, null, 'Sample', false, false, 'sample'],
-            ['Sample Status', 'fit_2nd_approval', '2nd Fit Approval', 'date', -25, null, 'Sample', false, false, 'sample'],
-            ['Sample Status', 'pp1_request', '1st PP request', 'date', -23, null, 'Sample', true, false, 'sample'],
-            ['Sample Status', 'pp1_submit', '1st PP submit', 'date', -21, null, 'Sample', true, false, 'sample'],
-            ['Sample Status', 'pp1_approval', '1st PP Approval', 'date', -20, null, 'Sample', true, true, 'sample'],
+            // group, code, name, value_type, offset_days, anchor_field, dept, mandatory, blocks_pcd, auto_source, auto_source_ref (mer_sample_types.code)
+            ['Sample Status', 'fit_request', 'Fit Request date', 'date', -35, null, 'Sample', true, false, 'sample', 'FIT'],
+            ['Sample Status', 'fit_submission', 'Fit Submission', 'date', -32, null, 'Sample', true, false, 'sample', 'FIT'],
+            ['Sample Status', 'fit_approval', 'Fit Approval', 'date', -30, null, 'Sample', true, false, 'sample', 'FIT'],
+            ['Sample Status', 'fit_2nd_submission', '2nd Fit submission', 'date', -27, null, 'Sample', false, false, 'sample', 'FIT2'],
+            ['Sample Status', 'fit_2nd_approval', '2nd Fit Approval', 'date', -25, null, 'Sample', false, false, 'sample', 'FIT2'],
+            ['Sample Status', 'pp1_request', '1st PP request', 'date', -23, null, 'Sample', true, false, 'sample', 'PP1'],
+            ['Sample Status', 'pp1_submit', '1st PP submit', 'date', -21, null, 'Sample', true, false, 'sample', 'PP1'],
+            ['Sample Status', 'pp1_approval', '1st PP Approval', 'date', -20, null, 'Sample', true, true, 'sample', 'PP1'],
 
-            ['Wash Status', 'wash_standard_approval', 'Wash Standard Approval', 'date', -18, null, 'Wash', true, true, 'sample'],
-            ['Wash Status', 'shade_band_submission', 'Shade band submission', 'date', -17, null, 'Wash', false, false, 'sample'],
-            ['Wash Status', 'shade_band_approval', 'Shade band Approval', 'date', -16, null, 'Wash', false, false, 'sample'],
+            ['Wash Status', 'wash_standard_approval', 'Wash Standard Approval', 'date', -18, null, 'Wash', true, true, 'sample', 'WASHSTD'],
+            ['Wash Status', 'shade_band_submission', 'Shade band submission', 'date', -17, null, 'Wash', false, false, 'sample', 'SHADEBAND'],
+            ['Wash Status', 'shade_band_approval', 'Shade band Approval', 'date', -16, null, 'Wash', false, false, 'sample', 'SHADEBAND'],
 
             ['Pilot Status', 'file_handover', 'File Hand over Date', 'date', -14, null, 'Production', true, true, 'none'],
             ['Pilot Status', 'pullout', 'Size set Fabric & Trims (Pullout)', 'date', -12, null, 'Production', true, true, 'none'],
@@ -87,6 +87,7 @@ class DefaultTnaTemplateSeeder extends Seeder
 
         foreach ($rows as $i => $row) {
             [$group, $code, $name, $valueType, $offset, $anchorField, $dept, $mandatory, $blocksPcd, $autoSource] = $row;
+            $autoSourceRef = $row[10] ?? null;
 
             TnaTemplateTask::create([
                 'tna_template_id' => $template->id,
@@ -101,6 +102,7 @@ class DefaultTnaTemplateSeeder extends Seeder
                 'is_mandatory' => $mandatory,
                 'blocks_pcd' => $blocksPcd,
                 'auto_source' => $autoSource,
+                'auto_source_ref' => $autoSourceRef,
             ]);
         }
     }

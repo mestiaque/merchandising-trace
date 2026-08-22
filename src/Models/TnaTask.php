@@ -17,6 +17,7 @@ class TnaTask extends Model
         'tna_plan_id', 'tna_template_task_id', 'group_name', 'task_code', 'task_name', 'value_type', 'sequence',
         'plan_date', 'revised_date', 'actual_date', 'value_text', 'value_number', 'status', 'is_mandatory',
         'blocks_pcd', 'responsible_dept_id', 'responsible_person_id', 'remarks', 'attachment', 'is_auto',
+        'auto_source', 'auto_source_ref',
     ];
 
     protected $casts = [

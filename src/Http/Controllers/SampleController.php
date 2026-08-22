@@ -73,6 +73,8 @@ class SampleController extends Controller
     {
         $sample->update($request->validated());
 
+        app(\ME\MerchandisingTrace\Services\SampleTnaSyncService::class)->syncFromSample($sample);
+
         return redirect()->route('merchandising-trace.samples.show', $sample)->with('success', "Sample {$sample->sample_no} updated successfully.");
     }
 
@@ -105,13 +107,15 @@ class SampleController extends Controller
             'status' => 'submitted',
         ]);
 
+        app(\ME\MerchandisingTrace\Services\SampleTnaSyncService::class)->syncFromSample($sample);
+
         return back()->with('success', 'Sample marked as submitted.');
     }
 
     /**
-     * §M04: approval form (buyer comment). The T&A auto-sync write-back
-     * (auto_source = sample) happens once the T&A module exists — see
-     * work/merchent.md §8.4.
+     * §M04 + §8.4 AC: approving a sample instantly writes back into every
+     * matching T&A task (e.g. "1st PP Approval") via SampleTnaSyncService —
+     * those cells are read-only in the grid once auto-filled.
      */
     public function approve(Request $request, Sample $sample): RedirectResponse
     {
@@ -125,7 +129,9 @@ class SampleController extends Controller
             'buyer_comments' => $request->buyer_comments,
         ]);
 
-        return back()->with('success', 'Sample approved.');
+        $synced = app(\ME\MerchandisingTrace\Services\SampleTnaSyncService::class)->syncFromSample($sample);
+
+        return back()->with('success', 'Sample approved.' . ($synced ? " {$synced} T&A task(s) auto-updated." : ''));
     }
 
     /**

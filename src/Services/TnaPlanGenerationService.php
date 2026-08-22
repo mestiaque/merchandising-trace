@@ -63,6 +63,8 @@ class TnaPlanGenerationService
                     'blocks_pcd' => $templateTask->blocks_pcd,
                     'responsible_dept_id' => $templateTask->responsible_dept_id,
                     'is_auto' => $templateTask->auto_source !== 'none',
+                    'auto_source' => $templateTask->auto_source,
+                    'auto_source_ref' => $templateTask->auto_source_ref,
                 ]);
             }
 
