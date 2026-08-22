@@ -26,6 +26,11 @@
                         </form>
                     @endif
                 @endcan
+                @can('merch_documentation.list')
+                    @if($salesContract->status !== 'draft')
+                        <a href="{{ route('merchandising-trace.order-documents.index', $salesContract) }}" class="btn btn-outline-secondary btn-sm me-1"><i class="fa-solid fa-file-lines"></i> Documents</a>
+                    @endif
+                @endcan
                 <a href="{{ route('merchandising-trace.sales-contracts.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
             </div>
         </div>

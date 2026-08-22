@@ -78,6 +78,11 @@ class SalesContractPo extends Model
         return $this->hasMany(SalesContractPoRevision::class, 'sales_contract_po_id')->latest('changed_at');
     }
 
+    public function shipmentBookings(): HasMany
+    {
+        return $this->hasMany(ShipmentBooking::class, 'sales_contract_po_id');
+    }
+
     public function tnaPlan(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(TnaPlan::class, 'sales_contract_po_id');

@@ -87,20 +87,38 @@ class SalesContractController extends Controller
      * §M07 AC: confirming a contract auto-generates the T&A plan for every
      * PO row from the buyer/product template.
      */
-    public function confirm(SalesContract $salesContract, \ME\MerchandisingTrace\Services\TnaPlanGenerationService $tnaGenerator): RedirectResponse
+    public function confirm(SalesContract $salesContract, \ME\MerchandisingTrace\Services\TnaPlanGenerationService $tnaGenerator, \ME\MerchandisingTrace\Services\DocumentChecklistService $documents): RedirectResponse
     {
         $this->authorize('merch_sales_contract.edit');
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($salesContract, $tnaGenerator) {
+        \Illuminate\Support\Facades\DB::transaction(function () use ($salesContract, $tnaGenerator, $documents) {
             $salesContract->update(['status' => 'confirmed']);
 
             foreach ($salesContract->pos as $po) {
                 $tnaGenerator->generateFor($po);
                 $po->update(['status' => 'tna_created']);
             }
+
+            $documents->generateFor($salesContract);
         });
 
         return back()->with('success', "Sales Contract {$salesContract->contract_no} confirmed — T&A plans generated for " . $salesContract->pos()->count() . ' PO line(s).');
+    }
+
+    /**
+     * §M13 AC: blocked while any mandatory document is missing.
+     */
+    public function close(SalesContract $salesContract): RedirectResponse
+    {
+        $this->authorize('merch_sales_contract.edit');
+
+        if ($salesContract->hasOutstandingMandatoryDocuments()) {
+            return back()->with('error', 'Cannot close — mandatory documents are still missing.');
+        }
+
+        $salesContract->update(['status' => 'closed']);
+
+        return back()->with('success', "Sales Contract {$salesContract->contract_no} closed.");
     }
 
     private function formOptions(): array

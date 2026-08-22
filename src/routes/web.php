@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use ME\MerchandisingTrace\Http\Controllers\BomController;
 use ME\MerchandisingTrace\Http\Controllers\BuyerController;
 use ME\MerchandisingTrace\Http\Controllers\ColorController;
+use ME\MerchandisingTrace\Http\Controllers\CommunicationLogController;
 use ME\MerchandisingTrace\Http\Controllers\CostSheetController;
 use ME\MerchandisingTrace\Http\Controllers\CurrencyController;
 use ME\MerchandisingTrace\Http\Controllers\DepartmentController;
@@ -12,6 +13,7 @@ use ME\MerchandisingTrace\Http\Controllers\InquiryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemCategoryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemController;
 use ME\MerchandisingTrace\Http\Controllers\MaterialBookingController;
+use ME\MerchandisingTrace\Http\Controllers\OrderDocumentController;
 use ME\MerchandisingTrace\Http\Controllers\ProductionHandoverController;
 use ME\MerchandisingTrace\Http\Controllers\ProductTypeController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractController;
@@ -19,6 +21,7 @@ use ME\MerchandisingTrace\Http\Controllers\SalesContractPoController;
 use ME\MerchandisingTrace\Http\Controllers\SampleController;
 use ME\MerchandisingTrace\Http\Controllers\SampleTypeController;
 use ME\MerchandisingTrace\Http\Controllers\SeasonController;
+use ME\MerchandisingTrace\Http\Controllers\ShipmentPlanController;
 use ME\MerchandisingTrace\Http\Controllers\ShipModeController;
 use ME\MerchandisingTrace\Http\Controllers\SizeController;
 use ME\MerchandisingTrace\Http\Controllers\StyleController;
@@ -83,6 +86,7 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         // Sales Contract / Order Confirmation (§M07)
         Route::resource('sales-contracts', SalesContractController::class)->parameters(['sales-contracts' => 'sales_contract']);
         Route::post('sales-contracts/{sales_contract}/confirm', [SalesContractController::class, 'confirm'])->name('sales-contracts.confirm');
+        Route::post('sales-contracts/{sales_contract}/close', [SalesContractController::class, 'close'])->name('sales-contracts.close');
         Route::get('sales-contracts/{sales_contract}/pos/create', [SalesContractPoController::class, 'create'])->name('sales-contracts.pos.create');
         Route::post('sales-contracts/{sales_contract}/pos', [SalesContractPoController::class, 'store'])->name('sales-contracts.pos.store');
         Route::get('sales-contracts/{sales_contract}/pos/{sales_contract_po}/edit', [SalesContractPoController::class, 'edit'])->name('sales-contracts.pos.edit');
@@ -123,4 +127,18 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::post('production-handovers/{sales_contract_po}/push', [ProductionHandoverController::class, 'push'])->name('production-handovers.push');
         Route::post('production-handovers/{sales_contract_po}/rollback', [ProductionHandoverController::class, 'rollback'])->name('production-handovers.rollback');
         Route::post('styles/{style}/map-production', [ProductionHandoverController::class, 'mapStyle'])->name('styles.map-production');
+
+        // Shipment Plan (§M12)
+        Route::get('shipment-plans', [ShipmentPlanController::class, 'index'])->name('shipment-plans.index');
+        Route::get('shipment-plans/{sales_contract_po}', [ShipmentPlanController::class, 'show'])->name('shipment-plans.show');
+        Route::post('shipment-plans/{sales_contract_po}/bookings', [ShipmentPlanController::class, 'storeBooking'])->name('shipment-plans.bookings.store');
+
+        // Documentation (§M13)
+        Route::get('sales-contracts/{sales_contract}/documents', [OrderDocumentController::class, 'index'])->name('order-documents.index');
+        Route::post('sales-contracts/{sales_contract}/documents/{document}/upload', [OrderDocumentController::class, 'upload'])->name('order-documents.upload');
+        Route::post('sales-contracts/{sales_contract}/documents/{document}/approve', [OrderDocumentController::class, 'approve'])->name('order-documents.approve');
+
+        // Buyer Communication (§M14)
+        Route::get('communication-logs', [CommunicationLogController::class, 'index'])->name('communication-logs.index');
+        Route::post('communication-logs', [CommunicationLogController::class, 'store'])->name('communication-logs.store');
     });

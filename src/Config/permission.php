@@ -58,5 +58,14 @@ return [
 
         // Production Handover Bridge
         'merch_production_handover' => ['label' => 'Production Handover', 'permissions' => $crud],
+
+        // Shipment Plan
+        'merch_shipment_plan' => ['label' => 'Shipment Plan', 'permissions' => $crud],
+
+        // Documentation
+        'merch_documentation' => ['label' => 'Documentation', 'permissions' => $crud],
+
+        // Buyer Communication
+        'merch_communication' => ['label' => 'Buyer Communication', 'permissions' => $crud],
     ],
 ];

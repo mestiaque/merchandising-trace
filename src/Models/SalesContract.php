@@ -65,6 +65,19 @@ class SalesContract extends Model
         return $this->hasMany(SalesContractPo::class, 'sales_contract_id');
     }
 
+    public function documents(): HasMany
+    {
+        return $this->hasMany(OrderDocument::class, 'sales_contract_id');
+    }
+
+    /**
+     * §M13 AC: no order can close while a mandatory document is missing.
+     */
+    public function hasOutstandingMandatoryDocuments(): bool
+    {
+        return $this->documents()->where('is_mandatory', true)->whereNotIn('status', ['uploaded', 'approved'])->exists();
+    }
+
     /**
      * §6 Rule 1: total_qty/total_value are denormalized from the PO lines'
      * effective values — refreshed after every PO write, never hand-typed.
