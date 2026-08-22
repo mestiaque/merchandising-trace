@@ -29,7 +29,16 @@ class SalesContractController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('merchandising-trace::admin.sales-contracts.index', ['salesContracts' => $salesContracts]);
+        $stats = [
+            'total' => SalesContract::count(),
+            'draft' => SalesContract::where('status', 'draft')->count(),
+            'confirmed' => SalesContract::where('status', 'confirmed')->count(),
+            'in_production' => SalesContract::where('status', 'in_production')->count(),
+            'closed' => SalesContract::where('status', 'closed')->count(),
+            'total_value' => (float) SalesContract::sum('total_value'),
+        ];
+
+        return view('merchandising-trace::admin.sales-contracts.index', ['salesContracts' => $salesContracts, 'stats' => $stats]);
     }
 
     public function create(): View

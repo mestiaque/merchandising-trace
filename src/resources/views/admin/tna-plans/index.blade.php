@@ -8,6 +8,40 @@
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
     @include('merchandising-trace::admin.partials.ui-kit')
+    @include('merchandising-trace::admin.partials.stat-card-styles')
+
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="merch-stat-card">
+                <div class="merch-stat-icon" style="background:#eef2f9;"><i class="fa-solid fa-calendar-check" style="color:#2a4b7c;"></i></div>
+                <div><div class="merch-stat-val" style="color:#2a4b7c;">{{ $stats['total'] }}</div><div class="merch-stat-lbl">Total Plans</div></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="merch-stat-card">
+                <div class="merch-stat-icon" style="background:#ecfdf5;"><i class="fa-solid fa-flag-checkered" style="color:#10b981;"></i></div>
+                <div><div class="merch-stat-val" style="color:#10b981;">{{ $stats['pcd_pass'] }}</div><div class="merch-stat-lbl">PCD Pass</div></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="merch-stat-card">
+                <div class="merch-stat-icon" style="background:{{ $stats['pcd_fail'] > 0 ? '#fff1f2' : '#f3f4f6' }};"><i class="fa-solid fa-triangle-exclamation" style="color:{{ $stats['pcd_fail'] > 0 ? '#f43f5e' : '#6b7280' }};"></i></div>
+                <div><div class="merch-stat-val" style="color:{{ $stats['pcd_fail'] > 0 ? '#f43f5e' : '#6b7280' }};">{{ $stats['pcd_fail'] }}</div><div class="merch-stat-lbl">PCD Fail</div></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="merch-stat-card">
+                <div class="merch-stat-icon" style="background:#fff7ed;"><i class="fa-solid fa-hourglass-half" style="color:#f59e0b;"></i></div>
+                <div><div class="merch-stat-val" style="color:#f59e0b;">{{ $stats['pcd_pending'] }}</div><div class="merch-stat-lbl">PCD Pending</div></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="merch-stat-card">
+                <div class="merch-stat-icon" style="background:#f5f0fb;"><i class="fa-solid fa-clock" style="color:#7c3aed;"></i></div>
+                <div><div class="merch-stat-val" style="color:#7c3aed;">{{ $stats['at_risk_or_delayed'] }}</div><div class="merch-stat-lbl">At Risk / Delayed</div></div>
+            </div>
+        </div>
+    </div>
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">

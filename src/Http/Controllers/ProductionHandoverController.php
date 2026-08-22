@@ -30,9 +30,17 @@ class ProductionHandoverController extends Controller
             'checks' => $checklist->evaluate($po),
         ]);
 
+        $stats = [
+            'pending' => $pos->total(),
+            'ready' => $rows->filter(fn ($r) => $r['checks']['all_passed'])->count(),
+            'blocked' => $rows->filter(fn ($r) => ! $r['checks']['all_passed'])->count(),
+            'handed_over' => SalesContractPo::whereNotNull('production_plan_line_id')->count(),
+        ];
+
         return view('merchandising-trace::admin.production-handovers.index', [
             'rows' => $rows,
             'paginator' => $pos,
+            'stats' => $stats,
         ]);
     }
 

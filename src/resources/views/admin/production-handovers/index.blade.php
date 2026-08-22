@@ -7,6 +7,34 @@
 @section('contents')
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
+    @include('merchandising-trace::admin.partials.stat-card-styles')
+
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3">
+            <div class="merch-stat-card">
+                <div class="merch-stat-icon" style="background:#f0f9ff;"><i class="fa-solid fa-clipboard-list" style="color:#0ea5e9;"></i></div>
+                <div><div class="merch-stat-val" style="color:#0ea5e9;">{{ $stats['pending'] }}</div><div class="merch-stat-lbl">Pending Handover</div></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="merch-stat-card">
+                <div class="merch-stat-icon" style="background:#ecfdf5;"><i class="fa-solid fa-check-double" style="color:#10b981;"></i></div>
+                <div><div class="merch-stat-val" style="color:#10b981;">{{ $stats['ready'] }}</div><div class="merch-stat-lbl">Checklist All-Green</div></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="merch-stat-card">
+                <div class="merch-stat-icon" style="background:{{ $stats['blocked'] > 0 ? '#fff1f2' : '#f3f4f6' }};"><i class="fa-solid fa-triangle-exclamation" style="color:{{ $stats['blocked'] > 0 ? '#f43f5e' : '#6b7280' }};"></i></div>
+                <div><div class="merch-stat-val" style="color:{{ $stats['blocked'] > 0 ? '#f43f5e' : '#6b7280' }};">{{ $stats['blocked'] }}</div><div class="merch-stat-lbl">Has Issues</div></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="merch-stat-card">
+                <div class="merch-stat-icon" style="background:#f5f0fb;"><i class="fa-solid fa-industry" style="color:#7c3aed;"></i></div>
+                <div><div class="merch-stat-val" style="color:#7c3aed;">{{ $stats['handed_over'] }}</div><div class="merch-stat-lbl">Handed Over (all time)</div></div>
+            </div>
+        </div>
+    </div>
 
     <div class="card">
         <div class="card-header"><h5 class="mb-0">Handover to Production — POs ready to push</h5></div>

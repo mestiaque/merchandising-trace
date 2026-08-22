@@ -36,8 +36,17 @@ class TnaPlanController extends Controller
             ->paginate(20)
             ->withQueryString();
 
+        $stats = [
+            'total' => TnaPlan::count(),
+            'pcd_pass' => TnaPlan::where('pcd_result', 'pass')->count(),
+            'pcd_fail' => TnaPlan::where('pcd_result', 'fail')->count(),
+            'pcd_pending' => TnaPlan::where('pcd_result', 'pending')->count(),
+            'at_risk_or_delayed' => TnaPlan::whereIn('overall_status', ['at_risk', 'delayed'])->count(),
+        ];
+
         return view('merchandising-trace::admin.tna-plans.index', [
             'plans' => $plans,
+            'stats' => $stats,
             'buyersOptions' => Buyer::query()->active()->orderBy('name')->get(),
         ]);
     }
