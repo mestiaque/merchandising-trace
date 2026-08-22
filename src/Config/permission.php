@@ -46,5 +46,11 @@ return [
 
         // Sales Contract
         'merch_sales_contract' => ['label' => 'Sales Contracts', 'permissions' => $crud],
+
+        // T&A
+        'merch_tna' => [
+            'label'       => 'T&A',
+            'permissions' => $crud + ['override_pcd' => 'Override PCD Result'],
+        ],
     ],
 ];

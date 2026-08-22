@@ -21,6 +21,8 @@ use ME\MerchandisingTrace\Http\Controllers\ShipModeController;
 use ME\MerchandisingTrace\Http\Controllers\SizeController;
 use ME\MerchandisingTrace\Http\Controllers\StyleController;
 use ME\MerchandisingTrace\Http\Controllers\SupplierController;
+use ME\MerchandisingTrace\Http\Controllers\TnaPlanController;
+use ME\MerchandisingTrace\Http\Controllers\TnaTemplateController;
 use ME\MerchandisingTrace\Http\Controllers\UomController;
 use ME\MerchandisingTrace\Http\Controllers\WashTypeController;
 
@@ -83,4 +85,16 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::put('sales-contracts/{sales_contract}/pos/{sales_contract_po}', [SalesContractPoController::class, 'update'])->name('sales-contracts.pos.update');
         Route::delete('sales-contracts/{sales_contract}/pos/{sales_contract_po}', [SalesContractPoController::class, 'destroy'])->name('sales-contracts.pos.destroy');
         Route::post('sales-contracts/{sales_contract}/pos/{sales_contract_po}/revise', [SalesContractPoController::class, 'revise'])->name('sales-contracts.pos.revise');
+
+        // T&A (§M08 — the core module)
+        Route::resource('tna-templates', TnaTemplateController::class)->only(['index', 'store', 'show']);
+        Route::post('tna-templates/{tna_template}/clone', [TnaTemplateController::class, 'clone'])->name('tna-templates.clone');
+        Route::post('tna-templates/{tna_template}/tasks', [TnaTemplateController::class, 'storeTask'])->name('tna-templates.tasks.store');
+        Route::put('tna-templates/{tna_template}/tasks/{task}', [TnaTemplateController::class, 'updateTask'])->name('tna-templates.tasks.update');
+        Route::delete('tna-templates/{tna_template}/tasks/{task}', [TnaTemplateController::class, 'destroyTask'])->name('tna-templates.tasks.destroy');
+
+        Route::resource('tna-plans', TnaPlanController::class)->only(['index', 'show']);
+        Route::put('tna-plans/{tna_plan}/tasks/{task}', [TnaPlanController::class, 'updateTask'])->name('tna-plans.tasks.update');
+        Route::post('tna-plans/{tna_plan}/evaluate-pcd', [TnaPlanController::class, 'evaluatePcd'])->name('tna-plans.evaluate-pcd');
+        Route::post('tna-plans/{tna_plan}/override-pcd', [TnaPlanController::class, 'overridePcd'])->name('tna-plans.override-pcd');
     });

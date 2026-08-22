@@ -85,16 +85,22 @@ class SalesContractController extends Controller
 
     /**
      * §M07 AC: confirming a contract auto-generates the T&A plan for every
-     * PO row. The T&A plan-generation call is wired once P7/P8 exist.
+     * PO row from the buyer/product template.
      */
-    public function confirm(SalesContract $salesContract): RedirectResponse
+    public function confirm(SalesContract $salesContract, \ME\MerchandisingTrace\Services\TnaPlanGenerationService $tnaGenerator): RedirectResponse
     {
         $this->authorize('merch_sales_contract.edit');
 
-        $salesContract->update(['status' => 'confirmed']);
-        $salesContract->pos()->update(['status' => 'tna_created']);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($salesContract, $tnaGenerator) {
+            $salesContract->update(['status' => 'confirmed']);
 
-        return back()->with('success', "Sales Contract {$salesContract->contract_no} confirmed.");
+            foreach ($salesContract->pos as $po) {
+                $tnaGenerator->generateFor($po);
+                $po->update(['status' => 'tna_created']);
+            }
+        });
+
+        return back()->with('success', "Sales Contract {$salesContract->contract_no} confirmed — T&A plans generated for " . $salesContract->pos()->count() . ' PO line(s).');
     }
 
     private function formOptions(): array

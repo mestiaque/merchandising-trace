@@ -18,5 +18,6 @@ return [
         'bom'     => 'BOM',
         'costing' => 'CST',
         'sales_contract' => 'SC',
+        'tna' => 'TNA',
     ],
 ];
