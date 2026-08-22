@@ -13,18 +13,11 @@ return [
             'order'      => 10,
             'children'   => [
                 [
-                    'title'      => 'My Dashboard',
+                    'title'      => 'Dashboard',
                     'icon'       => 'fa-solid fa-gauge',
                     'icon_color' => 'text-primary',
                     'permission' => 'merch_dashboard',
-                    'route'      => "$base/dashboard/merchandiser",
-                ],
-                [
-                    'title'      => 'Management Dashboard',
-                    'icon'       => 'fa-solid fa-chart-line',
-                    'icon_color' => 'text-primary',
-                    'permission' => 'merch_dashboard',
-                    'route'      => "$base/dashboard/management",
+                    'route'      => "$base/dashboard",
                 ],
                 [
                     'title'      => 'Reports',

@@ -17,8 +17,13 @@ class SalesContractPoRequest extends FormRequest
 
     public function rules(): array
     {
+        $buyerId = $this->route('sales_contract')?->buyer_id;
+
         return [
-            'style_id' => ['required', 'integer', 'exists:mer_styles,id'],
+            'style_id' => [
+                'required', 'integer',
+                Rule::exists('mer_styles', 'id')->when($buyerId, fn ($q) => $q->where('buyer_id', $buyerId)),
+            ],
             'product_type_id' => ['nullable', 'integer', 'exists:mer_product_types,id'],
             'color_id' => ['required', 'integer', 'exists:mer_colors,id'],
             'wash_type_id' => ['nullable', 'integer', 'exists:mer_wash_types,id'],

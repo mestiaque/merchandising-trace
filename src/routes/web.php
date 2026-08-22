@@ -173,9 +173,8 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::get('communication-logs', [CommunicationLogController::class, 'index'])->name('communication-logs.index');
         Route::post('communication-logs', [CommunicationLogController::class, 'store'])->name('communication-logs.store');
 
-        // Dashboards & Reports (§M15)
-        Route::get('dashboard/merchandiser', [DashboardController::class, 'merchandiser'])->name('dashboards.merchandiser');
-        Route::get('dashboard/management', [DashboardController::class, 'management'])->name('dashboards.management');
+        // Dashboard & Reports (§M15) — one dashboard, matching every sibling package's convention.
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/{key}', [ReportController::class, 'show'])->name('reports.show');

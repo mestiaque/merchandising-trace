@@ -91,6 +91,10 @@ class SalesContractController extends Controller
     {
         $this->authorize('merch_sales_contract.edit');
 
+        if ($salesContract->pos()->count() === 0) {
+            return back()->with('error', 'Cannot confirm — add at least one PO/style line first.');
+        }
+
         \Illuminate\Support\Facades\DB::transaction(function () use ($salesContract, $tnaGenerator, $documents) {
             $salesContract->update(['status' => 'confirmed']);
 

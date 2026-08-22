@@ -24,7 +24,7 @@ class SalesContractPoController extends Controller
     {
         $this->authorize('merch_sales_contract.add');
 
-        return view('merchandising-trace::admin.sales-contracts.pos.create', ['salesContract' => $salesContract] + $this->formOptions());
+        return view('merchandising-trace::admin.sales-contracts.pos.create', ['salesContract' => $salesContract] + $this->formOptions($salesContract->buyer_id));
     }
 
     public function store(SalesContractPoRequest $request, SalesContract $salesContract): RedirectResponse
@@ -79,7 +79,7 @@ class SalesContractPoController extends Controller
         return view('merchandising-trace::admin.sales-contracts.pos.edit', [
             'salesContract' => $salesContract,
             'salesContractPo' => $salesContractPo,
-        ] + $this->formOptions());
+        ] + $this->formOptions($salesContract->buyer_id));
     }
 
     public function update(SalesContractPoRequest $request, SalesContract $salesContract, SalesContractPo $salesContractPo): RedirectResponse
@@ -202,10 +202,17 @@ class SalesContractPoController extends Controller
         return back()->with('success', 'Revision recorded.');
     }
 
-    private function formOptions(): array
+    /**
+     * §14/2: a PO must only ever attach a style belonging to the same
+     * buyer as its sales contract — the style dropdown is scoped
+     * accordingly, in addition to the FormRequest rule.
+     */
+    private function formOptions(?int $buyerId = null): array
     {
         return [
-            'stylesOptions' => Style::query()->active()->orderBy('name')->get(),
+            'stylesOptions' => Style::query()->active()
+                ->when($buyerId, fn ($q) => $q->where('buyer_id', $buyerId))
+                ->orderBy('name')->get(),
             'productTypesOptions' => ProductType::query()->active()->orderBy('name')->get(),
             'colorsOptions' => Color::query()->active()->orderBy('name')->get(),
             'washTypesOptions' => WashType::query()->active()->orderBy('name')->get(),
