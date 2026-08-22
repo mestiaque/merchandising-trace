@@ -26,6 +26,14 @@
                         </form>
                     @endif
                 @endcan
+                <a href="{{ route('merchandising-trace.boms.export', $bom) }}" class="btn btn-outline-success btn-sm me-1"><i class="fa-solid fa-file-excel"></i> Export</a>
+                @can('merch_bom.edit')
+                    <form method="POST" action="{{ route('merchandising-trace.boms.import', $bom) }}" enctype="multipart/form-data" class="d-inline-flex gap-1 me-1">
+                        @csrf
+                        <input type="file" name="file" class="form-control form-control-sm" accept=".xlsx,.xls,.csv" required style="max-width:220px;">
+                        <button type="submit" class="btn btn-outline-primary btn-sm text-nowrap">Import Items</button>
+                    </form>
+                @endcan
                 <a href="{{ route('merchandising-trace.boms.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
             </div>
         </div>

@@ -315,10 +315,15 @@ column per template task), not a literal 81-column replica. Its actual
 import/export round-trip lives on the T&A plans screen itself (§5, test
 #15) — see `TnaGridExportService`/`TnaGridImportService` above.
 
-**Remaining gap:** Style Development's Measurement Chart tab (§M03) has a
-working manual UI but no dedicated Excel import/export of its own,
-unlike the masters (§3), the Sales Contract PO grid, and the T&A grid,
-which all have one.
+§8 deliverable 5 ("Excel import/export templates for T&A, sales contract,
+BOM, measurement chart") is now fully covered: `BomExcelService`
+(Item Code / Part Name / Color Code / Size Name / Consumption / UOM Code
+/ Wastage % / Rate / Supplier Code / Lead Time Days, looked up by code —
+import always *adds* lines, matching a freshly created BOM's own
+behaviour) sits on the BOM detail page; `MeasurementChartExcelService`
+(POM Code / POM Name / Tol +/- / one column per active size) sits on the
+style's Measurement Chart tab and upserts by `pom_code` so a re-import of
+an edited sheet updates existing rows instead of duplicating them.
 
 ## 11. Tests
 

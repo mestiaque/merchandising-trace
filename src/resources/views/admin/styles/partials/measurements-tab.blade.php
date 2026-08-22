@@ -1,3 +1,14 @@
+<div class="d-flex gap-2 mb-3">
+    <a href="{{ route('merchandising-trace.styles.measurements.export', $style) }}" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-file-excel"></i> Export</a>
+    @can('merch_style.edit')
+        <form method="POST" action="{{ route('merchandising-trace.styles.measurements.import', $style) }}" enctype="multipart/form-data" class="d-flex gap-1">
+            @csrf
+            <input type="file" name="file" class="form-control form-control-sm" accept=".xlsx,.xls,.csv" required>
+            <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap">Import</button>
+        </form>
+    @endcan
+</div>
+
 <div class="table-responsive mb-3">
     <table class="table table-bordered table-sm mb-0">
         <thead>

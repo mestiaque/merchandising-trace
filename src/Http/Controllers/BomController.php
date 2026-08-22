@@ -14,6 +14,9 @@ use ME\MerchandisingTrace\Models\Size;
 use ME\MerchandisingTrace\Models\Style;
 use ME\MerchandisingTrace\Models\Supplier;
 use ME\MerchandisingTrace\Models\Uom;
+use ME\MerchandisingTrace\Exports\GenericArrayExport;
+use ME\MerchandisingTrace\Imports\TnaGridImport;
+use ME\MerchandisingTrace\Services\BomExcelService;
 use ME\MerchandisingTrace\Services\DocumentNumberService;
 
 class BomController extends Controller
@@ -102,6 +105,41 @@ class BomController extends Controller
         $bom->delete();
 
         return redirect()->route('merchandising-trace.boms.index')->with('success', 'BOM deleted successfully.');
+    }
+
+    public function exportExcel(Bom $bom, BomExcelService $service)
+    {
+        $this->authorize('merch_bom.view');
+
+        $bom->load(['items.item', 'items.color', 'items.size', 'items.uom', 'items.supplier']);
+        $data = $service->export($bom);
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new GenericArrayExport($data['headers'], $data['rows']),
+            "{$bom->bom_no}.xlsx"
+        );
+    }
+
+    public function importExcel(Request $request, Bom $bom, BomExcelService $service): RedirectResponse
+    {
+        $this->authorize('merch_bom.edit');
+
+        $request->validate(['file' => ['required', 'file', 'mimes:xlsx,xls,csv']]);
+
+        $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new TnaGridImport(), $request->file('file'));
+
+        try {
+            $result = $service->import($bom, $sheets[0] ?? []);
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        $message = "{$result['created']} item(s) added.";
+        if ($result['skipped']) {
+            $message .= ' Skipped: ' . implode('; ', $result['skipped']);
+        }
+
+        return redirect()->route('merchandising-trace.boms.show', $bom)->with('success', $message);
     }
 
     public function approve(Bom $bom): RedirectResponse

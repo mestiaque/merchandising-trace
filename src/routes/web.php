@@ -84,6 +84,8 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::delete('styles/{style}/images/{image}', [StyleImageController::class, 'destroy'])->name('styles.images.destroy');
         Route::post('styles/{style}/measurements', [StyleMeasurementController::class, 'store'])->name('styles.measurements.store');
         Route::delete('styles/{style}/measurements/{measurement}', [StyleMeasurementController::class, 'destroy'])->name('styles.measurements.destroy');
+        Route::get('styles/{style}/measurements/export', [StyleMeasurementController::class, 'exportExcel'])->name('styles.measurements.export');
+        Route::post('styles/{style}/measurements/import', [StyleMeasurementController::class, 'importExcel'])->name('styles.measurements.import');
         Route::post('styles/{style}/parts', [StylePartController::class, 'store'])->name('styles.parts.store');
         Route::delete('styles/{style}/parts/{part}', [StylePartController::class, 'destroy'])->name('styles.parts.destroy');
         Route::post('styles/{style}/operations', [StyleOperationController::class, 'store'])->name('styles.operations.store');
@@ -101,6 +103,8 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         // BOM & Consumption (§M05)
         Route::resource('boms', BomController::class);
         Route::post('boms/{bom}/approve', [BomController::class, 'approve'])->name('boms.approve');
+        Route::get('boms/{bom}/export', [BomController::class, 'exportExcel'])->name('boms.export');
+        Route::post('boms/{bom}/import', [BomController::class, 'importExcel'])->name('boms.import');
 
         // Costing (§M06)
         Route::resource('cost-sheets', CostSheetController::class)->parameters(['cost-sheets' => 'cost_sheet']);
