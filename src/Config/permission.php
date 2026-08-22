@@ -29,5 +29,9 @@ return [
         'merch_item' => ['label' => 'Items (BOM Library)', 'permissions' => $crud],
         'merch_uom' => ['label' => 'Unit of Measure', 'permissions' => $crud],
         'merch_department' => ['label' => 'Departments', 'permissions' => $crud],
+
+        // Inquiry & Style Development
+        'merch_inquiry' => ['label' => 'Inquiries', 'permissions' => $crud],
+        'merch_style' => ['label' => 'Styles', 'permissions' => $crud],
     ],
 ];

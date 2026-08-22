@@ -6,12 +6,14 @@ use ME\MerchandisingTrace\Http\Controllers\ColorController;
 use ME\MerchandisingTrace\Http\Controllers\CurrencyController;
 use ME\MerchandisingTrace\Http\Controllers\DepartmentController;
 use ME\MerchandisingTrace\Http\Controllers\FactoryController;
+use ME\MerchandisingTrace\Http\Controllers\InquiryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemCategoryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemController;
 use ME\MerchandisingTrace\Http\Controllers\ProductTypeController;
 use ME\MerchandisingTrace\Http\Controllers\SeasonController;
 use ME\MerchandisingTrace\Http\Controllers\ShipModeController;
 use ME\MerchandisingTrace\Http\Controllers\SizeController;
+use ME\MerchandisingTrace\Http\Controllers\StyleController;
 use ME\MerchandisingTrace\Http\Controllers\SupplierController;
 use ME\MerchandisingTrace\Http\Controllers\UomController;
 use ME\MerchandisingTrace\Http\Controllers\WashTypeController;
@@ -41,4 +43,11 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::resource('items', ItemController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('uoms', UomController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('departments', DepartmentController::class)->only(['index', 'store', 'update', 'destroy']);
+
+        // Inquiry Management (§M02)
+        Route::resource('inquiries', InquiryController::class);
+        Route::post('inquiries/{inquiry}/convert-to-style', [InquiryController::class, 'convertToStyle'])->name('inquiries.convert-to-style');
+
+        // Style Development (§M03)
+        Route::resource('styles', StyleController::class)->only(['index', 'store', 'update', 'destroy']);
     });
