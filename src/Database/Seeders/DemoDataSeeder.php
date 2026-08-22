@@ -219,11 +219,11 @@ class DemoDataSeeder extends Seeder
             ]);
         }
 
-        // --- Costing (§M06) — CM = (58.84/72.5%)*0.0555 ≈ 3.00 ---
+        // --- Costing (§M06) — CM = (58.84/72.5%)*0.037 ≈ 3.00, matching §13's own CM 3.00 ---
         $costSheet = CostSheet::create([
             'cost_sheet_no' => 'CST-DEMO-RUE1', 'style_id' => $style->id, 'buyer_id' => $buyer->id, 'version' => 1,
             'currency_id' => $currency->id, 'exchange_rate' => 1, 'order_qty' => 10000,
-            'smv' => 58.84, 'cm_minute_rate' => 0.0555, 'efficiency_percent' => 72.5,
+            'smv' => 58.84, 'cm_minute_rate' => 0.037, 'efficiency_percent' => 72.5,
             'fabric_cost' => 2.52 * 3.20 * 1.03, 'trims_cost' => 0.35, 'accessories_cost' => 0.10,
             'print_emb_cost' => 0, 'wash_cost' => 0.18, 'commercial_cost' => 0.08, 'freight_cost' => 0.05,
             'testing_cost' => 0.02, 'overhead_cost' => 0.12, 'profit_percent' => 12, 'price_type' => 'FOB',
