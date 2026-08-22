@@ -104,6 +104,13 @@ return [
                     'permission' => 'merch_tna',
                     'route'      => "$base/tna-alerts",
                 ],
+                [
+                    'title'      => 'Sub-T&A',
+                    'icon'       => 'fa-solid fa-diagram-project',
+                    'icon_color' => 'text-warning',
+                    'permission' => 'merch_tna',
+                    'route'      => "$base/tna-sub-plans",
+                ],
             ],
         ],
     ],

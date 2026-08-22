@@ -19,5 +19,6 @@ return [
         'costing' => 'CST',
         'sales_contract' => 'SC',
         'tna' => 'TNA',
+        'tna_sub_plan' => 'SUB',
     ],
 ];

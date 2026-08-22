@@ -23,6 +23,7 @@ use ME\MerchandisingTrace\Http\Controllers\StyleController;
 use ME\MerchandisingTrace\Http\Controllers\SupplierController;
 use ME\MerchandisingTrace\Http\Controllers\TnaAlertController;
 use ME\MerchandisingTrace\Http\Controllers\TnaPlanController;
+use ME\MerchandisingTrace\Http\Controllers\TnaSubPlanController;
 use ME\MerchandisingTrace\Http\Controllers\TnaTemplateController;
 use ME\MerchandisingTrace\Http\Controllers\UomController;
 use ME\MerchandisingTrace\Http\Controllers\WashTypeController;
@@ -101,4 +102,8 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
 
         Route::get('tna-alerts', [TnaAlertController::class, 'index'])->name('tna-alerts.index');
         Route::post('tna-alerts/{tna_alert}/mark-read', [TnaAlertController::class, 'markRead'])->name('tna-alerts.mark-read');
+
+        // Sub-T&A (§M09)
+        Route::resource('tna-sub-plans', TnaSubPlanController::class)->only(['index', 'create', 'store', 'show']);
+        Route::post('tna-sub-plans/{tna_sub_plan}/logs', [TnaSubPlanController::class, 'addLog'])->name('tna-sub-plans.logs.store');
     });
