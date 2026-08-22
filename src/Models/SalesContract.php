@@ -8,12 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use ME\MerchandisingTrace\Support\Scopes\ScopedToMerchandiser;
 
 class SalesContract extends Model
 {
     use SoftDeletes;
 
     protected $table = 'mer_sales_contracts';
+
+    /**
+     * §6 Rule 8: row-level merchandiser scoping. A plain merchandiser only
+     * ever sees their own contracts; merch_scope.view_all bypasses it.
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ScopedToMerchandiser());
+    }
 
     public const STATUSES = ['draft', 'confirmed', 'in_production', 'shipped', 'closed', 'cancelled'];
 

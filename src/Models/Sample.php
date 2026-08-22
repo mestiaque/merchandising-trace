@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use ME\MerchandisingTrace\Support\Scopes\ScopedToMerchandiser;
 
 class Sample extends Model
 {
@@ -16,6 +17,11 @@ class Sample extends Model
     protected $table = 'mer_samples';
 
     public const STATUSES = ['requested', 'in_progress', 'submitted', 'approved', 'rejected', 'resubmit', 'cancelled'];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ScopedToMerchandiser());
+    }
 
     protected $fillable = [
         'sample_no', 'style_id', 'buyer_id', 'season_id', 'sample_type_id', 'merchandiser_id', 'order_id',
