@@ -97,6 +97,13 @@ return [
                     'permission' => 'merch_tna',
                     'route'      => "$base/tna-templates",
                 ],
+                [
+                    'title'      => 'T&A Alerts',
+                    'icon'       => 'fa-solid fa-bell',
+                    'icon_color' => 'text-warning',
+                    'permission' => 'merch_tna',
+                    'route'      => "$base/tna-alerts",
+                ],
             ],
         ],
     ],

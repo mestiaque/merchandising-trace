@@ -21,6 +21,7 @@ use ME\MerchandisingTrace\Http\Controllers\ShipModeController;
 use ME\MerchandisingTrace\Http\Controllers\SizeController;
 use ME\MerchandisingTrace\Http\Controllers\StyleController;
 use ME\MerchandisingTrace\Http\Controllers\SupplierController;
+use ME\MerchandisingTrace\Http\Controllers\TnaAlertController;
 use ME\MerchandisingTrace\Http\Controllers\TnaPlanController;
 use ME\MerchandisingTrace\Http\Controllers\TnaTemplateController;
 use ME\MerchandisingTrace\Http\Controllers\UomController;
@@ -97,4 +98,7 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::put('tna-plans/{tna_plan}/tasks/{task}', [TnaPlanController::class, 'updateTask'])->name('tna-plans.tasks.update');
         Route::post('tna-plans/{tna_plan}/evaluate-pcd', [TnaPlanController::class, 'evaluatePcd'])->name('tna-plans.evaluate-pcd');
         Route::post('tna-plans/{tna_plan}/override-pcd', [TnaPlanController::class, 'overridePcd'])->name('tna-plans.override-pcd');
+
+        Route::get('tna-alerts', [TnaAlertController::class, 'index'])->name('tna-alerts.index');
+        Route::post('tna-alerts/{tna_alert}/mark-read', [TnaAlertController::class, 'markRead'])->name('tna-alerts.mark-read');
     });

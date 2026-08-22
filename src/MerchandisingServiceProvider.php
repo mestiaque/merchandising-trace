@@ -2,6 +2,7 @@
 
 namespace ME\MerchandisingTrace;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +18,16 @@ class MerchandisingServiceProvider extends ServiceProvider
 
         $this->mergeSidebar();
         $this->mergePermissions();
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([Console\Commands\RunTnaDailyJobs::class]);
+        }
+
+        $this->app->booted(function () {
+            $this->app->make(Schedule::class)
+                ->command(Console\Commands\RunTnaDailyJobs::class)
+                ->dailyAt('01:00');
+        });
     }
 
     public function register(): void
