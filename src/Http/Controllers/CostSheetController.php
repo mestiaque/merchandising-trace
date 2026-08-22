@@ -152,6 +152,21 @@ class CostSheetController extends Controller
     }
 
     /**
+     * §M06 AC: "submit -> approve workflow, PDF export in buyer format."
+     */
+    public function pdf(CostSheet $costSheet)
+    {
+        $this->authorize('merch_costing.view');
+
+        $costSheet->load(['style', 'buyer', 'currency', 'items.item']);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('merchandising-trace::admin.cost-sheets.pdf', compact('costSheet'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download("{$costSheet->cost_sheet_no}.pdf");
+    }
+
+    /**
      * §M06: only an approved cost sheet may be linked to a sales contract.
      */
     public function approve(CostSheet $costSheet): RedirectResponse

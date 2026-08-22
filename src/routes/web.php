@@ -96,6 +96,7 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         // Costing (§M06)
         Route::resource('cost-sheets', CostSheetController::class)->parameters(['cost-sheets' => 'cost_sheet']);
         Route::post('cost-sheets/{cost_sheet}/approve', [CostSheetController::class, 'approve'])->name('cost-sheets.approve');
+        Route::get('cost-sheets/{cost_sheet}/pdf', [CostSheetController::class, 'pdf'])->name('cost-sheets.pdf');
 
         // Sales Contract / Order Confirmation (§M07)
         Route::resource('sales-contracts', SalesContractController::class)->parameters(['sales-contracts' => 'sales_contract']);

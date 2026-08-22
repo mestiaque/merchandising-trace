@@ -26,6 +26,7 @@
                         </form>
                     @endif
                 @endcan
+                <a href="{{ route('merchandising-trace.cost-sheets.pdf', $costSheet) }}" class="btn btn-outline-danger btn-sm me-1"><i class="fa-solid fa-file-pdf"></i> PDF</a>
                 <a href="{{ route('merchandising-trace.cost-sheets.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
             </div>
         </div>
