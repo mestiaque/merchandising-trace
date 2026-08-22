@@ -17,5 +17,6 @@ return [
         'order'   => 'PO',
         'bom'     => 'BOM',
         'costing' => 'CST',
+        'sales_contract' => 'SC',
     ],
 ];

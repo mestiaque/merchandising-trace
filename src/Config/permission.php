@@ -43,5 +43,8 @@ return [
 
         // Costing
         'merch_costing' => ['label' => 'Costing', 'permissions' => $crud],
+
+        // Sales Contract
+        'merch_sales_contract' => ['label' => 'Sales Contracts', 'permissions' => $crud],
     ],
 ];

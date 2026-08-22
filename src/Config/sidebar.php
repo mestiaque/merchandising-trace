@@ -76,6 +76,13 @@ return [
                     'permission' => 'merch_costing',
                     'route'      => "$base/cost-sheets",
                 ],
+                [
+                    'title'      => 'Sales Contracts',
+                    'icon'       => 'fa-solid fa-file-signature',
+                    'icon_color' => 'text-danger',
+                    'permission' => 'merch_sales_contract',
+                    'route'      => "$base/sales-contracts",
+                ],
             ],
         ],
     ],

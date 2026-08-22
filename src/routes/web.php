@@ -12,6 +12,8 @@ use ME\MerchandisingTrace\Http\Controllers\InquiryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemCategoryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemController;
 use ME\MerchandisingTrace\Http\Controllers\ProductTypeController;
+use ME\MerchandisingTrace\Http\Controllers\SalesContractController;
+use ME\MerchandisingTrace\Http\Controllers\SalesContractPoController;
 use ME\MerchandisingTrace\Http\Controllers\SampleController;
 use ME\MerchandisingTrace\Http\Controllers\SampleTypeController;
 use ME\MerchandisingTrace\Http\Controllers\SeasonController;
@@ -71,4 +73,14 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         // Costing (§M06)
         Route::resource('cost-sheets', CostSheetController::class)->parameters(['cost-sheets' => 'cost_sheet']);
         Route::post('cost-sheets/{cost_sheet}/approve', [CostSheetController::class, 'approve'])->name('cost-sheets.approve');
+
+        // Sales Contract / Order Confirmation (§M07)
+        Route::resource('sales-contracts', SalesContractController::class)->parameters(['sales-contracts' => 'sales_contract']);
+        Route::post('sales-contracts/{sales_contract}/confirm', [SalesContractController::class, 'confirm'])->name('sales-contracts.confirm');
+        Route::get('sales-contracts/{sales_contract}/pos/create', [SalesContractPoController::class, 'create'])->name('sales-contracts.pos.create');
+        Route::post('sales-contracts/{sales_contract}/pos', [SalesContractPoController::class, 'store'])->name('sales-contracts.pos.store');
+        Route::get('sales-contracts/{sales_contract}/pos/{sales_contract_po}/edit', [SalesContractPoController::class, 'edit'])->name('sales-contracts.pos.edit');
+        Route::put('sales-contracts/{sales_contract}/pos/{sales_contract_po}', [SalesContractPoController::class, 'update'])->name('sales-contracts.pos.update');
+        Route::delete('sales-contracts/{sales_contract}/pos/{sales_contract_po}', [SalesContractPoController::class, 'destroy'])->name('sales-contracts.pos.destroy');
+        Route::post('sales-contracts/{sales_contract}/pos/{sales_contract_po}/revise', [SalesContractPoController::class, 'revise'])->name('sales-contracts.pos.revise');
     });

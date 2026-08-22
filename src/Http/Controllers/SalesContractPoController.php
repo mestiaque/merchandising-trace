@@ -1,0 +1,189 @@
+<?php
+
+namespace ME\MerchandisingTrace\Http\Controllers;
+
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use ME\MerchandisingTrace\Http\Requests\SalesContractPoRequest;
+use ME\MerchandisingTrace\Models\Color;
+use ME\MerchandisingTrace\Models\ProductType;
+use ME\MerchandisingTrace\Models\SalesContract;
+use ME\MerchandisingTrace\Models\SalesContractPo;
+use ME\MerchandisingTrace\Models\ShipMode;
+use ME\MerchandisingTrace\Models\Size;
+use ME\MerchandisingTrace\Models\Style;
+use ME\MerchandisingTrace\Models\WashType;
+
+class SalesContractPoController extends Controller
+{
+    public function create(SalesContract $salesContract): View
+    {
+        $this->authorize('merch_sales_contract.add');
+
+        return view('merchandising-trace::admin.sales-contracts.pos.create', ['salesContract' => $salesContract] + $this->formOptions());
+    }
+
+    public function store(SalesContractPoRequest $request, SalesContract $salesContract): RedirectResponse
+    {
+        $data = $request->validated();
+
+        DB::transaction(function () use ($data, $salesContract) {
+            $po = $salesContract->pos()->create([
+                'style_id' => $data['style_id'],
+                'product_type_id' => $data['product_type_id'] ?? null,
+                'color_id' => $data['color_id'],
+                'wash_type_id' => $data['wash_type_id'] ?? null,
+                'po_no' => $data['po_no'],
+                'po_due_date' => $data['po_due_date'] ?? null,
+                'po_qty' => $data['po_qty'],
+                'unit_price' => $data['unit_price'] ?? null,
+                'total_value' => ($data['unit_price'] ?? 0) * $data['po_qty'],
+                'price_type' => $data['price_type'] ?? null,
+                'cost_smv' => $data['cost_smv'] ?? null,
+                'cm' => $data['cm'] ?? null,
+                'fob_foc' => $data['fob_foc'] ?? null,
+                'pcd_date' => $data['pcd_date'] ?? null,
+                'shipment_date' => $data['shipment_date'] ?? null,
+                'ship_mode_id' => $data['ship_mode_id'] ?? null,
+                'print_emb' => $data['print_emb'] ?? 'na',
+                'emb_applique_ih' => $data['emb_applique_ih'] ?? 'na',
+                'studs_stones_ih' => $data['studs_stones_ih'] ?? 'na',
+                'heat_seal_ih' => $data['heat_seal_ih'] ?? 'na',
+                'status' => 'pending',
+                'remarks' => $data['remarks'] ?? null,
+            ]);
+
+            foreach ($data['sizes'] as $line) {
+                if ((int) $line['qty'] <= 0) {
+                    continue;
+                }
+                $po->sizes()->create($line);
+            }
+
+            $salesContract->refreshTotals();
+        });
+
+        return redirect()->route('merchandising-trace.sales-contracts.show', $salesContract)->with('success', 'PO line added successfully.');
+    }
+
+    public function edit(SalesContract $salesContract, SalesContractPo $salesContractPo): View
+    {
+        $this->authorize('merch_sales_contract.edit');
+
+        $salesContractPo->load(['sizes', 'revisions.changer']);
+
+        return view('merchandising-trace::admin.sales-contracts.pos.edit', [
+            'salesContract' => $salesContract,
+            'salesContractPo' => $salesContractPo,
+        ] + $this->formOptions());
+    }
+
+    public function update(SalesContractPoRequest $request, SalesContract $salesContract, SalesContractPo $salesContractPo): RedirectResponse
+    {
+        $data = $request->validated();
+
+        DB::transaction(function () use ($data, $salesContract, $salesContractPo) {
+            $salesContractPo->update([
+                'style_id' => $data['style_id'],
+                'product_type_id' => $data['product_type_id'] ?? null,
+                'color_id' => $data['color_id'],
+                'wash_type_id' => $data['wash_type_id'] ?? null,
+                'po_no' => $data['po_no'],
+                'po_due_date' => $data['po_due_date'] ?? null,
+                'unit_price' => $data['unit_price'] ?? null,
+                'total_value' => ($data['unit_price'] ?? 0) * $salesContractPo->effectiveQty(),
+                'price_type' => $data['price_type'] ?? null,
+                'cost_smv' => $data['cost_smv'] ?? null,
+                'cm' => $data['cm'] ?? null,
+                'fob_foc' => $data['fob_foc'] ?? null,
+                'ship_mode_id' => $data['ship_mode_id'] ?? null,
+                'print_emb' => $data['print_emb'] ?? 'na',
+                'emb_applique_ih' => $data['emb_applique_ih'] ?? 'na',
+                'studs_stones_ih' => $data['studs_stones_ih'] ?? 'na',
+                'heat_seal_ih' => $data['heat_seal_ih'] ?? 'na',
+                'remarks' => $data['remarks'] ?? null,
+                // Qty/PCD/Shipment revisions handled via the dedicated
+                // reviseQty/revisePcd/reviseShipment actions (§6 Rule 2:
+                // every revision needs a reason, logged).
+            ]);
+
+            $salesContractPo->sizes()->delete();
+            foreach ($data['sizes'] as $line) {
+                if ((int) $line['qty'] <= 0) {
+                    continue;
+                }
+                $salesContractPo->sizes()->create($line);
+            }
+
+            $salesContract->refreshTotals();
+        });
+
+        return redirect()->route('merchandising-trace.sales-contracts.show', $salesContract)->with('success', 'PO line updated successfully.');
+    }
+
+    public function destroy(SalesContract $salesContract, SalesContractPo $salesContractPo): RedirectResponse
+    {
+        $this->authorize('merch_sales_contract.delete');
+
+        $salesContractPo->delete();
+        $salesContract->refreshTotals();
+
+        return back()->with('success', 'PO line deleted successfully.');
+    }
+
+    /**
+     * §6 Rule 2: every qty/PCD/shipment revision requires a reason and is
+     * logged. $field is one of po_qty|pcd|shipment; revision slot 1 is
+     * filled first, then slot 2 — never overwriting a value already set.
+     */
+    public function revise(Request $request, SalesContract $salesContract, SalesContractPo $salesContractPo): RedirectResponse
+    {
+        $this->authorize('merch_sales_contract.edit');
+
+        $request->validate([
+            'field' => ['required', 'string', 'in:po_qty,pcd,shipment'],
+            'value' => ['required'],
+            'reason' => ['required', 'string'],
+        ]);
+
+        $columnMap = [
+            'po_qty' => ['po_qty_revised_1', 'po_qty_revised_2'],
+            'pcd' => ['pcd_revised_1', 'pcd_revised_2'],
+            'shipment' => ['shipment_revised_1', 'shipment_revised_2'],
+        ];
+        [$slot1, $slot2] = $columnMap[$request->field];
+        $targetColumn = $salesContractPo->{$slot1} === null ? $slot1 : $slot2;
+        $oldValue = $salesContractPo->{$targetColumn};
+
+        $salesContractPo->update([$targetColumn => $request->value]);
+
+        $salesContractPo->revisions()->create([
+            'field' => $request->field,
+            'old_value' => $oldValue,
+            'new_value' => $request->value,
+            'reason' => $request->reason,
+            'changed_by' => auth()->id(),
+            'changed_at' => now(),
+        ]);
+
+        if ($request->field === 'po_qty') {
+            $salesContract->refreshTotals();
+        }
+
+        return back()->with('success', 'Revision recorded.');
+    }
+
+    private function formOptions(): array
+    {
+        return [
+            'stylesOptions' => Style::query()->active()->orderBy('name')->get(),
+            'productTypesOptions' => ProductType::query()->active()->orderBy('name')->get(),
+            'colorsOptions' => Color::query()->active()->orderBy('name')->get(),
+            'washTypesOptions' => WashType::query()->active()->orderBy('name')->get(),
+            'shipModesOptions' => ShipMode::query()->active()->orderBy('name')->get(),
+            'sizesOptions' => Size::query()->active()->orderBy('sort_order')->get(),
+        ];
+    }
+}
