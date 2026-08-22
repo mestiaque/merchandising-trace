@@ -52,5 +52,8 @@ return [
             'label'       => 'T&A',
             'permissions' => $crud + ['override_pcd' => 'Override PCD Result'],
         ],
+
+        // Material Booking
+        'merch_material_booking' => ['label' => 'Material Booking', 'permissions' => $crud],
     ],
 ];

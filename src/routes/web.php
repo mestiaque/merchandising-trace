@@ -11,6 +11,7 @@ use ME\MerchandisingTrace\Http\Controllers\FactoryController;
 use ME\MerchandisingTrace\Http\Controllers\InquiryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemCategoryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemController;
+use ME\MerchandisingTrace\Http\Controllers\MaterialBookingController;
 use ME\MerchandisingTrace\Http\Controllers\ProductTypeController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractPoController;
@@ -106,4 +107,12 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         // Sub-T&A (§M09)
         Route::resource('tna-sub-plans', TnaSubPlanController::class)->only(['index', 'create', 'store', 'show']);
         Route::post('tna-sub-plans/{tna_sub_plan}/logs', [TnaSubPlanController::class, 'addLog'])->name('tna-sub-plans.logs.store');
+
+        // Material Booking (§M10)
+        Route::resource('material-bookings', MaterialBookingController::class)->only(['index', 'create', 'store', 'show']);
+        Route::post('boms/{bom}/create-booking', [MaterialBookingController::class, 'createFromBom'])->name('material-bookings.create-from-bom');
+        Route::put('material-bookings/{material_booking}/dates', [MaterialBookingController::class, 'updateDates'])->name('material-bookings.update-dates');
+        Route::post('material-bookings/{material_booking}/consignments', [MaterialBookingController::class, 'addConsignment'])->name('material-bookings.consignments.store');
+        Route::post('material-bookings/{material_booking}/consignments/{consignment}/receive', [MaterialBookingController::class, 'receiveConsignment'])->name('material-bookings.consignments.receive');
+        Route::post('material-bookings/{material_booking}/receive-item', [MaterialBookingController::class, 'receiveItem'])->name('material-bookings.receive-item');
     });

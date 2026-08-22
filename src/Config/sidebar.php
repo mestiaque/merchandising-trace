@@ -111,6 +111,13 @@ return [
                     'permission' => 'merch_tna',
                     'route'      => "$base/tna-sub-plans",
                 ],
+                [
+                    'title'      => 'Material Booking',
+                    'icon'       => 'fa-solid fa-boxes-packing',
+                    'icon_color' => 'text-success',
+                    'permission' => 'merch_material_booking',
+                    'route'      => "$base/material-bookings",
+                ],
             ],
         ],
     ],
