@@ -69,6 +69,13 @@ return [
                     'permission' => 'merch_bom',
                     'route'      => "$base/boms",
                 ],
+                [
+                    'title'      => 'Costing',
+                    'icon'       => 'fa-solid fa-calculator',
+                    'icon_color' => 'text-danger',
+                    'permission' => 'merch_costing',
+                    'route'      => "$base/cost-sheets",
+                ],
             ],
         ],
     ],

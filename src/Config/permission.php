@@ -40,5 +40,8 @@ return [
 
         // BOM & Consumption
         'merch_bom' => ['label' => 'Bill of Materials (BOM)', 'permissions' => $crud],
+
+        // Costing
+        'merch_costing' => ['label' => 'Costing', 'permissions' => $crud],
     ],
 ];

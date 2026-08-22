@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use ME\MerchandisingTrace\Http\Controllers\BomController;
 use ME\MerchandisingTrace\Http\Controllers\BuyerController;
 use ME\MerchandisingTrace\Http\Controllers\ColorController;
+use ME\MerchandisingTrace\Http\Controllers\CostSheetController;
 use ME\MerchandisingTrace\Http\Controllers\CurrencyController;
 use ME\MerchandisingTrace\Http\Controllers\DepartmentController;
 use ME\MerchandisingTrace\Http\Controllers\FactoryController;
@@ -66,4 +67,8 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         // BOM & Consumption (§M05)
         Route::resource('boms', BomController::class);
         Route::post('boms/{bom}/approve', [BomController::class, 'approve'])->name('boms.approve');
+
+        // Costing (§M06)
+        Route::resource('cost-sheets', CostSheetController::class)->parameters(['cost-sheets' => 'cost_sheet']);
+        Route::post('cost-sheets/{cost_sheet}/approve', [CostSheetController::class, 'approve'])->name('cost-sheets.approve');
     });

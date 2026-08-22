@@ -16,5 +16,6 @@ return [
         'sample'  => 'SMP',
         'order'   => 'PO',
         'bom'     => 'BOM',
+        'costing' => 'CST',
     ],
 ];
