@@ -108,6 +108,10 @@ Two permissions matter beyond ordinary CRUD:
    (`SalesContractPoImportService`: Style No / Color Code / PO No / PO Qty
    required, Wash Type / PCD / Shipment / Unit Price / Ship Mode optional;
    unknown style/color rows are skipped with a reason, not fatal).
+   `confirm()` rejects a contract with zero PO lines rather than silently
+   confirming a styleless, quantity-less order; a PO's style dropdown and
+   its `style_id` validation are both scoped to the contract's own buyer,
+   so a style from a different buyer can't be attached.
 7. **T&A (the core module)** — see §5.
 8. **Material Booking** — fabric/trims/accessory/packing bookings with a
    PI/LC/X-mill date trail and a consignment schedule (1st–4th) for fabric;
@@ -287,11 +291,18 @@ mandatory reason (`SalesContractPoController::revise()`).
 - **Buyer Communication** — `mer_communication_logs`, a searchable
   thread-style log per style/PO.
 
-## 10. Dashboards & Reports
+## 10. Dashboard & Reports
 
 `DashboardService::merchandiser($userId)` / `::management()` implement the
-spec's two dashboards in full, except **"capacity vs booked qty by
-month/factory"**, which is skipped — no factory capacity-planning data
+spec's two dashboards' worth of data, but they render as **one page**
+(`DashboardController::index()`, one route `admin/merchandising-trace/dashboard`,
+one sidebar entry) matching the single-dashboard convention every other
+package in this host app follows — the merchandiser's own section is
+always shown, with a management section appended below it only for users
+holding `merch_dashboard.view_all` (`@can` inside the same view), rather
+than living on a second page/route. Content-wise it's the spec's two
+dashboards in full, except **"capacity vs booked qty by month/factory"**,
+which is skipped — no factory capacity-planning data
 source exists anywhere else in this build to draw it from.
 
 `ReportService::run($key, $filters)` implements all 14 §M15 reports behind
