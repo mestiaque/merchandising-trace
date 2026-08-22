@@ -12,6 +12,7 @@ use ME\MerchandisingTrace\Http\Controllers\InquiryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemCategoryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemController;
 use ME\MerchandisingTrace\Http\Controllers\MaterialBookingController;
+use ME\MerchandisingTrace\Http\Controllers\ProductionHandoverController;
 use ME\MerchandisingTrace\Http\Controllers\ProductTypeController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractPoController;
@@ -115,4 +116,11 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::post('material-bookings/{material_booking}/consignments', [MaterialBookingController::class, 'addConsignment'])->name('material-bookings.consignments.store');
         Route::post('material-bookings/{material_booking}/consignments/{consignment}/receive', [MaterialBookingController::class, 'receiveConsignment'])->name('material-bookings.consignments.receive');
         Route::post('material-bookings/{material_booking}/receive-item', [MaterialBookingController::class, 'receiveItem'])->name('material-bookings.receive-item');
+
+        // Production Handover Bridge (§M11)
+        Route::get('production-handovers', [ProductionHandoverController::class, 'index'])->name('production-handovers.index');
+        Route::get('production-handovers/{sales_contract_po}', [ProductionHandoverController::class, 'show'])->name('production-handovers.show');
+        Route::post('production-handovers/{sales_contract_po}/push', [ProductionHandoverController::class, 'push'])->name('production-handovers.push');
+        Route::post('production-handovers/{sales_contract_po}/rollback', [ProductionHandoverController::class, 'rollback'])->name('production-handovers.rollback');
+        Route::post('styles/{style}/map-production', [ProductionHandoverController::class, 'mapStyle'])->name('styles.map-production');
     });

@@ -20,13 +20,16 @@ class MerchandisingServiceProvider extends ServiceProvider
         $this->mergePermissions();
 
         if ($this->app->runningInConsole()) {
-            $this->commands([Console\Commands\RunTnaDailyJobs::class]);
+            $this->commands([
+                Console\Commands\RunTnaDailyJobs::class,
+                Console\Commands\SyncProductionProgress::class,
+            ]);
         }
 
         $this->app->booted(function () {
-            $this->app->make(Schedule::class)
-                ->command(Console\Commands\RunTnaDailyJobs::class)
-                ->dailyAt('01:00');
+            $schedule = $this->app->make(Schedule::class);
+            $schedule->command(Console\Commands\RunTnaDailyJobs::class)->dailyAt('01:00');
+            $schedule->command(Console\Commands\SyncProductionProgress::class)->hourly();
         });
     }
 

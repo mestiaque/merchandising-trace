@@ -118,6 +118,13 @@ return [
                     'permission' => 'merch_material_booking',
                     'route'      => "$base/material-bookings",
                 ],
+                [
+                    'title'      => 'Handover to Production',
+                    'icon'       => 'fa-solid fa-right-left',
+                    'icon_color' => 'text-success',
+                    'permission' => 'merch_production_handover',
+                    'route'      => "$base/production-handovers",
+                ],
             ],
         ],
     ],

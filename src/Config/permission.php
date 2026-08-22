@@ -55,5 +55,8 @@ return [
 
         // Material Booking
         'merch_material_booking' => ['label' => 'Material Booking', 'permissions' => $crud],
+
+        // Production Handover Bridge
+        'merch_production_handover' => ['label' => 'Production Handover', 'permissions' => $crud],
     ],
 ];

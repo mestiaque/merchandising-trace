@@ -19,9 +19,9 @@ class Style extends Model
 
     protected $fillable = [
         'style_no', 'name', 'description', 'image', 'buyer_id', 'inquiry_id', 'season_id', 'merchandiser_id',
-        'wash_type_id', 'product_type_id', 'smv', 'cost_smv', 'target_cm', 'fabric_description',
-        'tech_pack_file', 'artwork_file', 'size_chart_file', 'development_status', 'is_repeat',
-        'parent_style_id', 'is_active', 'created_by',
+        'wash_type_id', 'product_type_id', 'trc_product_id', 'trc_size_group_id', 'smv', 'cost_smv', 'target_cm',
+        'fabric_description', 'tech_pack_file', 'artwork_file', 'size_chart_file', 'development_status',
+        'is_repeat', 'parent_style_id', 'is_active', 'created_by',
     ];
 
     protected $casts = [
