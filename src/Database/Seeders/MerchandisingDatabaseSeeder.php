@@ -22,6 +22,7 @@ use ME\MerchandisingTrace\Models\PaymentTerm;
 use ME\MerchandisingTrace\Models\Port;
 use ME\MerchandisingTrace\Models\ProductType;
 use ME\MerchandisingTrace\Models\Sample;
+use ME\MerchandisingTrace\Models\SampleType;
 use ME\MerchandisingTrace\Models\SalesContract;
 use ME\MerchandisingTrace\Models\Season;
 use ME\MerchandisingTrace\Models\ShipMode;
@@ -230,6 +231,24 @@ class MerchandisingDatabaseSeeder extends Seeder
 
         foreach (['Merchandiser', 'Fabric', 'Trims', 'Sample', 'Wash', 'Production', 'Commercial', 'Buyer'] as $name) {
             Department::firstOrCreate(['code' => strtoupper(substr($name, 0, 4))], ['name' => $name]);
+        }
+
+        foreach ([
+            ['code' => 'PROTO', 'name' => 'Proto', 'sequence' => 1],
+            ['code' => 'FIT', 'name' => 'Fit', 'sequence' => 2],
+            ['code' => 'FIT2', 'name' => '2nd Fit', 'sequence' => 3],
+            ['code' => 'SIZESET', 'name' => 'Size Set', 'sequence' => 4],
+            ['code' => 'SMS', 'name' => 'SMS', 'sequence' => 5],
+            ['code' => 'SALESMAN', 'name' => 'Salesman', 'sequence' => 6],
+            ['code' => 'PP1', 'name' => '1st PP', 'sequence' => 7],
+            ['code' => 'PP', 'name' => 'PP (Pre-Production)', 'sequence' => 8],
+            ['code' => 'TOP', 'name' => 'TOP', 'sequence' => 9],
+            ['code' => 'SHIPMENT', 'name' => 'Shipment', 'sequence' => 10],
+            ['code' => 'PHOTOSHOOT', 'name' => 'Photo Shoot', 'sequence' => 11],
+            ['code' => 'WASHSTD', 'name' => 'Wash Standard', 'sequence' => 12],
+            ['code' => 'SHADEBAND', 'name' => 'Shade Band', 'sequence' => 13],
+        ] as $row) {
+            SampleType::firstOrCreate(['code' => $row['code']], $row);
         }
 
         $trimsCategory = ItemCategory::firstOrCreate(['code' => 'TRIMS'], ['name' => 'Trims']);

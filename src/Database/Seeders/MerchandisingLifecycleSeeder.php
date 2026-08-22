@@ -40,10 +40,12 @@ class MerchandisingLifecycleSeeder extends Seeder
         $sizes = collect(['S', 'M', 'L', 'XL'])->map(fn ($name, $i) => Size::firstOrCreate(['name' => $name], ['sort_order' => $i + 1, 'is_active' => true]));
 
         // ---------- 1. Sample ----------
+        $ppType = \ME\MerchandisingTrace\Models\SampleType::firstOrCreate(['code' => 'PP'], ['name' => 'PP (Pre-Production)', 'sequence' => 7, 'is_active' => true]);
+
         $sample = Sample::create([
             'buyer_id'        => $buyer->id,
             'style_id'        => $style->id,
-            'sample_type'     => 'pp',
+            'sample_type_id'  => $ppType->id,
             'qty'             => 3,
             'size_id'         => $sizes[1]->id,
             'request_date'    => now()->subDays(35),

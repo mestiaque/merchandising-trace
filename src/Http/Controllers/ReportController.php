@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use ME\MerchandisingTrace\Models\Costing;
 use ME\MerchandisingTrace\Models\Order;
 use ME\MerchandisingTrace\Models\Sample;
+use ME\MerchandisingTrace\Models\SampleType;
 use ME\MerchandisingTrace\Models\ShipmentPlan;
 use ME\MerchandisingTrace\Models\TnaMilestone;
 
@@ -85,8 +86,8 @@ class ReportController extends Controller
         $this->authorize('merch_report.view');
 
         $rows = Sample::query()
-            ->with(['buyer', 'style'])
-            ->when($request->filled('sample_type'), fn ($q) => $q->where('sample_type', $request->sample_type))
+            ->with(['buyer', 'style', 'sampleType'])
+            ->when($request->filled('sample_type_id'), fn ($q) => $q->where('sample_type_id', $request->sample_type_id))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status))
             ->latest('id')
             ->limit(500)
@@ -94,9 +95,9 @@ class ReportController extends Controller
 
         return $this->render('Sample Status', [
             'sample_number' => 'Sample No', 'buyer.name' => 'Buyer', 'style.name' => 'Style',
-            'sample_type' => 'Type', 'qty' => 'Qty', 'status' => 'Status',
+            'sampleType.name' => 'Type', 'qty' => 'Qty', 'status' => 'Status',
         ], $rows, [
-            ['name' => 'sample_type', 'label' => 'All Types', 'type' => 'select', 'options' => collect(Sample::SAMPLE_TYPES)->map(fn ($t) => (object) ['id' => $t, 'name' => ucfirst(str_replace('_', ' ', $t))])],
+            ['name' => 'sample_type_id', 'label' => 'All Types', 'type' => 'select', 'options' => SampleType::query()->active()->orderBy('sequence')->get()],
         ]);
     }
 

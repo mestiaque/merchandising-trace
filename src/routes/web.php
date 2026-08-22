@@ -26,6 +26,7 @@ use ME\MerchandisingTrace\Http\Controllers\SalesContractController;
 use ME\MerchandisingTrace\Http\Controllers\ShipModeController;
 use ME\MerchandisingTrace\Http\Controllers\ShipmentPlanController;
 use ME\MerchandisingTrace\Http\Controllers\SampleController;
+use ME\MerchandisingTrace\Http\Controllers\SampleTypeController;
 use ME\MerchandisingTrace\Http\Controllers\SeasonController;
 use ME\MerchandisingTrace\Http\Controllers\SizeController;
 use ME\MerchandisingTrace\Http\Controllers\StyleController;
@@ -111,6 +112,14 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::get('samples/print-list', [SampleController::class, 'printList'])->name('samples.print-list');
         Route::resource('samples', SampleController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
         Route::get('samples/{sample}/print', [SampleController::class, 'print'])->name('samples.print');
+        Route::post('samples/{sample}/submit', [SampleController::class, 'submit'])->name('samples.submit');
+        Route::post('samples/{sample}/approve', [SampleController::class, 'approve'])->name('samples.approve');
+        Route::post('samples/{sample}/reject', [SampleController::class, 'reject'])->name('samples.reject');
+        Route::post('samples/{sample}/resubmit', [SampleController::class, 'resubmit'])->name('samples.resubmit');
+        Route::post('samples/{sample}/comments', [SampleController::class, 'addComment'])->name('samples.comments.store');
+        Route::resource('sample-types', SampleTypeController::class)
+            ->only(['index', 'store', 'update', 'destroy'])
+            ->parameters(['sample-types' => 'sample_type']);
 
         // BOM (Section 4)
         Route::get('boms/print-list', [BomController::class, 'printList'])->name('boms.print-list');

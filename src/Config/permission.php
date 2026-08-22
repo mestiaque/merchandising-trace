@@ -113,6 +113,10 @@ return [
             'label'       => 'Samples',
             'permissions' => $crud,
         ],
+        'merch_sample_type' => [
+            'label'       => 'Sample Types',
+            'permissions' => $crud,
+        ],
 
         // BOM
         'merch_bom' => [

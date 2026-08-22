@@ -9,6 +9,20 @@
     @include('merchandising-trace::admin.partials.ui-kit')
     @include('merchandising-trace::admin.partials.sweetalert-init')
 
+    <div class="row g-2 mb-3">
+        @php($statusColors = ['requested' => 'secondary', 'in_progress' => 'warning', 'submitted' => 'info', 'approved' => 'success', 'rejected' => 'danger', 'resubmit' => 'dark', 'cancelled' => 'secondary'])
+        @foreach(\ME\MerchandisingTrace\Models\Sample::STATUSES as $status)
+            <div class="col">
+                <a href="{{ route('merchandising-trace.samples.index', ['status' => $status]) }}" class="card text-decoration-none h-100 {{ request('status') === $status ? 'border-primary' : '' }}">
+                    <div class="card-body text-center p-2">
+                        <div class="fs-4 fw-bold text-{{ $statusColors[$status] ?? 'secondary' }}">{{ $boardCounts[$status] ?? 0 }}</div>
+                        <div class="small text-muted">{{ ucfirst(str_replace('_', ' ', $status)) }}</div>
+                    </div>
+                </a>
+            </div>
+        @endforeach
+    </div>
+
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Samples</h5>
@@ -33,18 +47,18 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <select name="sample_type" class="form-control merch-select2">
+                    <select name="sample_type_id" class="form-control merch-select2">
                         <option value="">All Types</option>
-                        @foreach(\ME\MerchandisingTrace\Models\Sample::SAMPLE_TYPES as $type)
-                            <option value="{{ $type }}" @selected(request('sample_type') === $type)>{{ ucfirst(str_replace('_', ' ', $type)) }}</option>
+                        @foreach($sampleTypesOptions as $type)
+                            <option value="{{ $type->id }}" @selected(request('sample_type_id') == $type->id)>{{ $type->name }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-md-2">
                     <select name="status" class="form-control merch-select2">
                         <option value="">All Status</option>
-                        @foreach(['pending' => 'Pending', 'in_progress' => 'In Progress', 'sent' => 'Sent to Buyer', 'approved' => 'Approved', 'rejected' => 'Rejected', 'revise' => 'Revise Requested'] as $value => $label)
-                            <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
+                        @foreach(\ME\MerchandisingTrace\Models\Sample::STATUSES as $value)
+                            <option value="{{ $value }}" @selected(request('status') === $value)>{{ ucfirst(str_replace('_', ' ', $value)) }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -74,13 +88,12 @@
                         @forelse($samples as $sample)
                             <tr>
                                 <td>{{ $loop->iteration + $samples->firstItem() - 1 }}</td>
-                                <td>{{ $sample->sample_number }}</td>
+                                <td>{{ $sample->sample_number }} @if($sample->revision_no > 1)<span class="badge bg-dark">rev {{ $sample->revision_no }}</span>@endif</td>
                                 <td>{{ $sample->buyer->name ?? '-' }}</td>
                                 <td>{{ $sample->style->name ?? '-' }}</td>
-                                <td>{{ ucfirst(str_replace('_', ' ', $sample->sample_type)) }}</td>
+                                <td>{{ $sample->sampleType->name ?? '-' }}</td>
                                 <td>{{ $sample->qty }}</td>
                                 <td>
-                                    @php($statusColors = ['pending' => 'secondary', 'in_progress' => 'warning', 'sent' => 'info', 'approved' => 'success', 'rejected' => 'danger', 'revise' => 'dark'])
                                     <span class="badge p-1 text-white bg-{{ $statusColors[$sample->status] ?? 'secondary' }}">
                                         {{ ucfirst(str_replace('_', ' ', $sample->status)) }}
                                     </span>
