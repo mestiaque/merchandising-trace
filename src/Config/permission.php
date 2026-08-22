@@ -37,5 +37,8 @@ return [
         // Sample Management
         'merch_sample' => ['label' => 'Samples', 'permissions' => $crud],
         'merch_sample_type' => ['label' => 'Sample Types', 'permissions' => $crud],
+
+        // BOM & Consumption
+        'merch_bom' => ['label' => 'Bill of Materials (BOM)', 'permissions' => $crud],
     ],
 ];

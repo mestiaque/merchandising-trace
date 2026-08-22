@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use ME\MerchandisingTrace\Http\Controllers\BomController;
 use ME\MerchandisingTrace\Http\Controllers\BuyerController;
 use ME\MerchandisingTrace\Http\Controllers\ColorController;
 use ME\MerchandisingTrace\Http\Controllers\CurrencyController;
@@ -61,4 +62,8 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::post('samples/{sample}/comments', [SampleController::class, 'addComment'])->name('samples.comments.store');
         Route::resource('sample-types', SampleTypeController::class)
             ->only(['index', 'store', 'update', 'destroy'])->parameters(['sample-types' => 'sample_type']);
+
+        // BOM & Consumption (§M05)
+        Route::resource('boms', BomController::class);
+        Route::post('boms/{bom}/approve', [BomController::class, 'approve'])->name('boms.approve');
     });

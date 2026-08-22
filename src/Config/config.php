@@ -15,5 +15,6 @@ return [
         'inquiry' => 'INQ',
         'sample'  => 'SMP',
         'order'   => 'PO',
+        'bom'     => 'BOM',
     ],
 ];

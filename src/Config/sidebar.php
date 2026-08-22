@@ -62,6 +62,13 @@ return [
                     'permission' => 'merch_sample_type',
                     'route'      => "$base/sample-types",
                 ],
+                [
+                    'title'      => 'BOM',
+                    'icon'       => 'fa-solid fa-list-check',
+                    'icon_color' => 'text-danger',
+                    'permission' => 'merch_bom',
+                    'route'      => "$base/boms",
+                ],
             ],
         ],
     ],
