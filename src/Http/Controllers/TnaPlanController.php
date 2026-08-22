@@ -5,10 +5,14 @@ namespace ME\MerchandisingTrace\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use ME\MerchandisingTrace\Exports\GenericArrayExport;
+use ME\MerchandisingTrace\Imports\TnaGridImport;
 use ME\MerchandisingTrace\Models\Buyer;
 use ME\MerchandisingTrace\Models\TnaPlan;
 use ME\MerchandisingTrace\Models\TnaTask;
 use ME\MerchandisingTrace\Services\PcdGateService;
+use ME\MerchandisingTrace\Services\TnaGridExportService;
+use ME\MerchandisingTrace\Services\TnaGridImportService;
 
 class TnaPlanController extends Controller
 {
@@ -112,5 +116,33 @@ class TnaPlanController extends Controller
         $gate->override($tnaPlan, $request->reason, auth()->id());
 
         return back()->with('success', 'PCD result overridden to PASS.');
+    }
+
+    /**
+     * §8.3 / test #15: export in the same PO-No.-keyed layout the importer
+     * reads back.
+     */
+    public function exportExcel(Request $request, TnaGridExportService $export)
+    {
+        $this->authorize('merch_tna.view');
+
+        $data = $export->export($request->only(['buyer_id']));
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new GenericArrayExport($data['headers'], $data['rows']),
+            'tna-grid.xlsx'
+        );
+    }
+
+    public function importExcel(Request $request, TnaGridImportService $importer): RedirectResponse
+    {
+        $this->authorize('merch_tna.edit');
+
+        $request->validate(['file' => ['required', 'file', 'mimes:xlsx,xls,csv']]);
+
+        $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new TnaGridImport(), $request->file('file'));
+        $result = $importer->import($sheets[0] ?? [], auth()->id());
+
+        return back()->with('success', "T&A grid imported: {$result['updated']} cell(s) updated, {$result['skipped_auto']} auto-filled cell(s) skipped, {$result['po_not_found']} PO(s) not found.");
     }
 }

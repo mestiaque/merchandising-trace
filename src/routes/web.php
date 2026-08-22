@@ -119,6 +119,8 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::put('tna-plans/{tna_plan}/tasks/{task}', [TnaPlanController::class, 'updateTask'])->name('tna-plans.tasks.update');
         Route::post('tna-plans/{tna_plan}/evaluate-pcd', [TnaPlanController::class, 'evaluatePcd'])->name('tna-plans.evaluate-pcd');
         Route::post('tna-plans/{tna_plan}/override-pcd', [TnaPlanController::class, 'overridePcd'])->name('tna-plans.override-pcd');
+        Route::get('tna-plans-export/excel', [TnaPlanController::class, 'exportExcel'])->name('tna-plans.export.excel');
+        Route::post('tna-plans-import/excel', [TnaPlanController::class, 'importExcel'])->name('tna-plans.import.excel');
 
         Route::get('tna-alerts', [TnaAlertController::class, 'index'])->name('tna-alerts.index');
         Route::post('tna-alerts/{tna_alert}/mark-read', [TnaAlertController::class, 'markRead'])->name('tna-alerts.mark-read');

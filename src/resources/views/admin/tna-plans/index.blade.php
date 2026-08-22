@@ -10,7 +10,21 @@
     @include('merchandising-trace::admin.partials.ui-kit')
 
     <div class="card">
-        <div class="card-header"><h5 class="mb-0">T&amp;A Plans</h5></div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">T&amp;A Plans</h5>
+            <div class="d-flex gap-2 align-items-center">
+                <a href="{{ route('merchandising-trace.tna-plans.export.excel', request()->only('buyer_id')) }}" class="btn btn-sm btn-outline-success">
+                    <i class="fa-solid fa-file-excel"></i> Export Excel
+                </a>
+                @can('merch_tna.edit')
+                    <form method="POST" action="{{ route('merchandising-trace.tna-plans.import.excel') }}" enctype="multipart/form-data" class="d-flex gap-1">
+                        @csrf
+                        <input type="file" name="file" class="form-control form-control-sm" accept=".xlsx,.xls,.csv" required>
+                        <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap">Import Actual Dates</button>
+                    </form>
+                @endcan
+            </div>
+        </div>
         <div class="card-body">
             <form method="GET" class="row g-2 mb-3">
                 <div class="col-md-3">
