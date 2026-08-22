@@ -13,6 +13,7 @@ use ME\MerchandisingTrace\Http\Controllers\FactoryController;
 use ME\MerchandisingTrace\Http\Controllers\InquiryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemCategoryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemController;
+use ME\MerchandisingTrace\Http\Controllers\MasterExcelController;
 use ME\MerchandisingTrace\Http\Controllers\MaterialBookingController;
 use ME\MerchandisingTrace\Http\Controllers\OrderDocumentController;
 use ME\MerchandisingTrace\Http\Controllers\ProductionHandoverController;
@@ -64,6 +65,14 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::resource('items', ItemController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('uoms', UomController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('departments', DepartmentController::class)->only(['index', 'store', 'update', 'destroy']);
+
+        // §M01 AC: Excel import/export for every simple master above.
+        Route::get('masters/{master}/export', [MasterExcelController::class, 'export'])
+            ->whereIn('master', array_keys(config('merchandising-trace-master-excel', [])))
+            ->name('masters.export');
+        Route::post('masters/{master}/import', [MasterExcelController::class, 'import'])
+            ->whereIn('master', array_keys(config('merchandising-trace-master-excel', [])))
+            ->name('masters.import');
 
         // Inquiry Management (§M02)
         Route::resource('inquiries', InquiryController::class);

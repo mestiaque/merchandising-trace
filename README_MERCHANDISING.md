@@ -66,7 +66,15 @@ Two permissions matter beyond ordinary CRUD:
 
 1. **Masters** (`merch_buyer`, `merch_season`, ... `merch_department`) — simple
    code/name CRUD screens built on a shared `simple-master-index.blade.php`
-   partial to avoid ~10x duplicated Blade boilerplate.
+   partial to avoid ~10x duplicated Blade boilerplate. All 14 also get
+   Excel export/import for free from that same partial (§M01 AC), driven
+   by `Config/master_excel.php`'s per-master column map and one generic
+   `MasterExcelController` — import upserts by each master's `unique` key
+   (`code`, or `name` for `Size` which has no code column), so re-importing
+   the same file updates in place rather than duplicating rows. Only each
+   master's own scalar fields are covered; foreign-key fields (e.g.
+   `Item.category_id`, `Buyer.merchandiser_id`) are left to the manual
+   form to avoid mis-linking a row from an ambiguous imported code.
 2. **Inquiry → Style** — `InquiryController::convertToStyle()` clones every
    relevant field onto a new `Style` row with zero re-entry. The inquiry
    list flags overdue rows (`Inquiry::isOverdue()`: still `open` past
@@ -307,13 +315,10 @@ column per template task), not a literal 81-column replica. Its actual
 import/export round-trip lives on the T&A plans screen itself (§5, test
 #15) — see `TnaGridExportService`/`TnaGridImportService` above.
 
-**Remaining gap (not closed this session):** §M01's "Excel import/export"
-AC for the 14 simple masters (buyers, seasons, colors, ...) was not
-built — the masters CRUD is create/edit/delete only, no bulk file-based
-maintenance. Style Development's Measurement Chart tab (§M03) has a
-working manual UI (added this session) but no dedicated Excel import/
-export of its own either, unlike the Sales Contract PO grid and T&A grid,
-which do.
+**Remaining gap:** Style Development's Measurement Chart tab (§M03) has a
+working manual UI but no dedicated Excel import/export of its own,
+unlike the masters (§3), the Sales Contract PO grid, and the T&A grid,
+which all have one.
 
 ## 11. Tests
 

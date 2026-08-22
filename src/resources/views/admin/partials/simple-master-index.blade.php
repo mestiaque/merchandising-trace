@@ -21,14 +21,31 @@
     @include('merchandising-trace::admin.partials.alerts')
     @include('merchandising-trace::admin.partials.ui-kit')
 
+    @php($masterSlug = \Illuminate\Support\Str::after($routeBase, 'merchandising-trace.'))
+    @php($hasExcel = array_key_exists($masterSlug, config('merchandising-trace-master-excel', [])))
+
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">{{ $title }}</h5>
-            @can($permPrefix . '.add')
-                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create{{ Str::studly($modalLabel) }}Modal">
-                    <i class="fa-solid fa-plus"></i> Add {{ $modalLabel }}
-                </button>
-            @endcan
+            <div class="d-flex gap-2 align-items-center">
+                @if($hasExcel)
+                    @can($permPrefix . '.list')
+                        <a href="{{ route('merchandising-trace.masters.export', $masterSlug) }}" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-file-excel"></i> Export</a>
+                    @endcan
+                    @can($permPrefix . '.add')
+                        <form method="POST" action="{{ route('merchandising-trace.masters.import', $masterSlug) }}" enctype="multipart/form-data" class="d-flex gap-1">
+                            @csrf
+                            <input type="file" name="file" class="form-control form-control-sm" accept=".xlsx,.xls,.csv" required>
+                            <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap">Import</button>
+                        </form>
+                    @endcan
+                @endif
+                @can($permPrefix . '.add')
+                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create{{ Str::studly($modalLabel) }}Modal">
+                        <i class="fa-solid fa-plus"></i> Add {{ $modalLabel }}
+                    </button>
+                @endcan
+            </div>
         </div>
         <div class="card-body">
             <form method="GET" class="row g-2 mb-3">

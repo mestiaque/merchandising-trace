@@ -39,6 +39,10 @@ class MerchandisingServiceProvider extends ServiceProvider
             $this->mergeConfigFrom(__DIR__ . '/Config/config.php', 'merchandising-trace');
         }
 
+        if (file_exists(__DIR__ . '/Config/master_excel.php')) {
+            $this->mergeConfigFrom(__DIR__ . '/Config/master_excel.php', 'merchandising-trace-master-excel');
+        }
+
         $this->app->singleton(Services\DocumentNumberService::class);
     }
 
