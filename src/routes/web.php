@@ -7,6 +7,7 @@ use ME\MerchandisingTrace\Http\Controllers\ColorController;
 use ME\MerchandisingTrace\Http\Controllers\CommunicationLogController;
 use ME\MerchandisingTrace\Http\Controllers\CostSheetController;
 use ME\MerchandisingTrace\Http\Controllers\CurrencyController;
+use ME\MerchandisingTrace\Http\Controllers\DashboardController;
 use ME\MerchandisingTrace\Http\Controllers\DepartmentController;
 use ME\MerchandisingTrace\Http\Controllers\FactoryController;
 use ME\MerchandisingTrace\Http\Controllers\InquiryController;
@@ -16,6 +17,7 @@ use ME\MerchandisingTrace\Http\Controllers\MaterialBookingController;
 use ME\MerchandisingTrace\Http\Controllers\OrderDocumentController;
 use ME\MerchandisingTrace\Http\Controllers\ProductionHandoverController;
 use ME\MerchandisingTrace\Http\Controllers\ProductTypeController;
+use ME\MerchandisingTrace\Http\Controllers\ReportController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractPoController;
 use ME\MerchandisingTrace\Http\Controllers\SampleController;
@@ -141,4 +143,13 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         // Buyer Communication (§M14)
         Route::get('communication-logs', [CommunicationLogController::class, 'index'])->name('communication-logs.index');
         Route::post('communication-logs', [CommunicationLogController::class, 'store'])->name('communication-logs.store');
+
+        // Dashboards & Reports (§M15)
+        Route::get('dashboard/merchandiser', [DashboardController::class, 'merchandiser'])->name('dashboards.merchandiser');
+        Route::get('dashboard/management', [DashboardController::class, 'management'])->name('dashboards.management');
+
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/{key}', [ReportController::class, 'show'])->name('reports.show');
+        Route::get('reports/{key}/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');
+        Route::get('reports/{key}/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
     });

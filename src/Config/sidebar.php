@@ -13,6 +13,27 @@ return [
             'order'      => 10,
             'children'   => [
                 [
+                    'title'      => 'My Dashboard',
+                    'icon'       => 'fa-solid fa-gauge',
+                    'icon_color' => 'text-primary',
+                    'permission' => 'merch_dashboard',
+                    'route'      => "$base/dashboard/merchandiser",
+                ],
+                [
+                    'title'      => 'Management Dashboard',
+                    'icon'       => 'fa-solid fa-chart-line',
+                    'icon_color' => 'text-primary',
+                    'permission' => 'merch_dashboard',
+                    'route'      => "$base/dashboard/management",
+                ],
+                [
+                    'title'      => 'Reports',
+                    'icon'       => 'fa-solid fa-file-invoice',
+                    'icon_color' => 'text-primary',
+                    'permission' => 'merch_reports',
+                    'route'      => "$base/reports",
+                ],
+                [
                     'title'      => 'Masters',
                     'icon'       => 'fa-solid fa-gear',
                     'icon_color' => 'text-secondary',

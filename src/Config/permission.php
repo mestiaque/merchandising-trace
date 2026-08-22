@@ -67,5 +67,12 @@ return [
 
         // Buyer Communication
         'merch_communication' => ['label' => 'Buyer Communication', 'permissions' => $crud],
+
+        // Dashboards & Reports
+        'merch_dashboard' => [
+            'label' => 'Dashboards',
+            'permissions' => ['view' => 'View own dashboard', 'view_all' => 'View management dashboard'],
+        ],
+        'merch_reports' => ['label' => 'Reports', 'permissions' => ['list' => 'List', 'view' => 'View/Export']],
     ],
 ];
