@@ -68,7 +68,19 @@ Two permissions matter beyond ordinary CRUD:
    code/name CRUD screens built on a shared `simple-master-index.blade.php`
    partial to avoid ~10x duplicated Blade boilerplate.
 2. **Inquiry → Style** — `InquiryController::convertToStyle()` clones every
-   relevant field onto a new `Style` row with zero re-entry.
+   relevant field onto a new `Style` row with zero re-entry. The inquiry
+   list flags overdue rows (`Inquiry::isOverdue()`: still `open` past
+   `order_confirmation_due_date`) with a badge.
+2a. **Style Development** — beyond the basic-fields modal, every style has
+   a tabbed detail page (`StyleController::show()`): **Images** (upload/
+   remove, typed front/back/detail/embellishment/artwork), **Measurement
+   Chart** (POM rows × size columns with tolerances), **Parts &
+   Embellishment** (mandatory per spec — pick a part from production-
+   trace's own `trc_parts` master, qty/garment, embellishment type,
+   placement, critical flag), **Operations/SMV** (optional per-operation
+   SMV breakdown, summed on the tab). The Parts & Embellishment rows are
+   what the Production Handover Bridge (§7) later syncs into production's
+   own `style_parts`.
 3. **Sample** — full status workflow (`requested → in_progress → submitted →
    approved/rejected → resubmit`), revision chain via `parent_sample_id`.
    Submitting/approving a sample fires `SampleTnaSyncService` (§6).
@@ -76,14 +88,18 @@ Two permissions matter beyond ordinary CRUD:
    `consumption × (1 + wastage% / 100)`.
 5. **Costing** — versioned `CostSheet` with `calcCm()` / `calcTotalCost()` /
    `calcOfferPrice()` / `calcMarginPercent()`, all computed on demand from
-   current inputs (never trusted from a stale stored total).
+   current inputs (never trusted from a stale stored total). PDF export in
+   buyer format via `CostSheetController::pdf()`.
 6. **Sales Contract / PO** — `SalesContractPo` carries the **effective-value
    rule** (§8 below) and a two-revision-slot pattern
    (`po_qty_revised_1/2`, `pcd_revised_1/2`, `shipment_revised_1/2`), each
    change logged to `mer_sales_contract_po_revisions` with a mandatory
    reason. Confirming a contract (`SalesContractController::confirm()`)
    generates one T&A plan per PO row **and** clones the document checklist
-   (§9) in the same transaction.
+   (§9) in the same transaction. The PO grid supports Excel import
+   (`SalesContractPoImportService`: Style No / Color Code / PO No / PO Qty
+   required, Wash Type / PCD / Shipment / Unit Price / Ship Mode optional;
+   unknown style/color rows are skipped with a reason, not fatal).
 7. **T&A (the core module)** — see §5.
 8. **Material Booking** — fabric/trims/accessory/packing bookings with a
    PI/LC/X-mill date trail and a consignment schedule (1st–4th) for fabric;
@@ -104,6 +120,22 @@ merchandiser-owned aggregate roots — `Inquiry`, `SalesContract`, `Sample`
 `SalesContractPo::whereHas('salesContract', ...)` query). It no-ops outside
 an authenticated request (console commands, scheduled jobs, tinker), so
 background sync/report jobs still see everything.
+
+**Deliberately not scoped:** `TnaPlan`, despite carrying its own
+`merchandiser_id` (copied from the owning `SalesContract` at generation
+time), does **not** carry this global scope. `TnaPlan` is accessed as a
+relation (`$po->tnaPlan`) from many places outside the "browse my own
+records" UI flows — `PreFlightChecklistService`, `ProductionHandoverService`,
+`ReportService`, `DashboardService`, `PcdGateService` — and Eloquent
+relations inherit a related model's global scopes. Scoping `TnaPlan`
+directly risks silently breaking any of those for a role (e.g. spec's
+own "Planning: reads T&A, receives production handover") that legitimately
+needs cross-merchandiser T&A visibility without also being handed the
+broader `merch_scope.view_all` bypass. This was tried and reverted after
+weighing the risk against the remaining verification budget — the T&A
+plans list instead offers an opt-in `?my_orders=1` filter
+(`TnaPlanController::index()`), matching the spec's own filter list
+("my orders only").
 
 ## 5. T&A template configuration
 
@@ -134,6 +166,13 @@ soon, red = overdue, grey = not started, blue = N/A.
 tables with inline per-task forms rather than the frozen-column spreadsheet
 described in §8.3 of the spec. Functionally equivalent, not visually
 identical.
+
+**Excel round-trip (test #15):** `TnaGridExportService` flattens every
+matched plan into one row per PO / one column per task name (`PO No.` as
+the row key); `TnaGridImportService` reads the same layout back and
+bulk-updates `actual_date`/`value_text`/`value_number` — but any column
+matching an `is_auto` task is silently skipped no matter what the file
+contains, per §6 Rule 3. Buttons live on the T&A plans index page.
 
 ## 6. Auto-sync sources
 
@@ -196,16 +235,18 @@ merchandising-owned read-model, so dashboards never query
 production-trace's tables directly.
 
 **Guards implemented:** re-handover of an already-handed-over PO is
-rejected outright; rollback is only allowed while the plan line's status is
-still `pending` (no cutting started).
+rejected outright *unless* the effective qty has increased, in which case
+`ProductionHandoverService::pushDelta()` bumps the existing plan line's
+`total_order_qty` and any grown size rows in place — never a duplicate
+line (test #8, both halves). Rollback is only allowed while the plan
+line's status is still `pending` (no cutting started).
 
-**Known gap:** the spec's "a qty increase creates a delta on the existing
-plan line, never a duplicate" (test #8, second half) is **not**
-implemented — a re-handover is currently a hard rejection with no delta
-path. Embellishment-flag propagation into `trc_style_parts`
-(`requires_embroidery`/`requires_print`, spec §M11 step 5, test #9) is
-also **not implemented** — the bridge only *reads* `trc_style_parts` for
-the checklist, it never writes to it.
+Embellishment-flag propagation (test #9, §M11 step 5) is implemented:
+`ProductionHandoverService::syncStyleParts()` writes
+`requires_embroidery`/`requires_print` into `trc_style_parts` from each
+part's `embellishment_type` (set on the style's **Parts & Embellishment**
+tab, §M03) OR the PO-level flags (`emb_applique_ih`, `print_emb`,
+`heat_seal_ih`), per the exact §14 field map.
 
 ## 8. The effective-value rule (§6 global rule 1)
 
@@ -262,9 +303,17 @@ column `"not tracked"` rather than fabricating a number.
 
 **Known gap:** report #1 ("T&A status report — the Excel replica") is a
 reasonable flattened reconstruction (order/status columns + one dynamic
-column per template task), not a literal 81-column replica; and the
-Excel *import* side of §12's round-trip (test #15) was not built — export
-only.
+column per template task), not a literal 81-column replica. Its actual
+import/export round-trip lives on the T&A plans screen itself (§5, test
+#15) — see `TnaGridExportService`/`TnaGridImportService` above.
+
+**Remaining gap (not closed this session):** §M01's "Excel import/export"
+AC for the 14 simple masters (buyers, seasons, colors, ...) was not
+built — the masters CRUD is create/edit/delete only, no bulk file-based
+maintenance. Style Development's Measurement Chart tab (§M03) has a
+working manual UI (added this session) but no dedicated Excel import/
+export of its own either, unlike the Sales Contract PO grid and T&A grid,
+which do.
 
 ## 11. Tests
 
