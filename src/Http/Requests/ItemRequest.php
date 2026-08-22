@@ -4,6 +4,7 @@ namespace ME\MerchandisingTrace\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use ME\MerchandisingTrace\Models\Item;
 
 class ItemRequest extends FormRequest
 {
@@ -20,7 +21,7 @@ class ItemRequest extends FormRequest
             'code' => ['required', 'string', 'max:100', Rule::unique('mer_items', 'code')->ignore($this->route('item'))->whereNull('deleted_at')],
             'name' => ['required', 'string', 'max:150'],
             'category_id' => ['nullable', 'integer', 'exists:mer_item_categories,id'],
-            'type' => ['required', 'string', Rule::in(['fabric', 'trim', 'accessory', 'packing'])],
+            'type' => ['required', 'string', Rule::in(Item::TYPES)],
             'uom_id' => ['nullable', 'integer', 'exists:mer_uoms,id'],
             'default_supplier_id' => ['nullable', 'integer', 'exists:mer_suppliers,id'],
             'default_price' => ['nullable', 'numeric', 'min:0'],

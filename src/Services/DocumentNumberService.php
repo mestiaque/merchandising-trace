@@ -5,8 +5,8 @@ namespace ME\MerchandisingTrace\Services;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Generates unique, sequential document numbers (PO-000001, BOM-000001, ...)
- * for any Merchandising document. Mirrors ME\ProductionSfl\Services\DocumentNumberService.
+ * Generates unique, sequential document numbers (INQ-000001, PO-000001, ...)
+ * for any Merchandising document.
  */
 class DocumentNumberService
 {

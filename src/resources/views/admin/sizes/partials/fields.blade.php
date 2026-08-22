@@ -4,7 +4,7 @@
 </div>
 <div class="mb-3">
     <label class="form-label">Sort Order</label>
-    <input type="number" name="sort_order" class="form-control" value="{{ old('sort_order', $size->sort_order ?? '') }}">
+    <input type="number" min="0" name="sort_order" class="form-control" value="{{ old('sort_order', $size->sort_order ?? 0) }}">
 </div>
 <div class="form-check form-switch">
     <input type="hidden" name="is_active" value="0">

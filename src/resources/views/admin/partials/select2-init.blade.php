@@ -1,20 +1,9 @@
 @push('js')
 <script>
     function prodSelect2Init(scope) {
-        scope = scope || document;
-        $(scope).find('.merch-select2').each(function () {
-            if ($(this).hasClass('select2-hidden-accessible')) {
-                return;
-            }
-            $(this).select2({
-                theme: 'default',
-                width: '100%',
-                dropdownParent: $(this).closest('.modal').length ? $(this).closest('.modal') : $(document.body),
-            });
-        });
+        if (typeof $ === 'undefined' || !$.fn.select2) { return; }
+        $((scope || document).querySelectorAll ? scope || document : document).find('.merch-select2').select2({ width: '100%' });
     }
-    $(function () {
-        prodSelect2Init(document);
-    });
+    document.addEventListener('DOMContentLoaded', function () { prodSelect2Init(document); });
 </script>
 @endpush

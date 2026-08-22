@@ -16,35 +16,16 @@ class ColorController extends Controller
 
         $colors = Color::query()
             ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')
+            ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
 
-        return view('merchandising-trace::admin.colors.index', compact('colors'));
-    }
-
-    public function print(Request $request): View
-    {
-        $this->authorize('merch_color.list');
-
-        $colors = Color::query()
-            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')->get();
-
-        return view('merchandising-trace::admin.partials.print-table', [
-            'title'   => 'Colors',
-            'columns' => ['name' => 'Name', 'code' => 'Code'],
-            'rows'    => $colors,
-        ]);
+        return view('merchandising-trace::admin.colors.index', ['colors' => $colors]);
     }
 
     public function store(ColorRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['created_by'] = auth()->id();
-        Color::create($data);
+        Color::create($request->validated());
 
         return back()->with('success', 'Color created successfully.');
     }

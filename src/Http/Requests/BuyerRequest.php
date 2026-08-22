@@ -17,12 +17,12 @@ class BuyerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:150'],
             'code' => ['required', 'string', 'max:100', Rule::unique('mer_buyers', 'code')->ignore($this->route('buyer'))->whereNull('deleted_at')],
+            'name' => ['required', 'string', 'max:150'],
             'merchandiser_id' => ['nullable', 'integer', 'exists:users,id'],
-            'address' => ['nullable', 'string'],
             'region' => ['nullable', 'string', 'max:150'],
             'agent_name' => ['nullable', 'string', 'max:150'],
+            'address' => ['nullable', 'string'],
             'contact_person' => ['nullable', 'string', 'max:150'],
             'phone' => ['nullable', 'string', 'max:150'],
             'email' => ['nullable', 'email', 'max:150'],

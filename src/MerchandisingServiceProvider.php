@@ -17,7 +17,6 @@ class MerchandisingServiceProvider extends ServiceProvider
 
         $this->mergeSidebar();
         $this->mergePermissions();
-        $this->registerObservers();
     }
 
     public function register(): void
@@ -27,16 +26,6 @@ class MerchandisingServiceProvider extends ServiceProvider
         }
 
         $this->app->singleton(Services\DocumentNumberService::class);
-    }
-
-    private function registerObservers(): void
-    {
-        Models\Sample::observe(Observers\SampleObserver::class);
-        Models\Order::observe(Observers\OrderObserver::class);
-        Models\SalesContract::observe(Observers\SalesContractObserver::class);
-        Models\Costing::observe(Observers\CostingObserver::class);
-        Models\MaterialBooking::observe(Observers\MaterialBookingObserver::class);
-        Models\ShipmentPlan::observe(Observers\ShipmentPlanObserver::class);
     }
 
     private function mergeSidebar(): void

@@ -15,36 +15,17 @@ class ItemCategoryController extends Controller
         $this->authorize('merch_item_category.list');
 
         $itemCategories = ItemCategory::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')
+            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
+            ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
 
         return view('merchandising-trace::admin.item-categories.index', ['itemCategories' => $itemCategories]);
     }
 
-    public function print(Request $request): View
-    {
-        $this->authorize('merch_item_category.list');
-
-        $itemCategories = ItemCategory::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')->get();
-
-        return view('merchandising-trace::admin.partials.print-table', [
-            'title'   => 'Item Categories',
-            'columns' => ['name' => 'Name', 'code' => 'Code'],
-            'rows'    => $itemCategories,
-        ]);
-    }
-
     public function store(ItemCategoryRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['created_by'] = auth()->id();
-        ItemCategory::create($data);
+        ItemCategory::create($request->validated());
 
         return back()->with('success', 'Item Category created successfully.');
     }

@@ -15,36 +15,17 @@ class ShipModeController extends Controller
         $this->authorize('merch_ship_mode.list');
 
         $shipModes = ShipMode::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')
+            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
+            ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
 
         return view('merchandising-trace::admin.ship-modes.index', ['shipModes' => $shipModes]);
     }
 
-    public function print(Request $request): View
-    {
-        $this->authorize('merch_ship_mode.list');
-
-        $shipModes = ShipMode::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')->get();
-
-        return view('merchandising-trace::admin.partials.print-table', [
-            'title'   => 'Ship Modes',
-            'columns' => ['name' => 'Name', 'code' => 'Code'],
-            'rows'    => $shipModes,
-        ]);
-    }
-
     public function store(ShipModeRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['created_by'] = auth()->id();
-        ShipMode::create($data);
+        ShipMode::create($request->validated());
 
         return back()->with('success', 'Ship Mode created successfully.');
     }

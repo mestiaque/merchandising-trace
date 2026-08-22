@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Scope;
 /**
  * Row-level visibility for merchandiser-owned records (Inquiry, Sample,
  * Sales Contract, ...): a plain Merchandiser only sees rows where
- * merchandiser_id = auth()->id(); merch.view_all bypasses it entirely.
+ * merchandiser_id = auth()->id(); merch_scope.view_all bypasses it.
  * Apply via `static::addGlobalScope(new ScopedToMerchandiser)` in the
  * model's booted() method.
  */

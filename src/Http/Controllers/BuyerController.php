@@ -16,31 +16,14 @@ class BuyerController extends Controller
         $this->authorize('merch_buyer.list');
 
         $buyers = Buyer::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')
+            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%'))
+            ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
 
         return view('merchandising-trace::admin.buyers.index', [
             'buyers' => $buyers,
-            'merchandisers' => User::query()->orderBy('name')->get(),
-        ]);
-    }
-
-    public function print(Request $request): View
-    {
-        $this->authorize('merch_buyer.list');
-
-        $buyers = Buyer::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')->get();
-
-        return view('merchandising-trace::admin.partials.print-table', [
-            'title'   => 'Buyers',
-            'columns' => ['name' => 'Name', 'code' => 'Code', 'phone' => 'Phone'],
-            'rows'    => $buyers,
+            'merchandisersOptions' => User::query()->orderBy('name')->get(),
         ]);
     }
 

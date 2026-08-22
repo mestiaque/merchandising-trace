@@ -1,10 +1,10 @@
 <div class="mb-3">
-    <label class="form-label">Name</label>
-    <input type="text" name="name" class="form-control" value="{{ old('name', $factory->name ?? '') }}" required>
-</div>
-<div class="mb-3">
     <label class="form-label">Code</label>
     <input type="text" name="code" class="form-control" value="{{ old('code', $factory->code ?? '') }}" required>
+</div>
+<div class="mb-3">
+    <label class="form-label">Name</label>
+    <input type="text" name="name" class="form-control" value="{{ old('name', $factory->name ?? '') }}" required>
 </div>
 <div class="mb-3">
     <label class="form-label">Address</label>
@@ -20,11 +20,11 @@
 </div>
 <div class="form-check form-switch mb-2">
     <input type="hidden" name="is_own" value="0">
-    <input type="checkbox" name="is_own" value="1" class="form-check-input" id="factoryOwn" @checked(old('is_own', $factory->is_own ?? true))>
-    <label class="form-check-label" for="factoryOwn">Own Factory</label>
+    <input type="checkbox" name="is_own" value="1" class="form-check-input" id="factoryOwn{{ $factory->id ?? 'new' }}" @checked(old('is_own', $factory->is_own ?? true))>
+    <label class="form-check-label" for="factoryOwn{{ $factory->id ?? 'new' }}">Own Factory</label>
 </div>
 <div class="form-check form-switch">
     <input type="hidden" name="is_active" value="0">
-    <input type="checkbox" name="is_active" value="1" class="form-check-input" id="factoryActive" @checked(old('is_active', $factory->is_active ?? true))>
-    <label class="form-check-label" for="factoryActive">Active</label>
+    <input type="checkbox" name="is_active" value="1" class="form-check-input" id="factoryActive{{ $factory->id ?? 'new' }}" @checked(old('is_active', $factory->is_active ?? true))>
+    <label class="form-check-label" for="factoryActive{{ $factory->id ?? 'new' }}">Active</label>
 </div>

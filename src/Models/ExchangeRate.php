@@ -9,7 +9,7 @@ class ExchangeRate extends Model
 {
     protected $table = 'mer_exchange_rates';
 
-    protected $fillable = ['currency_id', 'rate', 'effective_date', 'created_by'];
+    protected $fillable = ['currency_id', 'rate', 'effective_date'];
 
     protected $casts = [
         'rate' => 'decimal:4',

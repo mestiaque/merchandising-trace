@@ -15,36 +15,17 @@ class FactoryController extends Controller
         $this->authorize('merch_factory.list');
 
         $factories = Factory::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')
+            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
+            ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
 
         return view('merchandising-trace::admin.factories.index', ['factories' => $factories]);
     }
 
-    public function print(Request $request): View
-    {
-        $this->authorize('merch_factory.list');
-
-        $factories = Factory::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')->get();
-
-        return view('merchandising-trace::admin.partials.print-table', [
-            'title'   => 'Factories',
-            'columns' => ['name' => 'Name', 'code' => 'Code', 'unit_type' => 'Unit Type', 'capacity_per_month' => 'Capacity/Month'],
-            'rows'    => $factories,
-        ]);
-    }
-
     public function store(FactoryRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['created_by'] = auth()->id();
-        Factory::create($data);
+        Factory::create($request->validated());
 
         return back()->with('success', 'Factory created successfully.');
     }

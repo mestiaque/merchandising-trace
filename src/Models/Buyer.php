@@ -4,22 +4,19 @@ namespace ME\MerchandisingTrace\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use ME\MerchandisingTrace\Database\Factories\BuyerFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Buyer extends Model
 {
-    use HasFactory;
     use SoftDeletes;
 
     protected $table = 'mer_buyers';
 
     protected $fillable = [
-        'name', 'code', 'merchandiser_id', 'address', 'region', 'agent_name', 'contact_person', 'phone', 'email',
+        'code', 'name', 'merchandiser_id', 'region', 'agent_name', 'address', 'contact_person', 'phone', 'email',
         'payment_term', 'delivery_term', 'default_aql', 'tna_template_id', 'doc_checklist_template_id', 'logo',
         'is_active', 'created_by',
     ];
@@ -44,8 +41,8 @@ class Buyer extends Model
         return $this->hasMany(BuyerContact::class, 'buyer_id');
     }
 
-    protected static function newFactory()
+    public function styles(): HasMany
     {
-        return BuyerFactory::new();
+        return $this->hasMany(Style::class, 'buyer_id');
     }
 }

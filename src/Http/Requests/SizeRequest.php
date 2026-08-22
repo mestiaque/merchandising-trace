@@ -17,7 +17,7 @@ class SizeRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:50'],
-            'sort_order' => ['nullable', 'integer'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
         ];
     }

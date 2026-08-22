@@ -15,29 +15,12 @@ class SeasonController extends Controller
         $this->authorize('merch_season.list');
 
         $seasons = Season::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')
+            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%'))
+            ->orderByDesc('year')
             ->paginate(20)
             ->withQueryString();
 
         return view('merchandising-trace::admin.seasons.index', ['seasons' => $seasons]);
-    }
-
-    public function print(Request $request): View
-    {
-        $this->authorize('merch_season.list');
-
-        $seasons = Season::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')->get();
-
-        return view('merchandising-trace::admin.partials.print-table', [
-            'title'   => 'Seasons',
-            'columns' => ['name' => 'Name', 'code' => 'Code', 'start_date' => 'Start Date', 'end_date' => 'End Date'],
-            'rows'    => $seasons,
-        ]);
     }
 
     public function store(SeasonRequest $request): RedirectResponse

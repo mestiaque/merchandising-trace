@@ -11,9 +11,7 @@ class BuyerContact extends Model
 
     protected $fillable = ['buyer_id', 'name', 'designation', 'email', 'phone', 'is_primary'];
 
-    protected $casts = [
-        'is_primary' => 'boolean',
-    ];
+    protected $casts = ['is_primary' => 'boolean'];
 
     public function buyer(): BelongsTo
     {

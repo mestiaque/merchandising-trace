@@ -17,8 +17,9 @@ class UomRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'code' => ['required', 'string', 'max:20', Rule::unique('mer_uoms', 'code')->ignore($this->route('uom'))->whereNull('deleted_at')],
             'name' => ['required', 'string', 'max:150'],
-            'short_name' => ['required', 'string', 'max:20'],
+            'decimal_places' => ['nullable', 'integer', 'min:0', 'max:4'],
             'is_active' => ['nullable', 'boolean'],
         ];
     }

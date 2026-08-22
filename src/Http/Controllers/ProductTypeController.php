@@ -15,36 +15,17 @@ class ProductTypeController extends Controller
         $this->authorize('merch_product_type.list');
 
         $productTypes = ProductType::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')
+            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
+            ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
 
         return view('merchandising-trace::admin.product-types.index', ['productTypes' => $productTypes]);
     }
 
-    public function print(Request $request): View
-    {
-        $this->authorize('merch_product_type.list');
-
-        $productTypes = ProductType::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')->get();
-
-        return view('merchandising-trace::admin.partials.print-table', [
-            'title'   => 'Product Types',
-            'columns' => ['name' => 'Name', 'code' => 'Code', 'category' => 'Category', 'default_smv' => 'Default SMV'],
-            'rows'    => $productTypes,
-        ]);
-    }
-
     public function store(ProductTypeRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['created_by'] = auth()->id();
-        ProductType::create($data);
+        ProductType::create($request->validated());
 
         return back()->with('success', 'Product Type created successfully.');
     }

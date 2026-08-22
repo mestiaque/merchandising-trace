@@ -12,7 +12,7 @@ class Factory extends Model
 
     protected $table = 'mer_factories';
 
-    protected $fillable = ['code', 'name', 'address', 'unit_type', 'capacity_per_month', 'is_own', 'is_active', 'created_by'];
+    protected $fillable = ['code', 'name', 'address', 'unit_type', 'capacity_per_month', 'is_own', 'is_active'];
 
     protected $casts = [
         'is_own' => 'boolean',

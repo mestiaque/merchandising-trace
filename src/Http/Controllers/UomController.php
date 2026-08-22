@@ -15,36 +15,17 @@ class UomController extends Controller
         $this->authorize('merch_uom.list');
 
         $uoms = Uom::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')
+            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%'))
+            ->orderBy('code')
             ->paginate(20)
             ->withQueryString();
 
         return view('merchandising-trace::admin.uoms.index', ['uoms' => $uoms]);
     }
 
-    public function print(Request $request): View
-    {
-        $this->authorize('merch_uom.list');
-
-        $uoms = Uom::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')->get();
-
-        return view('merchandising-trace::admin.partials.print-table', [
-            'title'   => 'Unit of Measure',
-            'columns' => ['name' => 'Name', 'short_name' => 'Short Name'],
-            'rows'    => $uoms,
-        ]);
-    }
-
     public function store(UomRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['created_by'] = auth()->id();
-        Uom::create($data);
+        Uom::create($request->validated());
 
         return back()->with('success', 'UOM created successfully.');
     }

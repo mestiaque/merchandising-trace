@@ -12,11 +12,9 @@ class WashType extends Model
 
     protected $table = 'mer_wash_types';
 
-    protected $fillable = ['code', 'name', 'is_active', 'created_by'];
+    protected $fillable = ['code', 'name', 'is_active'];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
+    protected $casts = ['is_active' => 'boolean'];
 
     public function scopeActive(Builder $query): Builder
     {

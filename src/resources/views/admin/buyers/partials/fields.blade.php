@@ -10,7 +10,7 @@
     <label class="form-label">Merchandiser</label>
     <select name="merchandiser_id" class="form-control merch-select2">
         <option value="">— Select —</option>
-        @foreach($merchandisers ?? [] as $m)
+        @foreach($merchandisersOptions as $m)
             <option value="{{ $m->id }}" @selected(old('merchandiser_id', $buyer->merchandiser_id ?? '') == $m->id)>{{ $m->name }}</option>
         @endforeach
     </select>
@@ -58,6 +58,6 @@
 </div>
 <div class="form-check form-switch">
     <input type="hidden" name="is_active" value="0">
-    <input type="checkbox" name="is_active" value="1" class="form-check-input" id="buyerActive" @checked(old('is_active', $buyer->is_active ?? true))>
-    <label class="form-check-label" for="buyerActive">Active</label>
+    <input type="checkbox" name="is_active" value="1" class="form-check-input" id="buyerActive{{ $buyer->id ?? 'new' }}" @checked(old('is_active', $buyer->is_active ?? true))>
+    <label class="form-check-label" for="buyerActive{{ $buyer->id ?? 'new' }}">Active</label>
 </div>

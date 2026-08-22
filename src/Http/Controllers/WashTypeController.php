@@ -15,36 +15,17 @@ class WashTypeController extends Controller
         $this->authorize('merch_wash_type.list');
 
         $washTypes = WashType::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')
+            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
+            ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
 
         return view('merchandising-trace::admin.wash-types.index', ['washTypes' => $washTypes]);
     }
 
-    public function print(Request $request): View
-    {
-        $this->authorize('merch_wash_type.list');
-
-        $washTypes = WashType::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')->get();
-
-        return view('merchandising-trace::admin.partials.print-table', [
-            'title'   => 'Wash Types',
-            'columns' => ['name' => 'Name', 'code' => 'Code'],
-            'rows'    => $washTypes,
-        ]);
-    }
-
     public function store(WashTypeRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['created_by'] = auth()->id();
-        WashType::create($data);
+        WashType::create($request->validated());
 
         return back()->with('success', 'Wash Type created successfully.');
     }

@@ -17,8 +17,9 @@ class SeasonRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:150'],
             'code' => ['required', 'string', 'max:100', Rule::unique('mer_seasons', 'code')->ignore($this->route('season'))->whereNull('deleted_at')],
+            'name' => ['required', 'string', 'max:150'],
+            'year' => ['nullable', 'integer', 'min:2000', 'max:2100'],
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'is_active' => ['nullable', 'boolean'],

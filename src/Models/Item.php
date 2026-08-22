@@ -13,9 +13,11 @@ class Item extends Model
 
     protected $table = 'mer_items';
 
+    public const TYPES = ['fabric', 'trim', 'accessory', 'packing'];
+
     protected $fillable = [
         'code', 'name', 'category_id', 'type', 'uom_id', 'default_supplier_id',
-        'default_price', 'consumption_uom', 'is_active', 'created_by',
+        'default_price', 'consumption_uom', 'is_active',
     ];
 
     protected $casts = [

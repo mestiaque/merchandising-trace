@@ -19,43 +19,22 @@ class ItemController extends Controller
 
         $items = Item::query()
             ->with(['category', 'uom'])
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('type'), fn ($q) => $q->where('type', $request->type))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')
+            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
+            ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
 
         return view('merchandising-trace::admin.items.index', [
             'items' => $items,
             'categoriesOptions' => ItemCategory::query()->active()->orderBy('name')->get(),
-            'uomsOptions' => Uom::query()->orderBy('name')->get(),
+            'uomsOptions' => Uom::query()->active()->orderBy('name')->get(),
             'suppliersOptions' => Supplier::query()->active()->orderBy('name')->get(),
-        ]);
-    }
-
-    public function print(Request $request): View
-    {
-        $this->authorize('merch_item.list');
-
-        $items = Item::query()
-            ->when($request->filled('search'), fn ($q) => $q->where(fn ($qq) => $qq->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%')))
-            ->when($request->filled('type'), fn ($q) => $q->where('type', $request->type))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest('id')->get();
-
-        return view('merchandising-trace::admin.partials.print-table', [
-            'title'   => 'Items',
-            'columns' => ['name' => 'Name', 'code' => 'Code', 'type' => 'Type', 'default_price' => 'Default Price'],
-            'rows'    => $items,
         ]);
     }
 
     public function store(ItemRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['created_by'] = auth()->id();
-        Item::create($data);
+        Item::create($request->validated());
 
         return back()->with('success', 'Item created successfully.');
     }

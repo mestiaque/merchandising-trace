@@ -12,7 +12,7 @@ class ProductType extends Model
 
     protected $table = 'mer_product_types';
 
-    protected $fillable = ['code', 'name', 'category', 'default_smv', 'is_active', 'created_by'];
+    protected $fillable = ['code', 'name', 'category', 'default_smv', 'is_active'];
 
     protected $casts = [
         'is_active' => 'boolean',
