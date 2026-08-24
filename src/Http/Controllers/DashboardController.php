@@ -26,4 +26,19 @@ class DashboardController extends Controller
 
         return view('merchandising-trace::admin.dashboard', $data);
     }
+
+    /**
+     * Static + try/catch-wrapped so it can be safely embedded on the host
+     * app's own aggregate dashboard, mirroring the pattern used by every
+     * other module (e.g. production-trace's TrcDashboardController::stats()).
+     * A failure here must never break a shared dashboard page.
+     */
+    public static function stats(): array
+    {
+        try {
+            return app(DashboardService::class)->overview();
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
 }

@@ -1,0 +1,20 @@
+Inquiry Given date	Merchant Name	Order confirmation due date	Allocated Fty	Buyer	Season	Style Name / Number	Product Type	Color	Wash type	Cost SMV	CM	FOB/FOC	PO due date	PO No.	PO Qty.	PO Qty revised 1	PO Qty revised 2	PCD	Fty Possible PCD	PCD revised 1	PCD revised 2	Shipment Date	Fty Committed Delivery	Shipment revised 1	Shipment revised 2	Ship Mode	Print / Emb	EMB Applique IH	Studs/ Stones IH	Heat seal IH	Fit Request date	Fit Submission	Fit Approval	2nd Fit submission	2nd Fit Approval	1st PP request	1st PP submit	1st PP Approval	Wash Standard Approval	Shade band submission	Shade band Approval	File Hand over Date	Size set Fabric & Trims (Pullout)	Pilot Stitching	Pilot Wash	Pilot Review	PP Meeting	Remarks	Fabric YY	Fabric Requirement	Bulk Fabric PI (Booking date)	Bulk Fabric LC	Fabric Mill Country	Bulk Fabric X mill	Bulk Fabric 1st consignment	Bulk Fabric 2nd consignment	Bulk Fabric 3rd consignment	Bulk Fabric 4th consignment	Remarks	Thread	Zipper	Main Label	Size Label	Care Label	Elastics	Buttons	Velcro	Remarks	Price tag	Price Stickers	Buttons	Cords	Poly Bags	Others	Cartons	PCD Pass or Fail	Reason	Responsible Dpt	Responsible Person	Remarks
+
+
+
+
+
+
+
+
+
+
+📑 ১. Order Status (অর্ডারের সাধারণ তথ্য)Inquiry Given date (ইনকোয়ারি দেওয়ার তারিখ)Merchant Name (মার্চেন্ট বা মার্চেন্ডাইজারের নাম)Order confirmation due date (অর্ডার নিশ্চিতকরণের শেষ তারিখ)Allocated Fty (বরাদ্দকৃত ফ্যাক্টরি)👕 ২. Style Detail (স্টাইলের বিবরণ)Buyer (বায়ার/ক্রেতার নাম)Season (সিজন)Style Name / Number (স্টাইলের নাম বা নম্বর)Product Type (পণ্যের ধরন)Color (রং)Wash type (ওয়াশের ধরন)Cost SMVCMFOB/FOCPO due date (পিও দেওয়ার শেষ তারিখ)PO No. (পিও নম্বর)PO Qty. (পিও পরিমাণ)PO Qty revised 1 (সংশোধিত পিও পরিমাণ ১)PO Qty revised 2 (সংশোধিত পিও পরিমাণ ২)PCD (Planned Cut Date / কাটিং শুরুর পরিকল্পিত তারিখ)Fty Possible PCD (ফ্যাক্টরির সম্ভাব্য কাটিং তারিখ)PCD revised 1 (সংশোধিত কাটিং তারিখ ১)PCD revised 2 (সংশোধিত কাটিং তারিখ ২)Shipment Date (শিপমেন্ট বা পণ্য পাঠানোর তারিখ)Fty Committed Delivery (ফ্যাক্টরির দেওয়া ডেলিভারির তারিখ)Shipment revised 1 (সংশোধিত শিপমেন্ট তারিখ ১)Shipment revised 2 (সংশোধিত শিপমেন্ট তারিখ ২)Ship Mode (শিপমেন্টের মাধ্যম - যেমন: SEA/AIR)✨ ৩. Embellishment (সাজসজ্জা বা নকশা)Print / Emb (প্রিন্ট বা এমব্রয়ডারি)EMB Applique IHStuds/ Stones IHHeat seal IH🧪 ৪. Sample Status (স্যাম্পল বা নমুনার অবস্থা)Fit Request dateFit SubmissionFit Approval2nd Fit submission2nd Fit Approval1st PP request1st PP submit1st PP ApprovalWash Standard ApprovalShade band submissionShade band ApprovalFile Hand over DateSize set Fabric & Trims (Pullout)🧥 ৫. Pilot Status (পাইলট রান বা ট্রায়াল অবস্থা)Pilot StitchingPilot WashPilot ReviewPP MeetingRemarks (মন্তব্য)🧵 ৬. Fabric Status (ফেব্রিক বা কাপড়ের অবস্থা)Fabric YYFabric Requirement (কাপড়ের মোট চাহিদা)Bulk Fabric PI (Booking date) (ফেব্রিক বুকিংয়ের তারিখ)Bulk Fabric LC (ফেব্রিক এলসি)Fabric Mill Country (কাপড় তৈরির দেশ)Bulk Fabric X millBulk Fabric 1st consignment (১ম চালানের কাপড়)Bulk Fabric 2nd consignment (২য় চালানের কাপড়)Bulk Fabric 3rd consignment (৩য় চালানের কাপড়)Bulk Fabric 4th consignment (৪র্থ চালানের কাপড়)Remarks (ফেব্রিক সংক্রান্ত মন্তব্য)🧷 ৭. Sewing Trims Status (সেলাইয়ের ট্রিমস বা এক্সেসরিজ)Thread (সুতা)Zipper (চেইন/জিপার)Main Label (মেইন লেবেল)Size Label (সাইজ লেবেল)Care Label (কেয়ার লেবেল)Elastics (ইলাস্টিক)Buttons (বোতাম)Velcro (ভেলক্রো)Remarks (সেলাইয়ের ট্রিমস মন্তব্য)📦 ৮. Finishing Trims (প্যাকিং ও ফিনিশিং ট্রিমস)Price tag (প্রাইস ট্যাগ)Price Stickers (প্রাইস স্টিকার)Buttons (ফিনিশিং বোতাম)Cords (দড়ি/কর্ড)Poly Bags (পলি ব্যাগ)Others (অন্যান্য)Cartons (কার্টন)❌ 🏁 ৯. PCD Pass or Fail (কাজের মূল্যায়ন)PCD Pass or Fail (কাটিংয়ের ডেট ঠিক আছে নাকি ফেইল করেছে)Reason (ফেইল করার কারণ)Responsible Dpt (দায়ী বিভাগ)Responsible Person (দায়ী ব্যক্তি)Remarks (চূড়ান্ত মন্তব্য)
+
+
+
+
+
+
+
+Order status (৪টি কলাম মার্জ হবে)Style Detail (২৩টি কলাম মার্জ হবে)Embellishment (৪টি কলাম মার্জ হবে)Sample Status (১৩টি কলাম মার্জ হবে)Wash Status / Pilot Status (৫টি কলাম মার্জ হবে) (নোট: সাব-হেডারে Pilot এর ডাটা আছে)Fabric Status (১১টি কলাম মার্জ হবে)Sewing trims Status (৯টি কলাম মার্জ হবে)Finishing Trims (৭টি কলাম মার্জ হবে)PCD Pass or Fail (৫টি কলাম মার্জ হবে)

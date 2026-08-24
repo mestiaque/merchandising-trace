@@ -53,4 +53,16 @@ class PoProductionProgress extends Model
     {
         return max(0, $this->cut_qty - $this->finished_qty);
     }
+
+    public function currentStage(): string
+    {
+        return match (true) {
+            $this->order_qty > 0 && $this->shipped_qty >= $this->order_qty => 'Shipped',
+            $this->packed_qty > 0 => 'Packing',
+            $this->finished_qty > 0 => 'Finishing',
+            $this->sewn_qty > 0 => 'Sewing',
+            $this->cut_qty > 0 => 'Cutting',
+            default => 'Not Started',
+        };
+    }
 }
