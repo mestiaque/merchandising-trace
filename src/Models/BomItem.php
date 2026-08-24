@@ -18,6 +18,7 @@ class BomItem extends Model
         'consumption' => 'decimal:4',
         'wastage_percent' => 'decimal:2',
         'rate' => 'decimal:4',
+        'lead_time_days' => 'integer',
     ];
 
     public function bom(): BelongsTo

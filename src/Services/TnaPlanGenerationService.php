@@ -48,7 +48,7 @@ class TnaPlanGenerationService
             foreach ($template->tasks as $templateTask) {
                 $anchorField = $templateTask->anchor_field ?? $template->anchor;
                 $anchorDate = $anchors[$anchorField] ?? null;
-                $planDate = $anchorDate ? $anchorDate->copy()->addDays($templateTask->offset_days) : null;
+                $planDate = $anchorDate ? $anchorDate->copy()->addDays((int) $templateTask->offset_days) : null;
 
                 $plan->tasks()->create([
                     'tna_template_task_id' => $templateTask->id,

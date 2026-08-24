@@ -18,7 +18,7 @@ class Supplier extends Model
         'code', 'name', 'type', 'country', 'contact', 'lead_time_days', 'payment_term', 'rating', 'is_active',
     ];
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $casts = ['is_active' => 'boolean', 'lead_time_days' => 'integer'];
 
     public function scopeActive(Builder $query): Builder
     {

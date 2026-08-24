@@ -30,7 +30,7 @@ class DocumentChecklistService
                 'document_template_item_id' => $item->id,
                 'name' => $item->name,
                 'is_mandatory' => $item->is_mandatory,
-                'due_date' => $item->due_offset_days !== null ? $contract->contract_date?->copy()->addDays($item->due_offset_days) : null,
+                'due_date' => $item->due_offset_days !== null ? $contract->contract_date?->copy()->addDays((int) $item->due_offset_days) : null,
                 'status' => 'pending',
             ]);
             $created++;

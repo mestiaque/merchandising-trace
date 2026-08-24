@@ -11,7 +11,7 @@ class DocumentTemplateItem extends Model
 
     protected $fillable = ['document_template_id', 'name', 'due_offset_days', 'is_mandatory', 'sequence'];
 
-    protected $casts = ['is_mandatory' => 'boolean'];
+    protected $casts = ['is_mandatory' => 'boolean', 'due_offset_days' => 'integer'];
 
     public function template(): BelongsTo
     {
