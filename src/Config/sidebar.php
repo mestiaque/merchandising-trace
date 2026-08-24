@@ -10,7 +10,7 @@ return [
             'icon'       => 'fa-solid fa-shirt',
             'icon_color' => 'text-primary',
             'permission' => '',
-            'order'      => 10,
+            'order'      => 13,
             'children'   => [
                 [
                     'title'      => 'Dashboard',
