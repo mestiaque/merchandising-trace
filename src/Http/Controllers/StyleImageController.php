@@ -4,19 +4,18 @@ namespace ME\MerchandisingTrace\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use ME\MerchandisingTrace\Models\Style;
 use ME\MerchandisingTrace\Models\StyleImage;
 
 class StyleImageController extends Controller
 {
-    public const TYPES = ['front', 'back', 'detail', 'embellishment', 'artwork'];
-
     public function store(Request $request, Style $style): RedirectResponse
     {
         $this->authorize('merch_style.edit');
 
         $data = $request->validate([
-            'type' => ['required', 'string', 'in:' . implode(',', self::TYPES)],
+            'type' => ['required', 'string', Rule::exists('mer_style_image_types', 'code')->where('is_active', true)],
             'caption' => ['nullable', 'string', 'max:150'],
             'file' => ['required', 'file', 'image', 'max:5120'],
         ]);

@@ -73,6 +73,7 @@ class SalesContractPoController extends Controller
     public function edit(SalesContract $salesContract, SalesContractPo $salesContractPo): View
     {
         $this->authorize('merch_sales_contract.edit');
+        $this->assertBelongsToContract($salesContract, $salesContractPo);
 
         $salesContractPo->load(['sizes', 'revisions.changer']);
 
@@ -84,6 +85,7 @@ class SalesContractPoController extends Controller
 
     public function update(SalesContractPoRequest $request, SalesContract $salesContract, SalesContractPo $salesContractPo): RedirectResponse
     {
+        $this->assertBelongsToContract($salesContract, $salesContractPo);
         $data = $request->validated();
 
         DB::transaction(function () use ($data, $salesContract, $salesContractPo) {
@@ -153,11 +155,33 @@ class SalesContractPoController extends Controller
     public function destroy(SalesContract $salesContract, SalesContractPo $salesContractPo): RedirectResponse
     {
         $this->authorize('merch_sales_contract.delete');
+        $this->assertBelongsToContract($salesContract, $salesContractPo);
 
         $salesContractPo->delete();
         $salesContract->refreshTotals();
 
         return back()->with('success', 'PO line deleted successfully.');
+    }
+
+    /**
+     * Order-wise PO document — buyer-facing print, same layout family as
+     * the Cost Sheet PDF (§M06) and the Risk Assessment register.
+     */
+    public function pdf(SalesContract $salesContract, SalesContractPo $salesContractPo)
+    {
+        $this->authorize('merch_sales_contract.view');
+        $this->assertBelongsToContract($salesContract, $salesContractPo);
+
+        $salesContractPo->load(['style', 'productType', 'color', 'shipMode', 'sizes']);
+        $salesContract->load(['buyer', 'season']);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('merchandising-trace::admin.sales-contracts.pos.pdf', [
+            'salesContract' => $salesContract,
+            'po' => $salesContractPo,
+            'sizes' => Size::query()->active()->orderBy('sort_order')->get(),
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download("PO-{$salesContractPo->po_no}.pdf");
     }
 
     /**
@@ -168,6 +192,7 @@ class SalesContractPoController extends Controller
     public function revise(Request $request, SalesContract $salesContract, SalesContractPo $salesContractPo): RedirectResponse
     {
         $this->authorize('merch_sales_contract.edit');
+        $this->assertBelongsToContract($salesContract, $salesContractPo);
 
         $request->validate([
             'field' => ['required', 'string', 'in:po_qty,pcd,shipment'],
@@ -200,6 +225,23 @@ class SalesContractPoController extends Controller
         }
 
         return back()->with('success', 'Revision recorded.');
+    }
+
+    /**
+     * Laravel's implicit route-model binding resolves {sales_contract} and
+     * {sales_contract_po} independently by their own primary keys — it does
+     * NOT verify the PO actually belongs to that contract. Without this
+     * guard, a merchandiser who owns *some* contract (so the ScopedToMerchandiser
+     * scope on SalesContract lets that ID resolve) could edit/delete/view any
+     * OTHER merchandiser's PO line just by pairing their own contract ID
+     * with someone else's PO ID in the URL — an IDOR, since SalesContractPo
+     * itself has no merchandiser_id column to scope directly (§3's row-level
+     * scoping is enforced at the SalesContract level and assumed to cover
+     * its children transitively).
+     */
+    private function assertBelongsToContract(SalesContract $salesContract, SalesContractPo $salesContractPo): void
+    {
+        abort_unless($salesContractPo->sales_contract_id === $salesContract->id, 404);
     }
 
     /**

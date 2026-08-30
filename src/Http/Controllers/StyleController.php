@@ -13,6 +13,7 @@ use ME\MerchandisingTrace\Models\ProductType;
 use ME\MerchandisingTrace\Models\Season;
 use ME\MerchandisingTrace\Models\Size;
 use ME\MerchandisingTrace\Models\Style;
+use ME\MerchandisingTrace\Models\StyleImageType;
 use ME\MerchandisingTrace\Models\WashType;
 
 class StyleController extends Controller
@@ -45,6 +46,7 @@ class StyleController extends Controller
             'style' => $style,
             'trcPartsOptions' => TrcPart::query()->active()->orderBy('name')->get(),
             'sizesOptions' => Size::query()->active()->orderBy('id')->get(),
+            'imageTypesOptions' => StyleImageType::query()->active()->orderBy('name')->get(),
         ]);
     }
 

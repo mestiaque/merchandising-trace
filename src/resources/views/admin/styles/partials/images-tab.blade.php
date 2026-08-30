@@ -25,8 +25,8 @@
         @csrf
         <div class="col-md-3">
             <select name="type" class="form-control" required>
-                @foreach(\ME\MerchandisingTrace\Http\Controllers\StyleImageController::TYPES as $t)
-                    <option value="{{ $t }}">{{ ucfirst($t) }}</option>
+                @foreach($imageTypesOptions as $t)
+                    <option value="{{ $t->code }}">{{ $t->name }}</option>
                 @endforeach
             </select>
         </div>

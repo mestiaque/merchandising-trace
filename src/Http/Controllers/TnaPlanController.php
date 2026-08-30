@@ -10,6 +10,7 @@ use ME\MerchandisingTrace\Imports\TnaGridImport;
 use ME\MerchandisingTrace\Models\Buyer;
 use ME\MerchandisingTrace\Models\TnaPlan;
 use ME\MerchandisingTrace\Models\TnaTask;
+use ME\MerchandisingTrace\Models\TnaTemplate;
 use ME\MerchandisingTrace\Services\PcdGateService;
 use ME\MerchandisingTrace\Services\TnaGridExportService;
 use ME\MerchandisingTrace\Services\TnaGridImportService;
@@ -17,10 +18,10 @@ use ME\MerchandisingTrace\Services\TnaGridImportService;
 class TnaPlanController extends Controller
 {
     /**
-     * §8.3: the T&A grid — frozen-column spreadsheet is a heavier client-side
-     * build; this list gives the same filters (buyer, PCD result, at-risk)
-     * plus row-level completion/status/countdown, with each row opening the
-     * full grouped task view in show().
+     * §8.3: this list view gives the same filters (buyer, PCD result,
+     * at-risk) plus row-level completion/status/countdown, with each row
+     * opening the full grouped task view in show(). See grid() below for
+     * the actual frozen-column spreadsheet screen.
      */
     public function index(Request $request): View
     {
@@ -51,6 +52,42 @@ class TnaPlanController extends Controller
         ]);
     }
 
+    /**
+     * §8.3 — "The T&A Grid (the main screen — must look like the Excel)".
+     * Frozen leading columns (Merchant/Buyer/Style/PO/Color/PO Qty) +
+     * grouped two-row header (group band, task caption) + colour-coded,
+     * inline-editable task cells (via tasks.update, AJAX). Column set is
+     * the DEFAULT template's tasks — every row uses the same columns
+     * regardless of which template actually generated that row's plan, so
+     * the grid stays visually consistent; a row simply shows '-' for a
+     * task_code its own plan doesn't have.
+     */
+    public function grid(Request $request): View
+    {
+        $this->authorize('merch_tna.list');
+
+        $plans = TnaPlan::query()
+            ->with(['salesContractPo.salesContract.buyer', 'salesContractPo.style', 'salesContractPo.color', 'merchandiser', 'tasks'])
+            ->when($request->filled('buyer_id'), fn ($q) => $q->whereHas('salesContractPo.salesContract', fn ($qq) => $qq->where('buyer_id', $request->buyer_id)))
+            ->when($request->filled('pcd_result'), fn ($q) => $q->where('pcd_result', $request->pcd_result))
+            ->when($request->filled('overall_status'), fn ($q) => $q->where('overall_status', $request->overall_status))
+            ->when($request->boolean('my_orders'), fn ($q) => $q->where('merchandiser_id', auth()->id()))
+            ->latest('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        $template = TnaTemplate::query()->where('is_default', true)->active()->first()
+            ?? TnaTemplate::query()->active()->first();
+        $columns = $template ? $template->tasks : collect();
+        $columnGroups = $columns->groupBy('group_name');
+
+        return view('merchandising-trace::admin.tna-plans.grid', [
+            'plans' => $plans,
+            'columnGroups' => $columnGroups,
+            'buyersOptions' => Buyer::query()->active()->orderBy('name')->get(),
+        ]);
+    }
+
     public function show(TnaPlan $tnaPlan): View
     {
         $this->authorize('merch_tna.view');
@@ -68,14 +105,24 @@ class TnaPlanController extends Controller
     /**
      * §8.3 inline cell edit — one task's date/status/text/number per request.
      * Auto-filled cells (is_auto) are rejected here too, mirroring the
-     * read-only rule client-side.
+     * read-only rule client-side. Route-model binding resolves {tna_plan}
+     * and {task} independently by their own primary keys, so the mismatch
+     * guard below is required — without it, a task belonging to a
+     * different plan could be updated while recomputeCompletion() runs
+     * against the WRONG (URL) plan, corrupting its completion % (the same
+     * bug class fixed in SalesContractPoController).
      */
-    public function updateTask(Request $request, TnaPlan $tnaPlan, TnaTask $task): RedirectResponse
+    public function updateTask(Request $request, TnaPlan $tnaPlan, TnaTask $task): RedirectResponse|\Illuminate\Http\JsonResponse
     {
         $this->authorize('merch_tna.edit');
+        abort_unless($task->tna_plan_id === $tnaPlan->id, 404);
 
         if ($task->is_auto) {
-            return back()->with('error', 'This cell is auto-filled from another module and cannot be edited manually.');
+            $message = 'This cell is auto-filled from another module and cannot be edited manually.';
+
+            return $request->ajax() || $request->wantsJson()
+                ? response()->json(['ok' => false, 'message' => $message], 422)
+                : back()->with('error', $message);
         }
 
         $data = $request->validate([
@@ -104,7 +151,31 @@ class TnaPlanController extends Controller
         $task->update($data);
         $tnaPlan->recomputeCompletion();
 
+        if ($request->ajax() || $request->wantsJson()) {
+            $task->refresh();
+
+            return response()->json([
+                'ok' => true,
+                'message' => "Task '{$task->task_name}' updated.",
+                'task' => [
+                    'id' => $task->id,
+                    'display' => $this->cellDisplay($task),
+                    'color' => $task->boardColor(),
+                    'status' => $task->status,
+                ],
+            ]);
+        }
+
         return back()->with('success', "Task '{$task->task_name}' updated.");
+    }
+
+    private function cellDisplay(TnaTask $task): string
+    {
+        return match ($task->value_type) {
+            'date' => $task->actual_date?->format('d-M-Y') ?? '-',
+            'number' => $task->value_number !== null ? (string) $task->value_number : '-',
+            default => $task->value_text ?? '-',
+        };
     }
 
     public function evaluatePcd(TnaPlan $tnaPlan, PcdGateService $gate): RedirectResponse

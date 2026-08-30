@@ -52,6 +52,11 @@ class MaterialBooking extends Model
         return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'currency_id');
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(MaterialBookingItem::class, 'booking_id');

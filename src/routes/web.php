@@ -19,6 +19,7 @@ use ME\MerchandisingTrace\Http\Controllers\OrderDocumentController;
 use ME\MerchandisingTrace\Http\Controllers\ProductionHandoverController;
 use ME\MerchandisingTrace\Http\Controllers\ProductTypeController;
 use ME\MerchandisingTrace\Http\Controllers\ReportController;
+use ME\MerchandisingTrace\Http\Controllers\RiskAssessmentController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractPoController;
 use ME\MerchandisingTrace\Http\Controllers\SampleController;
@@ -29,6 +30,7 @@ use ME\MerchandisingTrace\Http\Controllers\ShipModeController;
 use ME\MerchandisingTrace\Http\Controllers\SizeController;
 use ME\MerchandisingTrace\Http\Controllers\StyleController;
 use ME\MerchandisingTrace\Http\Controllers\StyleImageController;
+use ME\MerchandisingTrace\Http\Controllers\StyleImageTypeController;
 use ME\MerchandisingTrace\Http\Controllers\StyleMeasurementController;
 use ME\MerchandisingTrace\Http\Controllers\StyleOperationController;
 use ME\MerchandisingTrace\Http\Controllers\StylePartController;
@@ -65,6 +67,8 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::resource('items', ItemController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('uoms', UomController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('departments', DepartmentController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('style-image-types', StyleImageTypeController::class)
+            ->only(['index', 'store', 'update', 'destroy'])->parameters(['style-image-types' => 'style_image_type']);
 
         // §M01 AC: Excel import/export for every simple master above.
         Route::get('masters/{master}/export', [MasterExcelController::class, 'export'])
@@ -80,6 +84,8 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
 
         // Style Development (§M03)
         Route::resource('styles', StyleController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+        Route::resource('risk-assessments', RiskAssessmentController::class)
+            ->only(['index', 'store', 'update', 'destroy'])->parameters(['risk-assessments' => 'risk_assessment']);
         Route::post('styles/{style}/images', [StyleImageController::class, 'store'])->name('styles.images.store');
         Route::delete('styles/{style}/images/{image}', [StyleImageController::class, 'destroy'])->name('styles.images.destroy');
         Route::post('styles/{style}/measurements', [StyleMeasurementController::class, 'store'])->name('styles.measurements.store');
@@ -120,6 +126,7 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::get('sales-contracts/{sales_contract}/pos/{sales_contract_po}/edit', [SalesContractPoController::class, 'edit'])->name('sales-contracts.pos.edit');
         Route::put('sales-contracts/{sales_contract}/pos/{sales_contract_po}', [SalesContractPoController::class, 'update'])->name('sales-contracts.pos.update');
         Route::delete('sales-contracts/{sales_contract}/pos/{sales_contract_po}', [SalesContractPoController::class, 'destroy'])->name('sales-contracts.pos.destroy');
+        Route::get('sales-contracts/{sales_contract}/pos/{sales_contract_po}/pdf', [SalesContractPoController::class, 'pdf'])->name('sales-contracts.pos.pdf');
         Route::post('sales-contracts/{sales_contract}/pos/{sales_contract_po}/revise', [SalesContractPoController::class, 'revise'])->name('sales-contracts.pos.revise');
         Route::post('sales-contracts/{sales_contract}/pos/import', [SalesContractPoController::class, 'importExcel'])->name('sales-contracts.pos.import');
 
@@ -130,6 +137,7 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::put('tna-templates/{tna_template}/tasks/{task}', [TnaTemplateController::class, 'updateTask'])->name('tna-templates.tasks.update');
         Route::delete('tna-templates/{tna_template}/tasks/{task}', [TnaTemplateController::class, 'destroyTask'])->name('tna-templates.tasks.destroy');
 
+        Route::get('tna-plans-grid', [TnaPlanController::class, 'grid'])->name('tna-plans.grid');
         Route::resource('tna-plans', TnaPlanController::class)->only(['index', 'show']);
         Route::put('tna-plans/{tna_plan}/tasks/{task}', [TnaPlanController::class, 'updateTask'])->name('tna-plans.tasks.update');
         Route::post('tna-plans/{tna_plan}/evaluate-pcd', [TnaPlanController::class, 'evaluatePcd'])->name('tna-plans.evaluate-pcd');

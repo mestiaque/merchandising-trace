@@ -14,6 +14,12 @@ use ME\MerchandisingTrace\Models\TnaTemplate;
  * plan_date = anchor_date + offset_days (anchor = Shipment / PCD /
  * Order Confirm / PO Due, per task — falling back to the template's
  * default anchor when a task doesn't specify its own).
+ *
+ * Sample-sourced tasks are pre-marked n/a when the style skips our Dev
+ * stage (`requires_dev_sample = false`), and material-booking-sourced
+ * tasks are pre-marked n/a when the buyer supplies material directly
+ * (`fabric_sourced_by = buyer`) — otherwise those tasks would sit pending
+ * forever with nothing left to sync them, permanently blocking PCD.
  */
 class TnaPlanGenerationService
 {
@@ -44,11 +50,20 @@ class TnaPlanGenerationService
             $plan->tasks()->delete();
 
             $anchors = $this->resolveAnchorDates($po);
+            $devSampleRequired = $po->style?->requires_dev_sample ?? true;
+            $weSourceMaterial = ($po->style?->fabric_sourced_by ?? 'self') === 'self';
 
             foreach ($template->tasks as $templateTask) {
                 $anchorField = $templateTask->anchor_field ?? $template->anchor;
                 $anchorDate = $anchors[$anchorField] ?? null;
                 $planDate = $anchorDate ? $anchorDate->copy()->addDays((int) $templateTask->offset_days) : null;
+
+                $status = 'pending';
+                if ($templateTask->auto_source === 'sample' && ! $devSampleRequired) {
+                    $status = 'na';
+                } elseif ($templateTask->auto_source === 'material_booking' && ! $weSourceMaterial) {
+                    $status = 'na';
+                }
 
                 $plan->tasks()->create([
                     'tna_template_task_id' => $templateTask->id,
@@ -58,7 +73,7 @@ class TnaPlanGenerationService
                     'value_type' => $templateTask->value_type,
                     'sequence' => $templateTask->sequence,
                     'plan_date' => $planDate,
-                    'status' => 'pending',
+                    'status' => $status,
                     'is_mandatory' => $templateTask->is_mandatory,
                     'blocks_pcd' => $templateTask->blocks_pcd,
                     'responsible_dept_id' => $templateTask->responsible_dept_id,

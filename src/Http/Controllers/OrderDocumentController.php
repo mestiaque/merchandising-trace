@@ -5,17 +5,30 @@ namespace ME\MerchandisingTrace\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use ME\MerchandisingTrace\Models\CostSheet;
 use ME\MerchandisingTrace\Models\OrderDocument;
+use ME\MerchandisingTrace\Models\RiskAssessment;
 use ME\MerchandisingTrace\Models\SalesContract;
 
 class OrderDocumentController extends Controller
 {
+    /**
+     * §M13 — the order-wise document hub: the buyer checklist below, plus
+     * every buyer-format document already generated elsewhere in the
+     * pipeline (PO print, Cost Sheet PDF, Risk Assessment, tech pack file)
+     * for every style used on this order, gathered in one place.
+     */
     public function index(SalesContract $salesContract): \Illuminate\View\View
     {
         $this->authorize('merch_documentation.list');
 
+        $salesContract->load(['documents', 'pos.style']);
+        $styleIds = $salesContract->pos->pluck('style_id')->filter()->unique();
+
         return view('merchandising-trace::admin.order-documents.index', [
-            'salesContract' => $salesContract->load('documents'),
+            'salesContract' => $salesContract,
+            'costSheets' => CostSheet::query()->whereIn('style_id', $styleIds)->latest('version')->get(),
+            'riskAssessments' => RiskAssessment::query()->whereIn('style_id', $styleIds)->latest('id')->get(),
         ]);
     }
 

@@ -80,6 +80,7 @@
                             <td>{{ $po->effectiveShipment()?->format('Y-m-d') ?? '-' }}</td>
                             <td><span class="badge bg-secondary">{{ ucfirst(str_replace('_', ' ', $po->status)) }}</span></td>
                             <td class="text-end">
+                                <a href="{{ route('merchandising-trace.sales-contracts.pos.pdf', [$salesContract, $po]) }}" class="btn btn-sm btn-outline-secondary" title="Download PO"><i class="fa-solid fa-file-pdf"></i></a>
                                 @can('merch_sales_contract.edit')
                                     <a href="{{ route('merchandising-trace.sales-contracts.pos.edit', [$salesContract, $po]) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                 @endcan

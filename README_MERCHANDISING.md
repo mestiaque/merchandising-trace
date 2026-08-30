@@ -174,10 +174,15 @@ Each template task carries:
 Colour coding (`TnaTask::boardColor()`): green = done/approved, amber = due
 soon, red = overdue, grey = not started, blue = N/A.
 
-**Known simplification:** the T&A grid is built as grouped, colour-coded
-tables with inline per-task forms rather than the frozen-column spreadsheet
-described in §8.3 of the spec. Functionally equivalent, not visually
-identical.
+**The T&A Grid** (`GET tna-plans-grid`, `TnaPlanController::grid()` +
+`resources/views/admin/tna-plans/grid.blade.php`): the frozen-column
+spreadsheet described in §8.3 — sticky leading columns (Merchant/Buyer/
+Style/PO/Color/Qty/Ship Date/PCD), a two-row grouped header (group band +
+task caption) built from the default `TnaTemplate`'s task columns, and
+colour-coded, inline-editable task cells (click → input → AJAX `PUT` to
+`tna-plans.tasks.update`, repaints from the JSON response — no full page
+reload). Auto-filled cells render read-only. `tna-plans.index` (the plain
+list view) still exists alongside it for a row-per-plan overview.
 
 **Excel round-trip (test #15):** `TnaGridExportService` flattens every
 matched plan into one row per PO / one column per task name (`PO No.` as
@@ -355,18 +360,31 @@ Run it from the host app:
 php artisan test --filter=MerchandisingTraceTest
 ```
 
-Covers §7 test cases #2–#7 (contract confirm → T&A generation,
-sample/material auto-sync, PCD fail-reason/dept), #10 (sub-T&A cumulative
-math), #11 (costing formulas — exact values), #13 (effective-value
-resolution, all 3 revision states), and #14 (merchandiser row scoping,
-verified live against the real scope wired into `SalesContract`).
+Covers §7 test cases #1 (an inquiry converting to a style carries buyer,
+season, merchandiser, and product type forward untouched, hit as a real
+HTTP request through `InquiryController::convertToStyle()`) and #2–#9
+(contract confirm → T&A generation,
+sample/material auto-sync, PCD fail-reason/dept, **PCD-fail blocking
+handover + logged override, handover creating exactly one plan line with
+correct size breakdown and rejecting a no-qty-increase re-handover, a
+qty-increase re-handover creating a delta on the SAME plan line rather than
+a duplicate, and embellishment flags propagating into `trc_style_parts`
+from both the style's own Parts & Embellishment tab AND the PO-level
+flags**), #10 (sub-T&A cumulative math), #11 (costing formulas — exact
+values), #12 (`FabricConsumption::requirementFor()` — YY × qty × wastage%,
+exact values incl. the §13 demo-data example), #13 (effective-value
+resolution, all 3 revision states), #14 (merchandiser row scoping, verified
+live against the real scope wired into `SalesContract`), and #15 (the T&A
+grid's Excel export → import round trip: a manually-editable task's value
+survives the round trip exactly, and an auto-filled task's value is never
+overwritten by the import even when present in the file). Also includes
+regression tests for two IDOR/correctness fixes: `SalesContractPoController`
+(edit/update/destroy/pdf/revise now verify the PO actually belongs to the
+contract in the URL) and `TnaPlanController::updateTask()` (same fix — a
+task must belong to the plan in the URL, or `recomputeCompletion()` would
+run against the wrong plan).
 
-**Not covered** (see gaps noted above): #1 (inquiry→style — simple enough
-to have been manually verified, not worth a permission-gated HTTP test),
-#8's delta-on-qty-increase half, #9 (embellishment→style_parts sync), #12
-(this build's closest equivalent is `BomItem::netConsumption()`, which the
-costing test's sibling logic already exercises indirectly), #15 (Excel
-round-trip).
+All 15 of merchent.md §7's required tests are now covered.
 
 ## 12. Troubleshooting
 

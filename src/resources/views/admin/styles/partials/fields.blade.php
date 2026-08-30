@@ -81,6 +81,22 @@
         @endforeach
     </select>
 </div>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Fabric Sourced By</label>
+        <select name="fabric_sourced_by" class="form-control">
+            <option value="self" @selected(old('fabric_sourced_by', $style->fabric_sourced_by ?? 'self') === 'self')>Us (supplier handling)</option>
+            <option value="buyer" @selected(old('fabric_sourced_by', $style->fabric_sourced_by ?? 'self') === 'buyer')>Buyer supplies directly</option>
+        </select>
+    </div>
+    <div class="col-md-6 mb-3 d-flex align-items-end">
+        <div class="form-check form-switch">
+            <input type="hidden" name="requires_dev_sample" value="0">
+            <input type="checkbox" name="requires_dev_sample" value="1" class="form-check-input" id="styleReqDevSample{{ $style->id ?? 'new' }}" @checked(old('requires_dev_sample', $style->requires_dev_sample ?? true))>
+            <label class="form-check-label" for="styleReqDevSample{{ $style->id ?? 'new' }}">Requires Dev/Sample Stage</label>
+        </div>
+    </div>
+</div>
 <div class="form-check form-switch mb-2">
     <input type="hidden" name="is_repeat" value="0">
     <input type="checkbox" name="is_repeat" value="1" class="form-check-input" id="styleRepeat{{ $style->id ?? 'new' }}" @checked(old('is_repeat', $style->is_repeat ?? false))>

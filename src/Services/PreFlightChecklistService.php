@@ -12,11 +12,21 @@ use ME\MerchandisingTrace\Models\StylePart;
 /**
  * §M11 pre-flight checklist — every check is derived from data that already
  * lives in another module (never a field typed just for this screen).
+ *
+ * The PP-sample check is skipped (marked n/a) for styles flagged
+ * `requires_dev_sample = false` — some buyers hand over an already-approved
+ * sample/tech pack and skip our in-house Dev stage entirely. Likewise the
+ * fabric/trims in-house checks are skipped for styles flagged
+ * `fabric_sourced_by = buyer` — the buyer supplies material directly, so
+ * there's nothing for us to procure or receive against.
  */
 class PreFlightChecklistService
 {
     public function evaluate(SalesContractPo $po): array
     {
+        $devSampleRequired = $po->style?->requires_dev_sample ?? true;
+        $weSourceMaterial = ($po->style?->fabric_sourced_by ?? 'self') === 'self';
+
         $checks = [
             'order_confirmed' => [
                 'label' => 'Order confirmed',
@@ -32,7 +42,7 @@ class PreFlightChecklistService
             ],
             'pp_sample_approved' => [
                 'label' => 'PP sample approved',
-                'pass' => Sample::query()
+                'pass' => ! $devSampleRequired || Sample::query()
                     ->where('style_id', $po->style_id)
                     ->where('status', 'approved')
                     ->whereHas('sampleType', fn ($q) => $q->where('code', 'PP1'))
@@ -44,11 +54,11 @@ class PreFlightChecklistService
             ],
             'fabric_in_house' => [
                 'label' => 'Fabric in-house (1st consignment)',
-                'pass' => $this->fabricInHouse($po),
+                'pass' => ! $weSourceMaterial || $this->fabricInHouse($po),
             ],
             'sewing_trims_in_house' => [
                 'label' => 'Sewing trims in-house (all mandatory items)',
-                'pass' => $this->mandatoryTrimsDone($po),
+                'pass' => ! $weSourceMaterial || $this->mandatoryTrimsDone($po),
             ],
             'size_breakdown_complete' => [
                 'label' => 'Size breakdown complete',

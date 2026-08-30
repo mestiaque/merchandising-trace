@@ -24,10 +24,10 @@
     </div>
 
     <ul class="nav nav-tabs" id="styleTabs" role="tablist">
-        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-images" type="button">Images</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-measurements" type="button">Measurement Chart</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-parts" type="button">Parts &amp; Embellishment</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-operations" type="button">Operations / SMV</button></li>
+        <li class="nav-item"><button class="nav-link active" data-toggle="tab" data-target="#tab-images" type="button">Images</button></li>
+        <li class="nav-item"><button class="nav-link" data-toggle="tab" data-target="#tab-measurements" type="button">Measurement Chart</button></li>
+        <li class="nav-item"><button class="nav-link" data-toggle="tab" data-target="#tab-parts" type="button">Parts &amp; Embellishment</button></li>
+        <li class="nav-item"><button class="nav-link" data-toggle="tab" data-target="#tab-operations" type="button">Operations / SMV</button></li>
     </ul>
 
     <div class="tab-content border border-top-0 p-3 bg-white">

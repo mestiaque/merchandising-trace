@@ -29,10 +29,12 @@ return [
         'merch_item' => ['label' => 'Items (BOM Library)', 'permissions' => $crud],
         'merch_uom' => ['label' => 'Unit of Measure', 'permissions' => $crud],
         'merch_department' => ['label' => 'Departments', 'permissions' => $crud],
+        'merch_style_image_type' => ['label' => 'Style Image Types', 'permissions' => $crud],
 
         // Inquiry & Style Development
         'merch_inquiry' => ['label' => 'Inquiries', 'permissions' => $crud],
         'merch_style' => ['label' => 'Styles', 'permissions' => $crud],
+        'merch_risk_assessment' => ['label' => 'Risk Assessment', 'permissions' => $crud],
 
         // Sample Management
         'merch_sample' => ['label' => 'Samples', 'permissions' => $crud],

@@ -21,12 +21,16 @@ class Style extends Model
         'style_no', 'name', 'description', 'image', 'buyer_id', 'inquiry_id', 'season_id', 'merchandiser_id',
         'wash_type_id', 'product_type_id', 'trc_product_id', 'trc_size_group_id', 'smv', 'cost_smv', 'target_cm',
         'fabric_description', 'tech_pack_file', 'artwork_file', 'size_chart_file', 'development_status',
+        'requires_dev_sample', 'fabric_sourced_by',
         'is_repeat', 'parent_style_id', 'is_active', 'created_by',
     ];
+
+    public const FABRIC_SOURCED_BY = ['self', 'buyer'];
 
     protected $casts = [
         'is_active' => 'boolean',
         'is_repeat' => 'boolean',
+        'requires_dev_sample' => 'boolean',
         'smv' => 'decimal:2',
         'cost_smv' => 'decimal:2',
         'target_cm' => 'decimal:4',

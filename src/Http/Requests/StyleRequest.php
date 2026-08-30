@@ -32,6 +32,8 @@ class StyleRequest extends FormRequest
             'target_cm' => ['nullable', 'numeric', 'min:0'],
             'fabric_description' => ['nullable', 'string'],
             'development_status' => ['nullable', 'string', Rule::in(Style::DEVELOPMENT_STATUSES)],
+            'requires_dev_sample' => ['nullable', 'boolean'],
+            'fabric_sourced_by' => ['nullable', 'string', Rule::in(Style::FABRIC_SOURCED_BY)],
             'is_repeat' => ['nullable', 'boolean'],
             'parent_style_id' => ['nullable', 'integer', 'exists:mer_styles,id'],
             'is_active' => ['nullable', 'boolean'],
