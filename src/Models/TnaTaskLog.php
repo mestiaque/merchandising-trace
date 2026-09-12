@@ -5,9 +5,11 @@ namespace ME\MerchandisingTrace\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class TnaTaskLog extends Model
 {
+    use HasAudit;
     protected $table = 'mer_tna_task_logs';
 
     public $timestamps = false;

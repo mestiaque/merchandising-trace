@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\HasAudit;
 
 class ItemCategory extends Model
 {
+    use HasAudit;
     use SoftDeletes;
 
     protected $table = 'mer_item_categories';

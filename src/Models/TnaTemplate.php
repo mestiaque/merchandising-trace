@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\HasAudit;
 
 class TnaTemplate extends Model
 {
+    use HasAudit;
     protected $table = 'mer_tna_templates';
 
     public const ANCHORS = ['shipment', 'pcd', 'order_confirm'];

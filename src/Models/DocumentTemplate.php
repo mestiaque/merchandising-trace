@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\HasAudit;
 
 class DocumentTemplate extends Model
 {
+    use HasAudit;
     protected $table = 'mer_document_templates';
 
     protected $fillable = ['buyer_id', 'name', 'is_default', 'is_active'];

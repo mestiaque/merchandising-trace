@@ -5,9 +5,11 @@ namespace ME\MerchandisingTrace\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class SalesContractPoRevision extends Model
 {
+    use HasAudit;
     protected $table = 'mer_sales_contract_po_revisions';
 
     public $timestamps = false;

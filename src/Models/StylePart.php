@@ -4,9 +4,11 @@ namespace ME\MerchandisingTrace\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class StylePart extends Model
 {
+    use HasAudit;
     protected $table = 'mer_style_parts';
 
     public const EMBELLISHMENT_TYPES = ['none', 'print', 'embroidery', 'applique', 'studs_stones', 'heat_seal'];

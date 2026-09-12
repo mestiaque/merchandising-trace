@@ -5,9 +5,11 @@ namespace ME\MerchandisingTrace\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class CommunicationLog extends Model
 {
+    use HasAudit;
     protected $table = 'mer_communication_logs';
 
     public const DIRECTIONS = ['inbound', 'outbound'];

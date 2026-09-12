@@ -4,9 +4,11 @@ namespace ME\MerchandisingTrace\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class InquiryItem extends Model
 {
+    use HasAudit;
     protected $table = 'mer_inquiry_items';
 
     protected $fillable = ['inquiry_id', 'style_ref', 'product_type_id', 'color_ref', 'qty', 'target_price', 'remarks'];

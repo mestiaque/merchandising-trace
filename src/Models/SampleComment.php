@@ -5,9 +5,11 @@ namespace ME\MerchandisingTrace\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class SampleComment extends Model
 {
+    use HasAudit;
     protected $table = 'mer_sample_comments';
 
     protected $fillable = ['sample_id', 'comment', 'commented_by', 'comment_date', 'attachment', 'is_buyer_comment'];

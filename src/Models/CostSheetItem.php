@@ -4,9 +4,11 @@ namespace ME\MerchandisingTrace\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class CostSheetItem extends Model
 {
+    use HasAudit;
     protected $table = 'mer_cost_sheet_items';
 
     public const GROUPS = ['fabric', 'trims', 'accessories', 'process', 'commercial'];

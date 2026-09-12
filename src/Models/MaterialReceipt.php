@@ -5,9 +5,11 @@ namespace ME\MerchandisingTrace\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class MaterialReceipt extends Model
 {
+    use HasAudit;
     protected $table = 'mer_material_receipts';
 
     protected $fillable = ['booking_id', 'consignment_id', 'receive_date', 'item_id', 'qty', 'store_ref', 'received_by', 'remarks'];

@@ -4,9 +4,11 @@ namespace ME\MerchandisingTrace\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class TnaTemplateTask extends Model
 {
+    use HasAudit;
     protected $table = 'mer_tna_template_tasks';
 
     public const VALUE_TYPES = ['date', 'text', 'number', 'status', 'yesno'];

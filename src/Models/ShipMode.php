@@ -5,9 +5,11 @@ namespace ME\MerchandisingTrace\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\HasAudit;
 
 class ShipMode extends Model
 {
+    use HasAudit;
     use SoftDeletes;
 
     protected $table = 'mer_ship_modes';

@@ -5,9 +5,11 @@ namespace ME\MerchandisingTrace\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\HasAudit;
 
 class TnaSubPlan extends Model
 {
+    use HasAudit;
     protected $table = 'mer_tna_sub_plans';
 
     public const PROCESS_TYPES = ['embroidery', 'print', 'after_wash'];

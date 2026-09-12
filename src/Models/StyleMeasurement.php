@@ -5,9 +5,11 @@ namespace ME\MerchandisingTrace\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\HasAudit;
 
 class StyleMeasurement extends Model
 {
+    use HasAudit;
     protected $table = 'mer_style_measurements';
 
     protected $fillable = ['style_id', 'pom_code', 'pom_name', 'tolerance_plus', 'tolerance_minus', 'sort_order'];

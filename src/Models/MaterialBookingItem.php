@@ -4,9 +4,11 @@ namespace ME\MerchandisingTrace\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class MaterialBookingItem extends Model
 {
+    use HasAudit;
     protected $table = 'mer_material_booking_items';
 
     protected $fillable = ['booking_id', 'item_id', 'color_id', 'description', 'booked_qty', 'uom_id', 'rate', 'amount'];

@@ -5,9 +5,11 @@ namespace ME\MerchandisingTrace\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAudit;
 
 class FabricConsumption extends Model
 {
+    use HasAudit;
     protected $table = 'mer_fabric_consumptions';
 
     protected $fillable = ['style_id', 'color_id', 'item_id', 'yy', 'marker_efficiency', 'gsm', 'width', 'calculated_by', 'method'];

@@ -4,9 +4,11 @@ namespace ME\MerchandisingTrace\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasAudit;
 
 class SampleType extends Model
 {
+    use HasAudit;
     protected $table = 'mer_sample_types';
 
     protected $fillable = ['code', 'name', 'sequence', 'is_active'];

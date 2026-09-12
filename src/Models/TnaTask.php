@@ -6,9 +6,11 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\HasAudit;
 
 class TnaTask extends Model
 {
+    use HasAudit;
     protected $table = 'mer_tna_tasks';
 
     public const STATUSES = ['pending', 'in_progress', 'done', 'approved', 'na', 'delayed'];
