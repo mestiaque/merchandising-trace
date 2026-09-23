@@ -54,12 +54,9 @@ class StyleController extends Controller
     public function store(StyleRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        unset($data['tech_pack_file'], $data['sales_contract_file']);
+        unset($data['tech_pack_file']);
         if ($request->hasFile('tech_pack_file')) {
             $data['tech_pack_file'] = $request->file('tech_pack_file')->store('merchandising-trace/style-tech-packs', 'public');
-        }
-        if ($request->hasFile('sales_contract_file')) {
-            $data['sales_contract_file'] = $request->file('sales_contract_file')->store('merchandising-trace/style-sales-contracts', 'public');
         }
         $data['created_by'] = auth()->id();
         Style::create($data);
@@ -70,12 +67,9 @@ class StyleController extends Controller
     public function update(StyleRequest $request, Style $style): RedirectResponse
     {
         $data = $request->validated();
-        unset($data['tech_pack_file'], $data['sales_contract_file']);
+        unset($data['tech_pack_file']);
         if ($request->hasFile('tech_pack_file')) {
             $data['tech_pack_file'] = $request->file('tech_pack_file')->store('merchandising-trace/style-tech-packs', 'public');
-        }
-        if ($request->hasFile('sales_contract_file')) {
-            $data['sales_contract_file'] = $request->file('sales_contract_file')->store('merchandising-trace/style-sales-contracts', 'public');
         }
         $style->update($data);
 
@@ -98,24 +92,6 @@ class StyleController extends Controller
         abort_unless($style->tech_pack_file, 404);
 
         return Storage::disk('public')->download($style->tech_pack_file);
-    }
-
-    public function viewSalesContract(Style $style)
-    {
-        $this->authorize('merch_style.view');
-
-        abort_unless($style->sales_contract_file, 404);
-
-        return Storage::disk('public')->response($style->sales_contract_file);
-    }
-
-    public function downloadSalesContract(Style $style)
-    {
-        $this->authorize('merch_style.view');
-
-        abort_unless($style->sales_contract_file, 404);
-
-        return Storage::disk('public')->download($style->sales_contract_file);
     }
 
     public function destroy(Style $style): RedirectResponse

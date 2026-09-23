@@ -99,4 +99,22 @@
         <label class="form-label">Remarks</label>
         <textarea name="remarks" class="form-control" rows="2">{{ old('remarks', $salesContract->remarks ?? '') }}</textarea>
     </div>
+    <div class="col-12 mb-3">
+        <label class="form-label">Sales Contract Files</label>
+        <input type="file" name="files[]" class="form-control" multiple>
+        <span class="form-text">You can select multiple PDFs/documents at once.</span>
+        @if(isset($salesContract) && $salesContract->files->isNotEmpty())
+            <ul class="list-unstyled mt-2 mb-0 small">
+                @foreach($salesContract->files as $file)
+                    <li>
+                        <i class="fa-solid fa-file"></i> {{ $file->original_name }}
+                        &middot;
+                        <a href="{{ route('merchandising-trace.sales-contracts.files.view', [$salesContract, $file]) }}" target="_blank" rel="noopener">View</a>
+                        &middot;
+                        <a href="{{ route('merchandising-trace.sales-contracts.files.download', [$salesContract, $file]) }}">Download</a>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
 </div>

@@ -51,11 +51,13 @@ class SalesContractController extends Controller
     public function store(SalesContractRequest $request, DocumentNumberService $numbers): RedirectResponse
     {
         $data = $request->validated();
+        unset($data['files']);
         $data['contract_no'] = $numbers->next(SalesContract::class, 'contract_no', 'SC');
         $data['status'] = 'draft';
         $data['created_by'] = auth()->id();
 
         $salesContract = SalesContract::create($data);
+        $this->storeFiles($request, $salesContract);
 
         return redirect()->route('merchandising-trace.sales-contracts.show', $salesContract)->with('success', "Sales Contract {$salesContract->contract_no} created successfully.");
     }
@@ -64,7 +66,7 @@ class SalesContractController extends Controller
     {
         $this->authorize('merch_sales_contract.view');
 
-        $salesContract->load(['buyer', 'season', 'merchandiser', 'factory', 'pos.style', 'pos.color', 'pos.sizes.size']);
+        $salesContract->load(['buyer', 'season', 'merchandiser', 'factory', 'pos.style', 'pos.color', 'pos.sizes.size', 'files']);
 
         return view('merchandising-trace::admin.sales-contracts.show', ['salesContract' => $salesContract]);
     }
@@ -73,14 +75,32 @@ class SalesContractController extends Controller
     {
         $this->authorize('merch_sales_contract.edit');
 
+        $salesContract->load('files');
+
         return view('merchandising-trace::admin.sales-contracts.edit', ['salesContract' => $salesContract] + $this->formOptions());
     }
 
     public function update(SalesContractRequest $request, SalesContract $salesContract): RedirectResponse
     {
-        $salesContract->update($request->validated());
+        $data = $request->validated();
+        unset($data['files']);
+        $salesContract->update($data);
+        $this->storeFiles($request, $salesContract);
 
         return redirect()->route('merchandising-trace.sales-contracts.show', $salesContract)->with('success', 'Sales Contract updated successfully.');
+    }
+
+    private function storeFiles(Request $request, SalesContract $salesContract): void
+    {
+        foreach ($request->file('files', []) as $file) {
+            $path = $file->store('merchandising-trace/sales-contract-files', 'public');
+
+            $salesContract->files()->create([
+                'path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'uploaded_by' => auth()->id(),
+            ]);
+        }
     }
 
     public function destroy(SalesContract $salesContract): RedirectResponse

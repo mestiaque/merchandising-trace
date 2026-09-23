@@ -24,7 +24,6 @@ class StyleRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'string', 'max:255'],
             'tech_pack_file' => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
-            'sales_contract_file' => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
             'buyer_id' => ['required', 'integer', 'exists:mer_buyers,id'],
             'season_id' => ['nullable', 'integer', 'exists:mer_seasons,id'],
             'merchandiser_id' => ['nullable', 'integer', 'exists:users,id'],

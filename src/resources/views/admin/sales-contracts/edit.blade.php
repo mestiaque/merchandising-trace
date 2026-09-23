@@ -15,7 +15,7 @@
             <a href="{{ route('merchandising-trace.sales-contracts.show', $salesContract) }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('merchandising-trace.sales-contracts.update', $salesContract) }}">
+            <form method="POST" action="{{ route('merchandising-trace.sales-contracts.update', $salesContract) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 @include('merchandising-trace::admin.sales-contracts.partials.form')

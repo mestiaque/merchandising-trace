@@ -50,6 +50,44 @@
         </div>
     </div>
 
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Sales Contract Files</h6>
+            @can('merch_sales_contract.edit')
+                <form method="POST" action="{{ route('merchandising-trace.sales-contracts.files.store', $salesContract) }}" enctype="multipart/form-data" class="d-flex gap-1">
+                    @csrf
+                    <input type="file" name="files[]" class="form-control form-control-sm" multiple required>
+                    <button type="submit" class="btn btn-sm btn-primary text-nowrap"><i class="fa-solid fa-upload"></i> Upload</button>
+                </form>
+            @endcan
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm mb-0">
+                <thead><tr><th>File</th><th>Uploaded</th><th class="text-end">Actions</th></tr></thead>
+                <tbody>
+                    @forelse($salesContract->files as $file)
+                        <tr>
+                            <td>{{ $file->original_name }}</td>
+                            <td>{{ $file->created_at->format('Y-m-d H:i') }} @if($file->uploader) — {{ $file->uploader->name }} @endif</td>
+                            <td class="text-end">
+                                <a href="{{ route('merchandising-trace.sales-contracts.files.view', [$salesContract, $file]) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></a>
+                                <a href="{{ route('merchandising-trace.sales-contracts.files.download', [$salesContract, $file]) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-download"></i></a>
+                                @can('merch_sales_contract.edit')
+                                    <form method="POST" action="{{ route('merchandising-trace.sales-contracts.files.destroy', [$salesContract, $file]) }}" class="d-inline" onsubmit="return confirm('Remove this file?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                @endcan
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="3" class="text-center text-muted">No files uploaded yet.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h6 class="mb-0">PO Lines</h6>

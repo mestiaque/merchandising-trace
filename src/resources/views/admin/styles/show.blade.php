@@ -48,7 +48,6 @@
 
     <ul class="nav nav-tabs" id="styleTabs" role="tablist">
         <li class="nav-item"><button class="nav-link active" data-toggle="tab" data-target="#tab-tech-pack" type="button"><i class="fa-solid fa-file-pdf me-1"></i> Tech Pack</button></li>
-        <li class="nav-item"><button class="nav-link" data-toggle="tab" data-target="#tab-sales-contract" type="button"><i class="fa-solid fa-file-pdf me-1"></i> Sales Contract</button></li>
         {{-- <li class="nav-item"><button class="nav-link" data-toggle="tab" data-target="#tab-images" type="button">Images</button></li>
         <li class="nav-item"><button class="nav-link" data-toggle="tab" data-target="#tab-measurements" type="button">Measurement Chart</button></li>
         <li class="nav-item"><button class="nav-link" data-toggle="tab" data-target="#tab-parts" type="button">Parts &amp; Embellishment</button></li>
@@ -69,18 +68,6 @@
                 <div class="text-center text-muted py-5">
                     <i class="fa-solid fa-file-pdf fa-2x mb-2 d-block"></i>
                     No tech pack uploaded yet. Upload the buyer's PDF via Edit Style.
-                </div>
-            @endif
-        </div>
-        <div class="tab-pane fade" id="tab-sales-contract">
-            @if($style->sales_contract_file)
-                <div class="tech-pack-viewer border rounded">
-                    <iframe src="{{ route('merchandising-trace.styles.sales-contract.view', $style) }}" title="Sales Contract PDF"></iframe>
-                </div>
-            @else
-                <div class="text-center text-muted py-5">
-                    <i class="fa-solid fa-file-pdf fa-2x mb-2 d-block"></i>
-                    No sales contract uploaded yet. Upload the PDF via Edit Style.
                 </div>
             @endif
         </div>

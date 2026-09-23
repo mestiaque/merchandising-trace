@@ -82,6 +82,11 @@ class SalesContract extends Model
         return $this->hasMany(OrderDocument::class, 'sales_contract_id');
     }
 
+    public function files(): HasMany
+    {
+        return $this->hasMany(SalesContractFile::class, 'sales_contract_id')->latest('id');
+    }
+
     /**
      * §M13 AC: no order can close while a mandatory document is missing.
      */

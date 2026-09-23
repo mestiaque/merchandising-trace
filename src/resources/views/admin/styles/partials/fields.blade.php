@@ -125,15 +125,3 @@
         </div>
     @endif
 </div>
-<div class="mb-3">
-    <label class="form-label">Sales Contract (PDF)</label>
-    <input type="file" name="sales_contract_file" class="form-control" accept="application/pdf">
-    @if(!empty($style?->sales_contract_file))
-        <div class="mt-1 small">
-            Current file:
-            <a href="{{ route('merchandising-trace.styles.sales-contract.view', $style) }}" target="_blank" rel="noopener">View</a>
-            &middot;
-            <a href="{{ route('merchandising-trace.styles.sales-contract.download', $style) }}">Download</a>
-        </div>
-    @endif
-</div>

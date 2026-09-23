@@ -22,6 +22,7 @@ use ME\MerchandisingTrace\Http\Controllers\ProductTypeController;
 use ME\MerchandisingTrace\Http\Controllers\ReportController;
 use ME\MerchandisingTrace\Http\Controllers\RiskAssessmentController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractController;
+use ME\MerchandisingTrace\Http\Controllers\SalesContractFileController;
 use ME\MerchandisingTrace\Http\Controllers\SalesContractPoController;
 use ME\MerchandisingTrace\Http\Controllers\SampleController;
 use ME\MerchandisingTrace\Http\Controllers\SampleTypeController;
@@ -87,8 +88,6 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::resource('styles', StyleController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
         Route::get('styles/{style}/tech-pack/view', [StyleController::class, 'viewTechPack'])->name('styles.tech-pack.view');
         Route::get('styles/{style}/tech-pack/download', [StyleController::class, 'downloadTechPack'])->name('styles.tech-pack.download');
-        Route::get('styles/{style}/sales-contract/view', [StyleController::class, 'viewSalesContract'])->name('styles.sales-contract.view');
-        Route::get('styles/{style}/sales-contract/download', [StyleController::class, 'downloadSalesContract'])->name('styles.sales-contract.download');
         Route::resource('risk-assessments', RiskAssessmentController::class)
             ->only(['index', 'store', 'update', 'destroy'])->parameters(['risk-assessments' => 'risk_assessment']);
         Route::post('styles/{style}/images', [StyleImageController::class, 'store'])->name('styles.images.store');
@@ -126,6 +125,10 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::resource('sales-contracts', SalesContractController::class)->parameters(['sales-contracts' => 'sales_contract']);
         Route::post('sales-contracts/{sales_contract}/confirm', [SalesContractController::class, 'confirm'])->name('sales-contracts.confirm');
         Route::post('sales-contracts/{sales_contract}/close', [SalesContractController::class, 'close'])->name('sales-contracts.close');
+        Route::post('sales-contracts/{sales_contract}/files', [SalesContractFileController::class, 'store'])->name('sales-contracts.files.store');
+        Route::get('sales-contracts/{sales_contract}/files/{file}/view', [SalesContractFileController::class, 'view'])->name('sales-contracts.files.view');
+        Route::get('sales-contracts/{sales_contract}/files/{file}/download', [SalesContractFileController::class, 'download'])->name('sales-contracts.files.download');
+        Route::delete('sales-contracts/{sales_contract}/files/{file}', [SalesContractFileController::class, 'destroy'])->name('sales-contracts.files.destroy');
         Route::get('sales-contracts/{sales_contract}/pos/create', [SalesContractPoController::class, 'create'])->name('sales-contracts.pos.create');
         Route::post('sales-contracts/{sales_contract}/pos', [SalesContractPoController::class, 'store'])->name('sales-contracts.pos.store');
         Route::get('sales-contracts/{sales_contract}/pos/{sales_contract_po}/edit', [SalesContractPoController::class, 'edit'])->name('sales-contracts.pos.edit');

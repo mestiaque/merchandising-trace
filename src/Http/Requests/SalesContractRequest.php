@@ -32,6 +32,8 @@ class SalesContractRequest extends FormRequest
             'lc_value' => ['nullable', 'numeric', 'min:0'],
             'lc_expiry' => ['nullable', 'date'],
             'remarks' => ['nullable', 'string'],
+            'files' => ['nullable', 'array'],
+            'files.*' => ['file', 'max:20480'],
         ];
     }
 }
