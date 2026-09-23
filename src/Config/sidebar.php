@@ -20,6 +20,13 @@ return [
                     'route'      => "$base/dashboard",
                 ],
                 [
+                    'title'      => '360° History',
+                    'icon'       => 'fa-solid fa-timeline',
+                    'icon_color' => 'text-primary',
+                    'permission' => 'merch_history',
+                    'route'      => "$base/history",
+                ],
+                [
                     'title'      => 'Master Data',
                     'icon'       => 'fa-solid fa-gear',
                     'icon_color' => 'text-secondary',

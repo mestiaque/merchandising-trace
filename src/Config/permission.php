@@ -76,5 +76,8 @@ return [
             'permissions' => ['view' => 'View own dashboard', 'view_all' => 'View management dashboard'],
         ],
         'merch_reports' => ['label' => 'Reports', 'permissions' => ['list' => 'List', 'view' => 'View/Export']],
+
+        // Cross-module 360° History (Merchandising + Production + Inventory)
+        'merch_history' => ['label' => '360° History', 'permissions' => ['list' => 'Search', 'view' => 'View Timeline']],
     ],
 ];

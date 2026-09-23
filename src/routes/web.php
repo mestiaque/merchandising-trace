@@ -10,6 +10,7 @@ use ME\MerchandisingTrace\Http\Controllers\CurrencyController;
 use ME\MerchandisingTrace\Http\Controllers\DashboardController;
 use ME\MerchandisingTrace\Http\Controllers\DepartmentController;
 use ME\MerchandisingTrace\Http\Controllers\FactoryController;
+use ME\MerchandisingTrace\Http\Controllers\HistoryController;
 use ME\MerchandisingTrace\Http\Controllers\InquiryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemCategoryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemController;
@@ -191,4 +192,9 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::get('reports/{key}', [ReportController::class, 'show'])->name('reports.show');
         Route::get('reports/{key}/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');
         Route::get('reports/{key}/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
+
+        // 360° History (Merchandising + Production + Inventory, one timeline)
+        Route::get('history', [HistoryController::class, 'index'])->name('history.index');
+        Route::get('history/po/{sales_contract_po}', [HistoryController::class, 'showPo'])->name('history.po');
+        Route::get('history/style/{style}', [HistoryController::class, 'showStyle'])->name('history.style');
     });
