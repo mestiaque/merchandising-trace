@@ -84,6 +84,10 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
 
         // Style Development (§M03)
         Route::resource('styles', StyleController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+        Route::get('styles/{style}/tech-pack/view', [StyleController::class, 'viewTechPack'])->name('styles.tech-pack.view');
+        Route::get('styles/{style}/tech-pack/download', [StyleController::class, 'downloadTechPack'])->name('styles.tech-pack.download');
+        Route::get('styles/{style}/sales-contract/view', [StyleController::class, 'viewSalesContract'])->name('styles.sales-contract.view');
+        Route::get('styles/{style}/sales-contract/download', [StyleController::class, 'downloadSalesContract'])->name('styles.sales-contract.download');
         Route::resource('risk-assessments', RiskAssessmentController::class)
             ->only(['index', 'store', 'update', 'destroy'])->parameters(['risk-assessments' => 'risk_assessment']);
         Route::post('styles/{style}/images', [StyleImageController::class, 'store'])->name('styles.images.store');
@@ -106,11 +110,11 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::resource('sample-types', SampleTypeController::class)
             ->only(['index', 'store', 'update', 'destroy'])->parameters(['sample-types' => 'sample_type']);
 
-        // BOM & Consumption (§M05)
+        // BOM (§M05) — buyer-provided PDF, not a line-item builder
         Route::resource('boms', BomController::class);
         Route::post('boms/{bom}/approve', [BomController::class, 'approve'])->name('boms.approve');
-        Route::get('boms/{bom}/export', [BomController::class, 'exportExcel'])->name('boms.export');
-        Route::post('boms/{bom}/import', [BomController::class, 'importExcel'])->name('boms.import');
+        Route::get('boms/{bom}/file/view', [BomController::class, 'viewFile'])->name('boms.file.view');
+        Route::get('boms/{bom}/file/download', [BomController::class, 'downloadFile'])->name('boms.file.download');
 
         // Costing (§M06)
         Route::resource('cost-sheets', CostSheetController::class)->parameters(['cost-sheets' => 'cost_sheet']);
@@ -154,7 +158,6 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
 
         // Material Booking (§M10)
         Route::resource('material-bookings', MaterialBookingController::class)->only(['index', 'create', 'store', 'show']);
-        Route::post('boms/{bom}/create-booking', [MaterialBookingController::class, 'createFromBom'])->name('material-bookings.create-from-bom');
         Route::put('material-bookings/{material_booking}/dates', [MaterialBookingController::class, 'updateDates'])->name('material-bookings.update-dates');
         Route::post('material-bookings/{material_booking}/consignments', [MaterialBookingController::class, 'addConsignment'])->name('material-bookings.consignments.store');
         Route::post('material-bookings/{material_booking}/consignments/{consignment}/receive', [MaterialBookingController::class, 'receiveConsignment'])->name('material-bookings.consignments.receive');

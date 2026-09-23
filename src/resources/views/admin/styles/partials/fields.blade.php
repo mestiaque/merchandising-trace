@@ -1,6 +1,12 @@
-<div class="mb-3">
-    <label class="form-label">Style No <span class="text-danger">*</span></label>
-    <input type="text" name="style_no" class="form-control" value="{{ old('style_no', $style->style_no ?? '') }}" required>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Style No <span class="text-danger">*</span></label>
+        <input type="text" name="style_no" class="form-control" value="{{ old('style_no', $style->style_no ?? '') }}" required>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label">PO No</label>
+        <input type="text" name="po_no" class="form-control" value="{{ old('po_no', $style->po_no ?? '') }}">
+    </div>
 </div>
 <div class="mb-3">
     <label class="form-label">Name <span class="text-danger">*</span></label>
@@ -106,4 +112,28 @@
     <input type="hidden" name="is_active" value="0">
     <input type="checkbox" name="is_active" value="1" class="form-check-input" id="styleActive{{ $style->id ?? 'new' }}" @checked(old('is_active', $style->is_active ?? true))>
     <label class="form-check-label" for="styleActive{{ $style->id ?? 'new' }}">Active</label>
+</div>
+<div class="mb-3 mt-2">
+    <label class="form-label">Tech Pack (PDF)</label>
+    <input type="file" name="tech_pack_file" class="form-control" accept="application/pdf">
+    @if(!empty($style?->tech_pack_file))
+        <div class="mt-1 small">
+            Current file:
+            <a href="{{ route('merchandising-trace.styles.tech-pack.view', $style) }}" target="_blank" rel="noopener">View</a>
+            &middot;
+            <a href="{{ route('merchandising-trace.styles.tech-pack.download', $style) }}">Download</a>
+        </div>
+    @endif
+</div>
+<div class="mb-3">
+    <label class="form-label">Sales Contract (PDF)</label>
+    <input type="file" name="sales_contract_file" class="form-control" accept="application/pdf">
+    @if(!empty($style?->sales_contract_file))
+        <div class="mt-1 small">
+            Current file:
+            <a href="{{ route('merchandising-trace.styles.sales-contract.view', $style) }}" target="_blank" rel="noopener">View</a>
+            &middot;
+            <a href="{{ route('merchandising-trace.styles.sales-contract.download', $style) }}">Download</a>
+        </div>
+    @endif
 </div>

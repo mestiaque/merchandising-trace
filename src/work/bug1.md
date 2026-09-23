@@ -1,0 +1,1 @@
+buyer -> payment term => summernote

@@ -15,7 +15,7 @@
             <a href="{{ route('merchandising-trace.boms.show', $bom) }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('merchandising-trace.boms.update', $bom) }}">
+            <form method="POST" action="{{ route('merchandising-trace.boms.update', $bom) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 @include('merchandising-trace::admin.boms.partials.form')

@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use ME\MerchandisingTrace\Http\Requests\MaterialBookingRequest;
-use ME\MerchandisingTrace\Models\Bom;
 use ME\MerchandisingTrace\Models\Color;
 use ME\MerchandisingTrace\Models\Currency;
 use ME\MerchandisingTrace\Models\Item;
@@ -44,56 +43,6 @@ class MaterialBookingController extends Controller
         $this->authorize('merch_material_booking.add');
 
         return view('merchandising-trace::admin.material-bookings.create', $this->formOptions());
-    }
-
-    /**
-     * §M05 AC: "Create Booking from BOM" — turns an approved BOM into a
-     * draft booking covering every line, with no manual qty re-entry. A BOM
-     * is per-style (created before order confirmation, per the build's own
-     * flow diagram), so it carries no sales_contract_id of its own — the
-     * confirmed contract for that style must be picked explicitly here.
-     */
-    public function createFromBom(Request $request, Bom $bom): RedirectResponse
-    {
-        $this->authorize('merch_material_booking.add');
-
-        if ($bom->status !== 'approved') {
-            return back()->with('error', 'Only an approved BOM can be turned into a booking.');
-        }
-
-        $data = $request->validate([
-            'sales_contract_id' => ['required', 'integer', 'exists:mer_sales_contracts,id'],
-        ]);
-
-        $numbers = app(DocumentNumberService::class);
-        $booking = DB::transaction(function () use ($bom, $data, $numbers) {
-            $firstItem = $bom->items->first();
-
-            $booking = MaterialBooking::create([
-                'booking_no' => $numbers->next(MaterialBooking::class, 'booking_no', 'MB'),
-                'type' => $firstItem->item_type ?? 'trims',
-                'sales_contract_id' => $data['sales_contract_id'],
-                'style_id' => $bom->style_id,
-                'supplier_id' => $firstItem->supplier_id ?? null,
-                'status' => 'draft',
-                'created_by' => auth()->id(),
-            ]);
-
-            foreach ($bom->items as $line) {
-                $booking->items()->create([
-                    'item_id' => $line->item_id,
-                    'color_id' => $line->color_id,
-                    'description' => $line->part_name,
-                    'booked_qty' => $line->consumption,
-                    'uom_id' => $line->uom_id,
-                    'rate' => $line->rate,
-                ]);
-            }
-
-            return $booking;
-        });
-
-        return redirect()->route('merchandising-trace.material-bookings.show', $booking)->with('success', "Booking {$booking->booking_no} created from BOM {$bom->bom_no}.");
     }
 
     public function store(MaterialBookingRequest $request, DocumentNumberService $numbers): RedirectResponse

@@ -4,7 +4,7 @@
     'permPrefix' => 'merch_style',
     'items' => $styles,
     'itemVar' => 'style',
-    'columns' => ['style_no' => 'Style No', 'name' => 'Name', 'buyer.name' => 'Buyer', 'development_status' => 'Dev Status'],
+    'columns' => ['style_no' => 'Style No', 'po_no' => 'PO No', 'name' => 'Name', 'buyer.name' => 'Buyer', 'development_status' => 'Dev Status'],
     'fieldsView' => 'merchandising-trace::admin.styles.partials.fields',
     'fieldsExtra' => [
         'buyersOptions' => $buyersOptions, 'seasonsOptions' => $seasonsOptions,

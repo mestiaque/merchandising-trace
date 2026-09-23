@@ -203,21 +203,8 @@ class DemoDataSeeder extends Seeder
         ]);
         $ppSample->comments()->create(['comment' => 'Buyer approved PP with no comments.', 'commented_by' => $merchandiser?->id, 'comment_date' => now()->subDays(22), 'is_buyer_comment' => true]);
 
-        // --- BOM & Consumption (§M05) ---
+        // --- BOM (§M05) — buyer-provided PDF; no line items in this build ---
         $bom = Bom::create(['bom_no' => 'BOM-DEMO-RUE1', 'style_id' => $style->id, 'version' => 1, 'status' => 'approved', 'approved_by' => $merchandiser?->id, 'approved_at' => now()->subDays(45), 'created_by' => $merchandiser?->id]);
-        $bom->items()->create([
-            'item_id' => $fabricItem->id, 'item_type' => 'fabric', 'color_id' => $color->id, 'part_name' => 'Body',
-            'consumption' => 2.52, 'uom_id' => $uomYard->id, 'wastage_percent' => 3, 'rate' => 3.20,
-            'currency_id' => $currency->id, 'supplier_id' => $fabricSupplier->id, 'lead_time_days' => 45,
-        ]);
-        foreach (['THREAD' => 1, 'ZIPPER' => 1, 'MAIN_LABEL' => 1, 'SIZE_LABEL' => 1, 'CARE_LABEL' => 1] as $code => $qty) {
-            $trim = Item::where('code', $code)->firstOrFail();
-            $bom->items()->create([
-                'item_id' => $trim->id, 'item_type' => 'trim', 'part_name' => $trim->name, 'consumption' => $qty,
-                'uom_id' => $trim->uom_id, 'wastage_percent' => 2, 'rate' => $trim->default_price ?? 0.05,
-                'supplier_id' => $trimsSupplier->id, 'lead_time_days' => 15,
-            ]);
-        }
 
         // --- Costing (§M06) — CM = (58.84/72.5%)*0.037 ≈ 3.00, matching §13's own CM 3.00 ---
         $costSheet = CostSheet::create([

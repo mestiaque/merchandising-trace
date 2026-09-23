@@ -108,7 +108,7 @@
                                 <div class="modal fade" id="edit{{ Str::studly($modalLabel) }}Modal{{ $item->id }}" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
-                                            <form method="POST" action="{{ route($routeBase . '.update', $item) }}">
+                                            <form method="POST" action="{{ route($routeBase . '.update', $item) }}" enctype="multipart/form-data">
                                                 @csrf @method('PUT')
                                                 <div class="modal-header">
                                                     <h5 class="modal-title">Edit {{ $modalLabel }}</h5>
@@ -144,7 +144,7 @@
     <div class="modal fade" id="create{{ Str::studly($modalLabel) }}Modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="{{ route($routeBase . '.store') }}">
+                <form method="POST" action="{{ route($routeBase . '.store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title">Add {{ $modalLabel }}</h5>

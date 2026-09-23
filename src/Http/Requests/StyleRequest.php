@@ -19,9 +19,12 @@ class StyleRequest extends FormRequest
     {
         return [
             'style_no' => ['required', 'string', 'max:100', Rule::unique('mer_styles', 'style_no')->ignore($this->route('style'))->whereNull('deleted_at')],
+            'po_no' => ['nullable', 'string', 'max:100'],
             'name' => ['required', 'string', 'max:150'],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'string', 'max:255'],
+            'tech_pack_file' => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
+            'sales_contract_file' => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
             'buyer_id' => ['required', 'integer', 'exists:mer_buyers,id'],
             'season_id' => ['nullable', 'integer', 'exists:mer_seasons,id'],
             'merchandiser_id' => ['nullable', 'integer', 'exists:users,id'],

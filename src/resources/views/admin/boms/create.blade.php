@@ -15,7 +15,7 @@
             <a href="{{ route('merchandising-trace.boms.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('merchandising-trace.boms.store') }}">
+            <form method="POST" action="{{ route('merchandising-trace.boms.store') }}" enctype="multipart/form-data">
                 @csrf
                 @include('merchandising-trace::admin.boms.partials.form')
                 <button type="submit" class="btn btn-primary mt-3">Save BOM</button>

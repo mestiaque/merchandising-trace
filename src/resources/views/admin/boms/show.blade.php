@@ -26,14 +26,9 @@
                         </form>
                     @endif
                 @endcan
-                <a href="{{ route('merchandising-trace.boms.export', $bom) }}" class="btn btn-outline-success btn-sm me-1"><i class="fa-solid fa-file-excel"></i> Export</a>
-                @can('merch_bom.edit')
-                    <form method="POST" action="{{ route('merchandising-trace.boms.import', $bom) }}" enctype="multipart/form-data" class="d-inline-flex gap-1 me-1">
-                        @csrf
-                        <input type="file" name="file" class="form-control form-control-sm" accept=".xlsx,.xls,.csv" required style="max-width:220px;">
-                        <button type="submit" class="btn btn-outline-primary btn-sm text-nowrap">Import Items</button>
-                    </form>
-                @endcan
+                @if($bom->bom_file)
+                    <a href="{{ route('merchandising-trace.boms.file.download', $bom) }}" class="btn btn-outline-primary btn-sm me-1"><i class="fa-solid fa-download"></i> Download</a>
+                @endif
                 <a href="{{ route('merchandising-trace.boms.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
             </div>
         </div>
@@ -50,32 +45,34 @@
     </div>
 
     <div class="card">
-        <div class="card-header"><h6 class="mb-0">BOM Lines</h6></div>
-        <div class="table-responsive">
-            <table class="table table-bordered table-sm mb-0">
-                <thead>
-                    <tr><th>Item</th><th>Type</th><th>Color</th><th>Size</th><th>Part</th><th>Consumption</th><th>Wastage %</th><th>Net Consumption</th><th>Rate</th><th>Supplier</th></tr>
-                </thead>
-                <tbody>
-                    @forelse($bom->items as $line)
-                        <tr>
-                            <td>{{ $line->item->name ?? '-' }}</td>
-                            <td>{{ ucfirst($line->item_type) }}</td>
-                            <td>{{ $line->color->name ?? '-' }}</td>
-                            <td>{{ $line->size->name ?? '-' }}</td>
-                            <td>{{ $line->part_name ?? '-' }}</td>
-                            <td>{{ $line->consumption }} {{ $line->uom->name ?? '' }}</td>
-                            <td>{{ $line->wastage_percent }}%</td>
-                            <td class="fw-bold">{{ number_format($line->netConsumption(), 4) }}</td>
-                            <td>{{ $line->rate ?? '-' }}</td>
-                            <td>{{ $line->supplier->name ?? '-' }}</td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="10" class="text-center text-muted">No lines.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div class="card-header"><h6 class="mb-0">BOM Document</h6></div>
+        <div class="card-body">
+            @if($bom->bom_file)
+                <div class="bom-viewer border rounded">
+                    <iframe src="{{ route('merchandising-trace.boms.file.view', $bom) }}" title="BOM PDF"></iframe>
+                </div>
+            @else
+                <div class="text-center text-muted py-5">
+                    <i class="fa-solid fa-file-pdf fa-2x mb-2 d-block"></i>
+                    No BOM uploaded yet. Upload the buyer's PDF via Edit BOM.
+                </div>
+            @endif
         </div>
     </div>
 </div>
+
+<style>
+    .bom-viewer {
+        width: 100%;
+        height: calc(100vh - 260px);
+        min-height: 600px;
+        overflow: hidden;
+    }
+    .bom-viewer iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+    }
+</style>
 @endsection

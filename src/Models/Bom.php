@@ -6,10 +6,14 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\HasAudit;
 
+/**
+ * The BOM is buyer-provided — we don't build it line-by-line, we just store
+ * and serve the PDF the buyer hands over (bom_file, on Storage's public
+ * disk, same convention as Style::tech_pack_file / sales_contract_file).
+ */
 class Bom extends Model
 {
     use HasAudit;
@@ -19,7 +23,7 @@ class Bom extends Model
 
     public const STATUSES = ['draft', 'submitted', 'approved', 'revised'];
 
-    protected $fillable = ['bom_no', 'style_id', 'version', 'status', 'approved_by', 'approved_at', 'remarks', 'created_by'];
+    protected $fillable = ['bom_no', 'style_id', 'version', 'status', 'approved_by', 'approved_at', 'remarks', 'bom_file', 'created_by'];
 
     protected $casts = ['approved_at' => 'datetime'];
 
@@ -36,20 +40,5 @@ class Bom extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
-    }
-
-    public function items(): HasMany
-    {
-        return $this->hasMany(BomItem::class, 'bom_id');
-    }
-
-    /**
-     * §M05 shortage view input: required qty for a given order quantity.
-     */
-    public function requiredQtyFor(int $orderQty): array
-    {
-        return $this->items->mapWithKeys(fn (BomItem $item) => [
-            $item->id => $item->netConsumption() * $orderQty,
-        ])->all();
     }
 }

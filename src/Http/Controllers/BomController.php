@@ -4,19 +4,11 @@ namespace ME\MerchandisingTrace\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use ME\MerchandisingTrace\Http\Requests\BomRequest;
 use ME\MerchandisingTrace\Models\Bom;
-use ME\MerchandisingTrace\Models\Color;
-use ME\MerchandisingTrace\Models\Item;
-use ME\MerchandisingTrace\Models\Size;
 use ME\MerchandisingTrace\Models\Style;
-use ME\MerchandisingTrace\Models\Supplier;
-use ME\MerchandisingTrace\Models\Uom;
-use ME\MerchandisingTrace\Exports\GenericArrayExport;
-use ME\MerchandisingTrace\Imports\TnaGridImport;
-use ME\MerchandisingTrace\Services\BomExcelService;
 use ME\MerchandisingTrace\Services\DocumentNumberService;
 
 class BomController extends Controller
@@ -47,22 +39,17 @@ class BomController extends Controller
     {
         $data = $request->validated();
 
-        $bom = DB::transaction(function () use ($data, $numbers) {
-            $version = Bom::where('style_id', $data['style_id'])->max('version');
+        $version = Bom::where('style_id', $data['style_id'])->max('version');
 
-            $bom = Bom::create([
-                'bom_no' => $numbers->next(Bom::class, 'bom_no', 'BOM'),
-                'style_id' => $data['style_id'],
-                'version' => ($version ?? 0) + 1,
-                'status' => 'draft',
-                'remarks' => $data['remarks'] ?? null,
-                'created_by' => auth()->id(),
-            ]);
-
-            $this->saveItems($bom, $data['items']);
-
-            return $bom;
-        });
+        $bom = Bom::create([
+            'bom_no' => $numbers->next(Bom::class, 'bom_no', 'BOM'),
+            'style_id' => $data['style_id'],
+            'version' => ($version ?? 0) + 1,
+            'status' => 'draft',
+            'remarks' => $data['remarks'] ?? null,
+            'bom_file' => $request->hasFile('bom_file') ? $request->file('bom_file')->store('merchandising-trace/bom-files', 'public') : null,
+            'created_by' => auth()->id(),
+        ]);
 
         return redirect()->route('merchandising-trace.boms.show', $bom)->with('success', "BOM {$bom->bom_no} created successfully.");
     }
@@ -71,7 +58,7 @@ class BomController extends Controller
     {
         $this->authorize('merch_bom.view');
 
-        $bom->load(['style.buyer', 'items.item.category', 'items.color', 'items.size', 'items.uom', 'items.supplier', 'approver']);
+        $bom->load(['style.buyer', 'approver']);
 
         return view('merchandising-trace::admin.boms.show', compact('bom'));
     }
@@ -80,8 +67,6 @@ class BomController extends Controller
     {
         $this->authorize('merch_bom.edit');
 
-        $bom->load('items');
-
         return view('merchandising-trace::admin.boms.edit', ['bom' => $bom] + $this->formOptions());
     }
 
@@ -89,11 +74,12 @@ class BomController extends Controller
     {
         $data = $request->validated();
 
-        DB::transaction(function () use ($data, $bom) {
-            $bom->update(['remarks' => $data['remarks'] ?? null]);
-            $bom->items()->delete();
-            $this->saveItems($bom, $data['items']);
-        });
+        $update = ['remarks' => $data['remarks'] ?? null];
+        if ($request->hasFile('bom_file')) {
+            $update['bom_file'] = $request->file('bom_file')->store('merchandising-trace/bom-files', 'public');
+        }
+
+        $bom->update($update);
 
         return redirect()->route('merchandising-trace.boms.show', $bom)->with('success', 'BOM updated successfully.');
     }
@@ -107,41 +93,6 @@ class BomController extends Controller
         return redirect()->route('merchandising-trace.boms.index')->with('success', 'BOM deleted successfully.');
     }
 
-    public function exportExcel(Bom $bom, BomExcelService $service)
-    {
-        $this->authorize('merch_bom.view');
-
-        $bom->load(['items.item', 'items.color', 'items.size', 'items.uom', 'items.supplier']);
-        $data = $service->export($bom);
-
-        return \Maatwebsite\Excel\Facades\Excel::download(
-            new GenericArrayExport($data['headers'], $data['rows']),
-            "{$bom->bom_no}.xlsx"
-        );
-    }
-
-    public function importExcel(Request $request, Bom $bom, BomExcelService $service): RedirectResponse
-    {
-        $this->authorize('merch_bom.edit');
-
-        $request->validate(['file' => ['required', 'file', 'mimes:xlsx,xls,csv']]);
-
-        $sheets = \Maatwebsite\Excel\Facades\Excel::toArray(new TnaGridImport(), $request->file('file'));
-
-        try {
-            $result = $service->import($bom, $sheets[0] ?? []);
-        } catch (\RuntimeException $e) {
-            return back()->with('error', $e->getMessage());
-        }
-
-        $message = "{$result['created']} item(s) added.";
-        if ($result['skipped']) {
-            $message .= ' Skipped: ' . implode('; ', $result['skipped']);
-        }
-
-        return redirect()->route('merchandising-trace.boms.show', $bom)->with('success', $message);
-    }
-
     public function approve(Bom $bom): RedirectResponse
     {
         $this->authorize('merch_bom.edit');
@@ -151,37 +102,28 @@ class BomController extends Controller
         return back()->with('success', "BOM {$bom->bom_no} approved.");
     }
 
-    private function saveItems(Bom $bom, array $items): void
+    public function viewFile(Bom $bom)
     {
-        foreach ($items as $line) {
-            $item = Item::findOrFail($line['item_id']);
+        $this->authorize('merch_bom.view');
 
-            $bom->items()->create([
-                'item_id' => $item->id,
-                'item_type' => $item->type,
-                'color_id' => $line['color_id'] ?? null,
-                'size_id' => $line['size_id'] ?? null,
-                'part_name' => $line['part_name'] ?? null,
-                'consumption' => $line['consumption'],
-                'uom_id' => $line['uom_id'] ?? $item->uom_id,
-                'wastage_percent' => $line['wastage_percent'] ?? 0,
-                'rate' => $line['rate'] ?? $item->default_price,
-                'currency_id' => $line['currency_id'] ?? null,
-                'supplier_id' => $line['supplier_id'] ?? $item->default_supplier_id,
-                'lead_time_days' => $line['lead_time_days'] ?? null,
-            ]);
-        }
+        abort_unless($bom->bom_file, 404);
+
+        return Storage::disk('public')->response($bom->bom_file);
+    }
+
+    public function downloadFile(Bom $bom)
+    {
+        $this->authorize('merch_bom.view');
+
+        abort_unless($bom->bom_file, 404);
+
+        return Storage::disk('public')->download($bom->bom_file);
     }
 
     private function formOptions(): array
     {
         return [
             'stylesOptions' => Style::query()->active()->orderBy('name')->get(),
-            'itemsOptions' => Item::query()->active()->orderBy('name')->get(),
-            'uomsOptions' => Uom::query()->active()->orderBy('name')->get(),
-            'suppliersOptions' => Supplier::query()->active()->orderBy('name')->get(),
-            'colorsOptions' => Color::query()->active()->orderBy('name')->get(),
-            'sizesOptions' => Size::query()->active()->orderBy('sort_order')->get(),
         ];
     }
 }

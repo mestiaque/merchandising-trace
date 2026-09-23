@@ -2,9 +2,7 @@
 
 namespace ME\MerchandisingTrace\Services;
 
-use ME\MerchandisingTrace\Models\Bom;
 use ME\MerchandisingTrace\Models\CostSheet;
-use ME\MerchandisingTrace\Models\MaterialBooking;
 use ME\MerchandisingTrace\Models\OrderDocument;
 use ME\MerchandisingTrace\Models\Sample;
 use ME\MerchandisingTrace\Models\SalesContractPo;
@@ -24,7 +22,6 @@ class ReportService
         'tna_status' => 'T&A Status Report',
         'pcd_analysis' => 'PCD Pass/Fail Analysis',
         'sample_turnaround' => 'Sample Status & Approval Turnaround',
-        'bom_shortage' => 'BOM vs Booking vs Receiving Shortage',
         'fabric_trims_in_house' => 'Fabric & Trims In-House Status',
         'costing_summary' => 'Costing Summary & Margin Analysis',
         'order_book' => 'Order Book & Value',
@@ -43,7 +40,6 @@ class ReportService
             'tna_status' => $this->tnaStatus($filters),
             'pcd_analysis' => $this->pcdAnalysis($filters),
             'sample_turnaround' => $this->sampleTurnaround($filters),
-            'bom_shortage' => $this->bomShortage($filters),
             'fabric_trims_in_house' => $this->fabricTrimsInHouse($filters),
             'costing_summary' => $this->costingSummary($filters),
             'order_book' => $this->orderBook($filters),
@@ -130,38 +126,6 @@ class ReportService
                 'Approval Date' => optional($s->approval_date)->format('Y-m-d'),
                 'Turnaround (days)' => $s->request_date && $s->approval_date ? $s->request_date->diffInDays($s->approval_date) : null,
             ])->all();
-
-        return ['headers' => $rows ? array_keys($rows[0]) : [], 'rows' => $rows];
-    }
-
-    private function bomShortage(array $filters): array
-    {
-        $rows = [];
-        $boms = Bom::query()->with('items.item')
-            ->when($filters['style_id'] ?? null, fn ($q, $v) => $q->where('style_id', $v))
-            ->where('status', 'approved')
-            ->get();
-
-        foreach ($boms as $bom) {
-            foreach ($bom->items as $line) {
-                $booked = (float) MaterialBooking::query()->where('style_id', $bom->style_id)
-                    ->whereHas('items', fn ($q) => $q->where('item_id', $line->item_id))
-                    ->with(['items' => fn ($q) => $q->where('item_id', $line->item_id)])
-                    ->get()->flatMap->items->sum('booked_qty');
-                $received = (float) \ME\MerchandisingTrace\Models\MaterialReceipt::query()
-                    ->whereHas('booking', fn ($q) => $q->where('style_id', $bom->style_id))
-                    ->where('item_id', $line->item_id)->sum('qty');
-
-                $rows[] = [
-                    'Style' => $bom->style->style_no ?? '-',
-                    'Item' => $line->item->name ?? '-',
-                    'Required (BOM)' => $line->netConsumption(),
-                    'Booked' => $booked,
-                    'Received' => $received,
-                    'Shortfall' => max(0, (float) $line->netConsumption() - $booked),
-                ];
-            }
-        }
 
         return ['headers' => $rows ? array_keys($rows[0]) : [], 'rows' => $rows];
     }

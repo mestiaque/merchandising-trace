@@ -110,13 +110,8 @@ class DemoOrderFullProcessSeeder extends Seeder
         $ppSample = Sample::create(['sample_no' => 'SMP-DEMOFULL-PP1', 'style_id' => $style->id, 'buyer_id' => $buyer->id, 'sample_type_id' => $ppType->id, 'merchandiser_id' => $merchandiser?->id, 'request_date' => now()->subDays(35)->toDateString(), 'required_date' => now()->subDays(28)->toDateString(), 'qty' => 3, 'size_ref' => 'S,M,L', 'submit_date' => now()->subDays(30)->toDateString(), 'approval_date' => now()->subDays(22)->toDateString(), 'status' => 'approved']);
         $washSample = Sample::create(['sample_no' => 'SMP-DEMOFULL-WASHSTD', 'style_id' => $style->id, 'buyer_id' => $buyer->id, 'sample_type_id' => $washStdType->id, 'merchandiser_id' => $merchandiser?->id, 'request_date' => now()->subDays(20)->toDateString(), 'submit_date' => now()->subDays(15)->toDateString(), 'approval_date' => now()->subDays(10)->toDateString(), 'status' => 'approved']);
 
-        // --- BOM ---
+        // --- BOM (buyer-provided PDF; no line items in this build) ---
         $bom = Bom::create(['bom_no' => 'BOM-DEMOFULL', 'style_id' => $style->id, 'version' => 1, 'status' => 'approved', 'approved_by' => $merchandiser?->id, 'approved_at' => now()->subDays(45), 'created_by' => $merchandiser?->id]);
-        $bom->items()->create(['item_id' => $fabricItem->id, 'item_type' => 'fabric', 'color_id' => $color->id, 'part_name' => 'Body', 'consumption' => 2.52, 'uom_id' => $uomYard->id, 'wastage_percent' => 3, 'rate' => 3.20, 'currency_id' => $currency->id, 'supplier_id' => $fabricSupplier->id, 'lead_time_days' => 45]);
-        foreach (['THREAD' => 1, 'ZIPPER' => 1, 'MAIN_LABEL' => 1, 'SIZE_LABEL' => 1, 'CARE_LABEL' => 1] as $code => $qty) {
-            $trim = Item::where('code', $code)->firstOrFail();
-            $bom->items()->create(['item_id' => $trim->id, 'item_type' => 'trim', 'part_name' => $trim->name, 'consumption' => $qty, 'uom_id' => $trim->uom_id, 'wastage_percent' => 2, 'rate' => $trim->default_price ?? 0.05, 'supplier_id' => $trimsSupplier->id, 'lead_time_days' => 15]);
-        }
 
         // --- Costing ---
         $costSheet = CostSheet::create(['cost_sheet_no' => 'CST-DEMOFULL', 'style_id' => $style->id, 'buyer_id' => $buyer->id, 'version' => 1, 'currency_id' => $currency->id, 'exchange_rate' => 1, 'order_qty' => 10000, 'smv' => 58.84, 'cm_minute_rate' => 0.037, 'efficiency_percent' => 72.5, 'fabric_cost' => 2.52 * 3.20 * 1.03, 'trims_cost' => 0.35, 'accessories_cost' => 0.10, 'print_emb_cost' => 0, 'wash_cost' => 0.18, 'commercial_cost' => 0.08, 'freight_cost' => 0.05, 'testing_cost' => 0.02, 'overhead_cost' => 0.12, 'profit_percent' => 12, 'price_type' => 'FOB', 'buyer_target_price' => 4.82, 'status' => 'approved', 'prepared_by' => $merchandiser?->id, 'approved_by' => $merchandiser?->id, 'approved_at' => now()->subDays(40)]);

@@ -63,7 +63,7 @@ return [
                     'children'   => [
                         ['title' => 'Sales Contracts', 'icon' => 'fa-solid fa-file-signature', 'icon_color' => 'text-danger', 'permission' => 'merch_sales_contract', 'route' => "$base/sales-contracts"],
                         ['title' => 'BOM', 'icon' => 'fa-solid fa-list-check', 'icon_color' => 'text-danger', 'permission' => 'merch_bom', 'route' => "$base/boms"],
-                        ['title' => 'Fabric Book & Accessories', 'icon' => 'fa-solid fa-boxes-packing', 'icon_color' => 'text-danger', 'permission' => 'merch_material_booking', 'route' => "$base/material-bookings"],
+                        ['title' => 'Fabric & Accessories Booking', 'icon' => 'fa-solid fa-boxes-packing', 'icon_color' => 'text-danger', 'permission' => 'merch_material_booking', 'route' => "$base/material-bookings"],
                     ],
                 ],
                 [
@@ -113,7 +113,6 @@ return [
                         ['title' => 'T&A Status Report', 'icon' => 'fa-solid fa-calendar-check', 'icon_color' => 'text-primary', 'permission' => 'merch_reports', 'route' => "$base/reports/tna_status"],
                         ['title' => 'PCD Pass/Fail Analysis', 'icon' => 'fa-solid fa-flag-checkered', 'icon_color' => 'text-primary', 'permission' => 'merch_reports', 'route' => "$base/reports/pcd_analysis"],
                         ['title' => 'Sample Status & Turnaround', 'icon' => 'fa-solid fa-vial', 'icon_color' => 'text-primary', 'permission' => 'merch_reports', 'route' => "$base/reports/sample_turnaround"],
-                        ['title' => 'BOM vs Booking Shortage', 'icon' => 'fa-solid fa-list-check', 'icon_color' => 'text-primary', 'permission' => 'merch_reports', 'route' => "$base/reports/bom_shortage"],
                         ['title' => 'Fabric & Trims In-House', 'icon' => 'fa-solid fa-boxes-stacked', 'icon_color' => 'text-primary', 'permission' => 'merch_reports', 'route' => "$base/reports/fabric_trims_in_house"],
                         ['title' => 'Costing Summary & Margin', 'icon' => 'fa-solid fa-calculator', 'icon_color' => 'text-primary', 'permission' => 'merch_reports', 'route' => "$base/reports/costing_summary"],
                         ['title' => 'Order Book & Value', 'icon' => 'fa-solid fa-book', 'icon_color' => 'text-primary', 'permission' => 'merch_reports', 'route' => "$base/reports/order_book"],
