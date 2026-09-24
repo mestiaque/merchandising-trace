@@ -1,3 +1,19 @@
+<div class="mb-3">
+    <label class="form-label">From Inquiry</label>
+    <select name="inquiry_id" class="form-control merch-select2" data-style-inquiry>
+        <option value="">— None —</option>
+        @foreach($inquiriesOptions as $inq)
+            @continue($inq->tech_pack_id && $inq->tech_pack_id != ($style->id ?? null))
+            <option value="{{ $inq->id }}" @selected(old('inquiry_id', $style->inquiry_id ?? '') == $inq->id)
+                data-buyer="{{ $inq->buyer_id }}" data-season="{{ $inq->season_id }}" data-merchandiser="{{ $inq->merchandiser_id }}"
+                data-product-type="{{ $inq->product_type_id }}" data-style-ref="{{ $inq->style_ref }}"
+                data-name="{{ $inq->productType->name ?? $inq->style_ref }}">
+                {{ $inq->inquiry_no }}{{ $inq->style_ref ? ' — ' . $inq->style_ref : '' }} ({{ $inq->buyer->name ?? '' }})
+            </option>
+        @endforeach
+    </select>
+    <span class="form-text">Picking an inquiry fills buyer, season, merchant, product type and style from it.</span>
+</div>
 <div class="row">
     <div class="col-md-6 mb-3">
         <label class="form-label">Style No <span class="text-danger">*</span></label>
@@ -62,17 +78,21 @@
     </select>
 </div>
 <div class="row">
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-3">
         <label class="form-label">SMV</label>
         <input type="number" step="0.01" name="smv" class="form-control" value="{{ old('smv', $style->smv ?? '') }}">
     </div>
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-3">
         <label class="form-label">Cost SMV</label>
         <input type="number" step="0.01" name="cost_smv" class="form-control" value="{{ old('cost_smv', $style->cost_smv ?? '') }}">
     </div>
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-3">
         <label class="form-label">Target CM</label>
         <input type="number" step="0.0001" name="target_cm" class="form-control" value="{{ old('target_cm', $style->target_cm ?? '') }}">
+    </div>
+    <div class="col-md-3 mb-3">
+        <label class="form-label">Confirm CM <small class="text-muted">/ Dz</small></label>
+        <input type="number" step="0.0001" min="0" name="confirm_cm" class="form-control" value="{{ old('confirm_cm', $style->confirm_cm ?? '') }}">
     </div>
 </div>
 <div class="mb-3">
@@ -125,3 +145,31 @@
         </div>
     @endif
 </div>
+
+@once
+@push('js')
+<script>
+    // Inquiry → tech pack auto-fill: only empty fields are filled, so an
+    // edit never overwrites what the user already set.
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof $ === 'undefined') { return; }
+        $(document).on('change', 'select[data-style-inquiry]', function () {
+            const opt = this.options[this.selectedIndex];
+            if (!opt || !opt.value) { return; }
+            const form = $(this).closest('form');
+            const fill = function (name, value) {
+                const el = form.find('[name="' + name + '"]');
+                if (!value || !el.length || el.val()) { return; }
+                el.val(value).trigger('change');
+            };
+            fill('buyer_id', opt.dataset.buyer);
+            fill('season_id', opt.dataset.season);
+            fill('merchandiser_id', opt.dataset.merchandiser);
+            fill('product_type_id', opt.dataset.productType);
+            fill('style_no', opt.dataset.styleRef);
+            fill('name', opt.dataset.name);
+        });
+    });
+</script>
+@endpush
+@endonce

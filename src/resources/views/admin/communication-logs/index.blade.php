@@ -7,6 +7,7 @@
 @section('contents')
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
+    @include('merchandising-trace::admin.partials.ui-kit')
 
     <div class="card mb-3">
         <div class="card-header"><h6 class="mb-0">Log a Communication</h6></div>

@@ -15,7 +15,7 @@
             <a href="{{ route('merchandising-trace.cost-sheets.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('merchandising-trace.cost-sheets.store') }}">
+            <form method="POST" action="{{ route('merchandising-trace.cost-sheets.store') }}" enctype="multipart/form-data">
                 @csrf
                 @include('merchandising-trace::admin.cost-sheets.partials.form')
                 <button type="submit" class="btn btn-primary mt-3">Save Cost Sheet</button>

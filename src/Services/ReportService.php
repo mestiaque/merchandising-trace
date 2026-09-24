@@ -99,7 +99,7 @@ class ReportService
             'Style' => $po->style->style_no ?? '-',
             'Buyer' => $po->salesContract->buyer->name ?? '-',
             'PCD Result' => $po->tnaPlan?->pcd_result ?? '-',
-            'Fail Reason' => $po->tnaPlan?->pcd_fail_reason ?? '-',
+            'Fail Reason' => \ME\MerchandisingTrace\Support\RichText::plain($po->tnaPlan?->pcd_fail_reason) ?: '-',
             'Responsible Dept' => $po->tnaPlan?->responsibleDept?->name ?? '-',
             'Responsible Person' => $po->tnaPlan?->responsiblePerson?->name ?? '-',
         ])->all();
@@ -155,10 +155,10 @@ class ReportService
             ->get()
             ->map(fn (CostSheet $c) => [
                 'Cost Sheet No' => $c->cost_sheet_no,
-                'Style' => $c->style->style_no ?? '-',
+                'Style' => $c->styleLabel(),
                 'Buyer' => $c->buyer->name ?? '-',
-                'Total Cost' => (float) $c->total_cost,
-                'Offer Price' => (float) $c->offer_price,
+                'FOB / Pc' => (float) $c->total_cost,
+                'FOB / Dz' => (float) $c->total_cost * 12,
                 'Margin %' => $c->calcMarginPercent(),
                 'Status' => $c->status,
             ])->all();
@@ -295,10 +295,10 @@ class ReportService
             ->when($filters['buyer_id'] ?? null, fn ($q, $v) => $q->where('buyer_id', $v))
             ->get()
             ->map(fn (CostSheet $c) => [
-                'Style' => $c->style->style_no ?? '-',
+                'Style' => $c->styleLabel(),
                 'Buyer' => $c->buyer->name ?? '-',
-                'Planned Total Cost' => (float) $c->total_cost,
-                'Planned Offer Price' => (float) $c->offer_price,
+                'Planned FOB / Pc' => (float) $c->total_cost,
+                'Final Price' => (float) ($c->final_price ?: $c->offer_price),
                 'Planned Margin %' => $c->calcMarginPercent(),
                 'Actual Cost' => 'not tracked',
             ])->all();

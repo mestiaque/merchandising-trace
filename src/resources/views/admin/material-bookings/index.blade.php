@@ -33,6 +33,7 @@
                 <thead>
                     <tr>
                         <th>Booking No</th>
+                        <th>Against</th>
                         <th>Style</th>
                         <th>Supplier</th>
                         <th>Booking Date</th>
@@ -47,6 +48,7 @@
                     @forelse($bookings as $booking)
                         <tr>
                             <td>{{ $booking->booking_no }}</td>
+                            <td>{{ $booking->againstReference() }}</td>
                             <td>{{ $booking->style->style_no ?? '-' }}</td>
                             <td>{{ $booking->supplier->name ?? '-' }}</td>
                             <td>{{ optional($booking->booking_date)->format('Y-m-d') ?? '-' }}</td>
@@ -61,7 +63,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="9" class="text-center text-muted">No bookings found.</td></tr>
+                        <tr><td colspan="10" class="text-center text-muted">No bookings found.</td></tr>
                     @endforelse
                 </tbody>
             </table>

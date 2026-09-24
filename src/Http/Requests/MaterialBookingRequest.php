@@ -13,11 +13,20 @@ class MaterialBookingRequest extends FormRequest
         return (bool) $this->user()?->can($this->route('material_booking') ? 'merch_material_booking.edit' : 'merch_material_booking.add');
     }
 
+    public function messages(): array
+    {
+        return ['sales_contract_id.exists' => 'The selected LC was not found — pick a contract that has an LC number.'];
+    }
+
     public function rules(): array
     {
         return [
             'type' => ['required', 'string', Rule::in(MaterialBooking::TYPES)],
-            'sales_contract_id' => ['required', 'integer', 'exists:mer_sales_contracts,id'],
+            'booking_against' => ['required', 'string', Rule::in(array_keys(MaterialBooking::BOOKING_AGAINST))],
+            // Booking against an LC: the contract picked must actually carry one.
+            'sales_contract_id' => $this->input('booking_against') === 'lc'
+                ? ['required', 'integer', Rule::exists('mer_sales_contracts', 'id')->whereNotNull('lc_no')->whereNot('lc_no', '')]
+                : ['required', 'integer', 'exists:mer_sales_contracts,id'],
             'sales_contract_po_id' => ['nullable', 'integer', 'exists:mer_sales_contract_pos,id'],
             'style_id' => ['required', 'integer', 'exists:mer_styles,id'],
             'supplier_id' => ['nullable', 'integer', 'exists:mer_suppliers,id'],

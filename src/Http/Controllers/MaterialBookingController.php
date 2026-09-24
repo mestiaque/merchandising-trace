@@ -25,7 +25,7 @@ class MaterialBookingController extends Controller
         $this->authorize('merch_material_booking.list');
 
         $bookings = MaterialBooking::query()
-            ->with(['style', 'supplier'])
+            ->with(['style', 'supplier', 'salesContract'])
             ->when($request->filled('type'), fn ($q) => $q->where('type', $request->type), fn ($q) => $q->where('type', 'fabric'))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status))
             ->latest('id')
@@ -73,7 +73,7 @@ class MaterialBookingController extends Controller
     {
         $this->authorize('merch_material_booking.view');
 
-        $materialBooking->load(['style', 'supplier', 'currency', 'items.item', 'consignments', 'receipts.item']);
+        $materialBooking->load(['salesContract', 'style', 'supplier', 'currency', 'items.item', 'consignments', 'receipts.item']);
 
         return view('merchandising-trace::admin.material-bookings.show', [
             'booking' => $materialBooking,

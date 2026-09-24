@@ -29,6 +29,10 @@
                     <div class="booking-meta-value">{{ ucfirst($booking->type) }}</div>
                 </div>
                 <div class="booking-meta-item">
+                    <div class="booking-meta-label"><i class="fa-solid fa-file-signature"></i> Against</div>
+                    <div class="booking-meta-value">{{ $booking->againstReference() }}</div>
+                </div>
+                <div class="booking-meta-item">
                     <div class="booking-meta-label"><i class="fa-solid fa-shirt"></i> Style</div>
                     <div class="booking-meta-value">{{ $booking->style->style_no ?? '—' }}</div>
                 </div>

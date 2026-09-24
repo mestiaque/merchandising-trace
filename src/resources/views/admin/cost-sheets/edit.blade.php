@@ -15,7 +15,7 @@
             <a href="{{ route('merchandising-trace.cost-sheets.show', $costSheet) }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('merchandising-trace.cost-sheets.update', $costSheet) }}">
+            <form method="POST" action="{{ route('merchandising-trace.cost-sheets.update', $costSheet) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 @include('merchandising-trace::admin.cost-sheets.partials.form')

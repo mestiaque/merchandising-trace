@@ -75,10 +75,15 @@ Two permissions matter beyond ordinary CRUD:
    master's own scalar fields are covered; foreign-key fields (e.g.
    `Item.category_id`, `Buyer.merchandiser_id`) are left to the manual
    form to avoid mis-linking a row from an ambiguous imported code.
-2. **Inquiry → Style** — `InquiryController::convertToStyle()` clones every
-   relevant field onto a new `Style` row with zero re-entry. The inquiry
-   list flags overdue rows (`Inquiry::isOverdue()`: still `open` past
-   `order_confirmation_due_date`) with a badge.
+2. **Inquiry → Tech Pack (Style)** — one inquiry = one item (style ref,
+   color, Order Qty, Unit Price, derived Total Value, Ship Date + optional
+   Extended Ship Date). `InquiryController::convertToStyle()` ("Create Tech
+   Pack") clones every relevant field onto a new `Style` row with zero
+   re-entry, allows only one tech pack per inquiry, and links cost sheets
+   already costed against the inquiry. The tech pack carries a **Confirm CM**
+   (/dozen) that costing picks up. The inquiry list flags overdue rows
+   (`Inquiry::isOverdue()`: still `open` past `order_confirmation_due_date`)
+   with a badge.
 2a. **Style Development** — beyond the basic-fields modal, every style has
    a tabbed detail page (`StyleController::show()`): **Images** (upload/
    remove, typed front/back/detail/embellishment/artwork), **Measurement
@@ -92,12 +97,17 @@ Two permissions matter beyond ordinary CRUD:
 3. **Sample** — full status workflow (`requested → in_progress → submitted →
    approved/rejected → resubmit`), revision chain via `parent_sample_id`.
    Submitting/approving a sample fires `SampleTnaSyncService` (§6).
-4. **BOM** — versioned per style; `BomItem::netConsumption()` =
+4. **BOM** — versioned per style, two options (`Bom::bom_type`): **file**
+   (upload the buyer's PDF) or **manual** (build it line by line; lines can
+   be loaded from the style's cost sheet). `BomItem::netConsumption()` =
    `consumption × (1 + wastage% / 100)`.
-5. **Costing** — versioned `CostSheet` with `calcCm()` / `calcTotalCost()` /
-   `calcOfferPrice()` / `calcMarginPercent()`, all computed on demand from
-   current inputs (never trusted from a stale stored total). PDF export in
-   buyer format via `CostSheetController::pdf()`.
+5. **Costing** — the factory's **Open Cost Sheet**: sections A fabric /
+   B trims / C wash / D stone / E print / F heat seal costed per dozen
+   (fabric = cons × price; others = cons × price × 12), + CM (SMV × CPM, or
+   the tech pack's Confirm CM) + commercial % → FOB per dozen / piece,
+   with the same layout on screen, print (`cost-sheets/{id}/print`) and PDF.
+   A sheet can belong to a style, to an inquiry (before the style exists)
+   or to neither. `CostSheet::summary()` produces every printed figure.
 6. **Sales Contract / PO** — `SalesContractPo` carries the **effective-value
    rule** (§8 below) and a two-revision-slot pattern
    (`po_qty_revised_1/2`, `pcd_revised_1/2`, `shipment_revised_1/2`), each
@@ -113,11 +123,19 @@ Two permissions matter beyond ordinary CRUD:
    its `style_id` validation are both scoped to the contract's own buyer,
    so a style from a different buyer can't be attached.
 7. **T&A (the core module)** — see §5.
-8. **Material Booking** — fabric/trims/accessory/packing bookings with a
-   PI/LC/X-mill date trail and a consignment schedule (1st–4th) for fabric;
+8. **Material Booking** — raised against a **Sales Contract** or its **LC**
+   (`booking_against`); picking the contract narrows styles to its POs and
+   "Load from BOM" books net consumption × order qty. Fabric/trims/
+   accessory/packing bookings with a PI/LC/X-mill date trail and a consignment schedule (1st–4th) for fabric;
    every receipt/consignment/date fires `MaterialBookingTnaSyncService`
    (§6).
 9. **Production Handover Bridge** — see §7.
+
+Across modules: every textarea (remarks, comments, descriptions, reasons)
+is a Summernote editor; stored HTML is echoed only through `@richtext(...)`
+(`Support\RichText::clean()`, a DOM whitelist). Entry forms call
+`lookup/styles|inquiries|sales-contracts/{id}` so a picked record fills
+everything it already knows.
 10. **Shipment Plan / Documentation / Buyer Communication** — see §9.
 11. **Dashboards & Reports** — see §10.
 

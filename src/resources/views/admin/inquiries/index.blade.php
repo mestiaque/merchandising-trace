@@ -19,7 +19,7 @@
         <div class="card-body">
             <form method="GET" class="row g-2 mb-3">
                 <div class="col-md-3">
-                    <input type="text" name="search" class="form-control" placeholder="Search inquiry no" value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control" placeholder="Search inquiry no / style ref" value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2">
                     <select name="status" class="form-control merch-select2">
@@ -41,7 +41,7 @@
                 <table class="table table-bordered table-striped align-middle">
                     <thead>
                         <tr>
-                            <th>#</th><th>Inquiry No</th><th>Buyer</th><th>Merchant</th><th>Given Date</th><th>Confirmation Due</th><th>Status</th><th class="text-end">Actions</th>
+                            <th>#</th><th>Inquiry No</th><th>Buyer</th><th>Style Ref</th><th class="text-end">Order Qty</th><th class="text-end">Total Value</th><th>Merchant</th><th>Given Date</th><th>Confirmation Due</th><th>Status</th><th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,6 +50,9 @@
                                 <td>{{ $loop->iteration + $inquiries->firstItem() - 1 }}</td>
                                 <td>{{ $inquiry->inquiry_no }}</td>
                                 <td>{{ $inquiry->buyer->name ?? '-' }}</td>
+                                <td>{{ $inquiry->style_ref ?? '-' }}</td>
+                                <td class="text-end">{{ $inquiry->target_qty !== null ? number_format($inquiry->target_qty) : '-' }}</td>
+                                <td class="text-end">{{ $inquiry->total_value !== null ? number_format((float) $inquiry->total_value, 2) : '-' }}</td>
                                 <td>{{ $inquiry->merchandiser->name ?? '-' }}</td>
                                 <td>{{ $inquiry->inquiry_given_date?->format('Y-m-d') }}</td>
                                 <td>
@@ -75,7 +78,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="text-center text-muted">No inquiries found.</td></tr>
+                            <tr><td colspan="11" class="text-center text-muted">No inquiries found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

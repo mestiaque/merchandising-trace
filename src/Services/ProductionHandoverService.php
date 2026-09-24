@@ -8,6 +8,7 @@ use ME\MerchandisingTrace\Models\Bridge\TrcPlanLineSize;
 use ME\MerchandisingTrace\Models\Bridge\TrcPlanStyle;
 use ME\MerchandisingTrace\Models\Bridge\TrcProductionPlan;
 use ME\MerchandisingTrace\Models\Bridge\TrcStylePart;
+use ME\MerchandisingTrace\Models\Bom;
 use ME\MerchandisingTrace\Models\ProductionHandover;
 use ME\MerchandisingTrace\Models\Sample;
 use ME\MerchandisingTrace\Models\SalesContractPo;
@@ -110,6 +111,11 @@ class ProductionHandoverService
             ->whereHas('sampleType', fn ($q) => $q->where('code', 'PP1'))->exists();
         $trimsInHouse = $checks['sewing_trims_in_house']['pass'];
 
+        // Only a manually built BOM has lines; a buyer-PDF BOM leaves this null.
+        $mainFabric = Bom::query()->where('style_id', $style->id)->where('status', 'approved')
+            ->where('bom_type', 'manual')->latest('version')->first()
+            ?->items()->where('item_type', 'fabric')->orderBy('id')->first();
+
         $line = TrcPlanLine::create([
             'plan_style_id' => $planStyle->id,
             'sl_no' => TrcPlanLine::where('plan_style_id', $planStyle->id)->count() + 1,
@@ -117,7 +123,7 @@ class ProductionHandoverService
             'merch_order_id' => $po->id,
             'color_id' => $po->color_id,
             'fabric_id' => null,
-            'fabric_code' => null,
+            'fabric_code' => $mainFabric->item->code ?? null,
             'sample_rcv_status' => $ppSampleApproved ? 'yes' : 'no',
             'trim_card_rcv_status' => $trimsInHouse ? 'yes' : 'no',
             'total_order_qty' => $po->effectiveQty(),

@@ -40,7 +40,7 @@
             <div class="table-responsive">
                 <table class="table table-bordered table-striped align-middle">
                     <thead>
-                        <tr><th>#</th><th>BOM No</th><th>Style</th><th>Version</th><th>Status</th><th class="text-end">Actions</th></tr>
+                        <tr><th>#</th><th>BOM No</th><th>Style</th><th>Version</th><th>Option</th><th>Status</th><th class="text-end">Actions</th></tr>
                     </thead>
                     <tbody>
                         @forelse($boms as $bom)
@@ -49,6 +49,7 @@
                                 <td>{{ $bom->bom_no }}</td>
                                 <td>{{ $bom->style->style_no ?? '-' }} — {{ $bom->style->name ?? '' }}</td>
                                 <td>v{{ $bom->version }}</td>
+                                <td>{{ \ME\MerchandisingTrace\Models\Bom::TYPES[$bom->bom_type] ?? $bom->bom_type }}</td>
                                 <td><span class="badge bg-secondary">{{ ucfirst($bom->status) }}</span></td>
                                 <td class="text-end">
                                     <a href="{{ route('merchandising-trace.boms.show', $bom) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></a>
@@ -61,7 +62,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="text-center text-muted">No BOMs found.</td></tr>
+                            <tr><td colspan="7" class="text-center text-muted">No BOMs found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

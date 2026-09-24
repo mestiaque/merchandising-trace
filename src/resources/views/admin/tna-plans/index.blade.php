@@ -47,6 +47,10 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">T&amp;A Plans</h5>
             <div class="d-flex gap-2 align-items-center">
+                @can('merch_tna.add')
+                    <a href="{{ route('merchandising-trace.tna-plans.create') }}" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Add T&amp;A Plan</a>
+                @endcan
+                {{-- Import/Export hidden for now.
                 <a href="{{ route('merchandising-trace.tna-plans.export.excel', request()->only('buyer_id')) }}" class="btn btn-sm btn-outline-success">
                     <i class="fa-solid fa-file-excel"></i> Export Excel
                 </a>
@@ -57,6 +61,7 @@
                         <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap">Import Actual Dates</button>
                     </form>
                 @endcan
+                --}}
             </div>
         </div>
         <div class="card-body">

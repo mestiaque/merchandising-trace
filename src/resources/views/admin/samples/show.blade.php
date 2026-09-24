@@ -45,10 +45,10 @@
                     <div class="col-md-6 mb-2"><strong>Courier:</strong> {{ $sample->courier_name ?? '-' }} / {{ $sample->tracking_no ?? '-' }}</div>
                 @endif
                 @if($sample->buyer_comments)
-                    <div class="col-12 mb-2"><strong>Buyer Comments:</strong> {{ $sample->buyer_comments }}</div>
+                    <div class="col-12 mb-2"><strong>Buyer Comments:</strong> @richtext($sample->buyer_comments)</div>
                 @endif
                 @if($sample->remarks)
-                    <div class="col-12 mb-2"><strong>Remarks:</strong> {{ $sample->remarks }}</div>
+                    <div class="col-12 mb-2"><strong>Remarks:</strong> @richtext($sample->remarks)</div>
                 @endif
                 @if($sample->parentSample)
                     <div class="col-12 mb-2"><strong>Revised from:</strong> {{ $sample->parentSample->sample_no }}</div>
@@ -91,7 +91,7 @@
                         {{ $comment->commenter->name ?? 'System' }} — {{ $comment->comment_date->format('d M Y') }}
                         @if($comment->is_buyer_comment)<span class="badge bg-info text-dark">Buyer</span>@endif
                     </div>
-                    <div>{{ $comment->comment }}</div>
+                    <div>@richtext($comment->comment)</div>
                 </div>
             @empty
                 <p class="text-muted mb-0">No comments yet.</p>

@@ -10,7 +10,6 @@ use ME\MerchandisingTrace\Models\CommunicationLog;
 use ME\MerchandisingTrace\Models\CostSheet;
 use ME\MerchandisingTrace\Models\FabricConsumption;
 use ME\MerchandisingTrace\Models\Inquiry;
-use ME\MerchandisingTrace\Models\InquiryItem;
 use ME\MerchandisingTrace\Models\Item;
 use ME\MerchandisingTrace\Models\MaterialBooking;
 use ME\MerchandisingTrace\Models\OrderDocument;
@@ -72,10 +71,10 @@ class DemoOrderFullProcessSeeder extends Seeder
             'buyer_id' => $buyer->id, 'season_id' => $season->id, 'merchandiser_id' => $merchandiser?->id,
             'factory_id' => $factory->id, 'order_confirmation_due_date' => now()->subDays(30)->toDateString(),
             'product_type_id' => $productType->id, 'description' => 'Unisex jacket, full Dev + Purchase pipeline',
+            'style_ref' => self::STYLE_NO, 'color_ref' => 'Black',
             'target_qty' => 10000, 'target_price' => 4.82, 'target_ship_date' => now()->addDays(90)->toDateString(),
             'status' => 'confirmed',
         ]);
-        InquiryItem::create(['inquiry_id' => $inquiry->id, 'style_ref' => self::STYLE_NO, 'product_type_id' => $productType->id, 'color_ref' => 'Black', 'qty' => 10000, 'target_price' => 4.82]);
 
         $style = Style::create([
             'style_no' => self::STYLE_NO, 'name' => self::STYLE_NO . ' - Unisex Jacket - Black',
@@ -114,9 +113,10 @@ class DemoOrderFullProcessSeeder extends Seeder
         $bom = Bom::create(['bom_no' => 'BOM-DEMOFULL', 'style_id' => $style->id, 'version' => 1, 'status' => 'approved', 'approved_by' => $merchandiser?->id, 'approved_at' => now()->subDays(45), 'created_by' => $merchandiser?->id]);
 
         // --- Costing ---
-        $costSheet = CostSheet::create(['cost_sheet_no' => 'CST-DEMOFULL', 'style_id' => $style->id, 'buyer_id' => $buyer->id, 'version' => 1, 'currency_id' => $currency->id, 'exchange_rate' => 1, 'order_qty' => 10000, 'smv' => 58.84, 'cm_minute_rate' => 0.037, 'efficiency_percent' => 72.5, 'fabric_cost' => 2.52 * 3.20 * 1.03, 'trims_cost' => 0.35, 'accessories_cost' => 0.10, 'print_emb_cost' => 0, 'wash_cost' => 0.18, 'commercial_cost' => 0.08, 'freight_cost' => 0.05, 'testing_cost' => 0.02, 'overhead_cost' => 0.12, 'profit_percent' => 12, 'price_type' => 'FOB', 'buyer_target_price' => 4.82, 'status' => 'approved', 'prepared_by' => $merchandiser?->id, 'approved_by' => $merchandiser?->id, 'approved_at' => now()->subDays(40)]);
+        $costSheet = CostSheet::create(['cost_sheet_no' => 'CST-DEMOFULL', 'style_id' => $style->id, 'buyer_id' => $buyer->id, 'version' => 1, 'currency_id' => $currency->id, 'exchange_rate' => 1, 'order_qty' => 10000, 'smv' => 58.84, 'cm_minute_rate' => 0.037, 'efficiency_percent' => 72.5, 'commercial_percent' => 5, 'style_ref' => $style->style_no, 'fabric_cost' => 2.52 * 3.20 * 1.03, 'trims_cost' => 0.35, 'accessories_cost' => 0.10, 'print_emb_cost' => 0, 'wash_cost' => 0.18, 'commercial_cost' => 0.08, 'freight_cost' => 0.05, 'testing_cost' => 0.02, 'overhead_cost' => 0.12, 'profit_percent' => 12, 'price_type' => 'FOB', 'buyer_target_price' => 4.82, 'status' => 'approved', 'prepared_by' => $merchandiser?->id, 'approved_by' => $merchandiser?->id, 'approved_at' => now()->subDays(40)]);
+        // Lines are per dozen: 2.52 yds/pc = 30.24 yds/dz.
+        $costSheet->items()->create(['group' => 'fabric', 'item_id' => $fabricItem->id, 'description' => 'Main body fabric', 'consumption' => 2.52 * 12, 'uom_id' => $uomYard->id, 'rate' => 3.20]);
         $costSheet->recompute();
-        $costSheet->items()->create(['group' => 'fabric', 'item_id' => $fabricItem->id, 'description' => 'Main body fabric', 'consumption' => 2.52, 'uom_id' => $uomYard->id, 'rate' => 3.20]);
 
         // --- Sales Contract / PO ---
         $contract = SalesContract::create(['contract_no' => self::CONTRACT_NO, 'buyer_id' => $buyer->id, 'season_id' => $season->id, 'merchandiser_id' => $merchandiser?->id, 'factory_id' => $factory->id, 'inquiry_id' => $inquiry->id, 'buyer_order_ref' => 'CORVEX-PO-FULL', 'contract_date' => now()->subDays(30)->toDateString(), 'currency_id' => $currency->id, 'exchange_rate' => 1, 'delivery_term' => 'FOB', 'payment_term' => 'LC at sight', 'lc_no' => 'LC-DEMOFULL', 'lc_date' => now()->subDays(20)->toDateString(), 'lc_value' => 48200, 'lc_expiry' => now()->addDays(60)->toDateString(), 'status' => 'draft', 'created_by' => $merchandiser?->id]);

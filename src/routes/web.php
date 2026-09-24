@@ -14,6 +14,7 @@ use ME\MerchandisingTrace\Http\Controllers\HistoryController;
 use ME\MerchandisingTrace\Http\Controllers\InquiryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemCategoryController;
 use ME\MerchandisingTrace\Http\Controllers\ItemController;
+use ME\MerchandisingTrace\Http\Controllers\LookupController;
 use ME\MerchandisingTrace\Http\Controllers\MasterExcelController;
 use ME\MerchandisingTrace\Http\Controllers\MaterialBookingController;
 use ME\MerchandisingTrace\Http\Controllers\OrderDocumentController;
@@ -110,7 +111,7 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::resource('sample-types', SampleTypeController::class)
             ->only(['index', 'store', 'update', 'destroy'])->parameters(['sample-types' => 'sample_type']);
 
-        // BOM (§M05) — buyer-provided PDF, not a line-item builder
+        // BOM (§M05) — buyer PDF (bom_type=file) or built here line by line (bom_type=manual)
         Route::resource('boms', BomController::class);
         Route::post('boms/{bom}/approve', [BomController::class, 'approve'])->name('boms.approve');
         Route::get('boms/{bom}/file/view', [BomController::class, 'viewFile'])->name('boms.file.view');
@@ -120,6 +121,12 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::resource('cost-sheets', CostSheetController::class)->parameters(['cost-sheets' => 'cost_sheet']);
         Route::post('cost-sheets/{cost_sheet}/approve', [CostSheetController::class, 'approve'])->name('cost-sheets.approve');
         Route::get('cost-sheets/{cost_sheet}/pdf', [CostSheetController::class, 'pdf'])->name('cost-sheets.pdf');
+        Route::get('cost-sheets/{cost_sheet}/print', [CostSheetController::class, 'print'])->name('cost-sheets.print');
+
+        // Form auto-fill (pick a style / inquiry / contract once, never re-type its data)
+        Route::get('lookup/styles/{style}', [LookupController::class, 'style'])->name('lookup.style');
+        Route::get('lookup/inquiries/{inquiry}', [LookupController::class, 'inquiry'])->name('lookup.inquiry');
+        Route::get('lookup/sales-contracts/{sales_contract}', [LookupController::class, 'salesContract'])->name('lookup.sales-contract');
 
         // Sales Contract / Order Confirmation (§M07)
         Route::resource('sales-contracts', SalesContractController::class)->parameters(['sales-contracts' => 'sales_contract']);
@@ -146,7 +153,7 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::delete('tna-templates/{tna_template}/tasks/{task}', [TnaTemplateController::class, 'destroyTask'])->name('tna-templates.tasks.destroy');
 
         Route::get('tna-plans-grid', [TnaPlanController::class, 'grid'])->name('tna-plans.grid');
-        Route::resource('tna-plans', TnaPlanController::class)->only(['index', 'show']);
+        Route::resource('tna-plans', TnaPlanController::class)->only(['index', 'create', 'store', 'show']);
         Route::put('tna-plans/{tna_plan}/tasks/{task}', [TnaPlanController::class, 'updateTask'])->name('tna-plans.tasks.update');
         Route::post('tna-plans/{tna_plan}/evaluate-pcd', [TnaPlanController::class, 'evaluatePcd'])->name('tna-plans.evaluate-pcd');
         Route::post('tna-plans/{tna_plan}/override-pcd', [TnaPlanController::class, 'overridePcd'])->name('tna-plans.override-pcd');

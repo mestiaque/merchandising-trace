@@ -16,7 +16,6 @@ use ME\MerchandisingTrace\Models\ExchangeRate;
 use ME\MerchandisingTrace\Models\Factory;
 use ME\MerchandisingTrace\Models\FabricConsumption;
 use ME\MerchandisingTrace\Models\Inquiry;
-use ME\MerchandisingTrace\Models\InquiryItem;
 use ME\MerchandisingTrace\Models\Item;
 use ME\MerchandisingTrace\Models\ItemCategory;
 use ME\MerchandisingTrace\Models\MaterialBooking;
@@ -126,12 +125,9 @@ class DemoDataSeeder extends Seeder
             'order_confirmation_due_date' => now()->subDays(30)->toDateString(),
             'product_type_id' => $productType->id,
             'description' => 'Unisex jacket, enzyme wash, heat-seal branding',
+            'style_ref' => 'RUE1', 'color_ref' => 'Black',
             'target_qty' => 10000, 'target_price' => 4.82, 'target_ship_date' => now()->addDays(90)->toDateString(),
             'status' => 'quoted',
-        ]);
-        InquiryItem::create([
-            'inquiry_id' => $inquiry->id, 'style_ref' => 'RUE1', 'product_type_id' => $productType->id,
-            'color_ref' => 'Black', 'qty' => 10000, 'target_price' => 4.82,
         ]);
 
         $trcProductId = DB::table('trc_products')->where('code', 'UJKT')->value('id')
@@ -210,16 +206,16 @@ class DemoDataSeeder extends Seeder
         $costSheet = CostSheet::create([
             'cost_sheet_no' => 'CST-DEMO-RUE1', 'style_id' => $style->id, 'buyer_id' => $buyer->id, 'version' => 1,
             'currency_id' => $currency->id, 'exchange_rate' => 1, 'order_qty' => 10000,
-            'smv' => 58.84, 'cm_minute_rate' => 0.037, 'efficiency_percent' => 72.5,
+            'smv' => 58.84, 'cm_minute_rate' => 0.037, 'efficiency_percent' => 72.5, 'commercial_percent' => 5, 'style_ref' => $style->style_no,
             'fabric_cost' => 2.52 * 3.20 * 1.03, 'trims_cost' => 0.35, 'accessories_cost' => 0.10,
             'print_emb_cost' => 0, 'wash_cost' => 0.18, 'commercial_cost' => 0.08, 'freight_cost' => 0.05,
             'testing_cost' => 0.02, 'overhead_cost' => 0.12, 'profit_percent' => 12, 'price_type' => 'FOB',
             'buyer_target_price' => 4.82, 'status' => 'approved', 'prepared_by' => $merchandiser?->id,
             'approved_by' => $merchandiser?->id, 'approved_at' => now()->subDays(40),
         ]);
+        // Lines are per dozen: 2.52 yds/pc = 30.24 yds/dz. CM comes from SMV, not a line.
+        $costSheet->items()->create(['group' => 'fabric', 'item_id' => $fabricItem->id, 'description' => 'Main body fabric', 'consumption' => 2.52 * 12, 'uom_id' => $uomYard->id, 'rate' => 3.20]);
         $costSheet->recompute();
-        $costSheet->items()->create(['group' => 'fabric', 'item_id' => $fabricItem->id, 'description' => 'Main body fabric', 'consumption' => 2.52, 'uom_id' => $uomYard->id, 'rate' => 3.20]);
-        $costSheet->items()->create(['group' => 'process', 'description' => 'CM (sewing)', 'consumption' => 1, 'rate' => $costSheet->calcCm()]);
 
         // --- Sales Contract / Order Confirmation (§M07) ---
         $contract = SalesContract::create([

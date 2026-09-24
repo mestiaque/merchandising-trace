@@ -32,6 +32,10 @@ class StyleRequest extends FormRequest
             'smv' => ['nullable', 'numeric', 'min:0'],
             'cost_smv' => ['nullable', 'numeric', 'min:0'],
             'target_cm' => ['nullable', 'numeric', 'min:0'],
+            'confirm_cm' => ['nullable', 'numeric', 'min:0'],
+            // One inquiry = one item = one tech pack.
+            'inquiry_id' => ['nullable', 'integer', 'exists:mer_inquiries,id',
+                Rule::unique('mer_styles', 'inquiry_id')->ignore($this->route('style'))->whereNull('deleted_at')],
             'fabric_description' => ['nullable', 'string'],
             'development_status' => ['nullable', 'string', Rule::in(Style::DEVELOPMENT_STATUSES)],
             'requires_dev_sample' => ['nullable', 'boolean'],
@@ -40,5 +44,10 @@ class StyleRequest extends FormRequest
             'parent_style_id' => ['nullable', 'integer', 'exists:mer_styles,id'],
             'is_active' => ['nullable', 'boolean'],
         ];
+    }
+
+    public function messages(): array
+    {
+        return ['inquiry_id.unique' => 'This inquiry already has a tech pack.'];
     }
 }

@@ -21,4 +21,12 @@ return [
         'tna' => 'TNA',
         'tna_sub_plan' => 'SUB',
     ],
+
+    // Letterhead printed on the Open Cost Sheet (screen, print and PDF).
+    // logo: a path on the "public" storage disk, or null to print the short name.
+    'company' => [
+        'name' => env('MERCH_COMPANY_NAME', 'SUHANA FASHIONS LTD'),
+        'short' => env('MERCH_COMPANY_SHORT', 'SFL'),
+        'logo' => env('MERCH_COMPANY_LOGO'),
+    ],
 ];

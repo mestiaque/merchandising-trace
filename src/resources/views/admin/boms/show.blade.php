@@ -15,6 +15,7 @@
                 BOM {{ $bom->bom_no }} <span class="badge bg-secondary">v{{ $bom->version }}</span>
                 @php($statusColors = ['draft' => 'secondary', 'submitted' => 'info', 'approved' => 'success', 'revised' => 'dark'])
                 <span class="badge bg-{{ $statusColors[$bom->status] ?? 'secondary' }} ms-1">{{ ucfirst($bom->status) }}</span>
+                <span class="badge bg-light text-dark border ms-1">{{ \ME\MerchandisingTrace\Models\Bom::TYPES[$bom->bom_type] ?? $bom->bom_type }}</span>
             </h5>
             <div>
                 @can('merch_bom.edit')
@@ -26,7 +27,7 @@
                         </form>
                     @endif
                 @endcan
-                @if($bom->bom_file)
+                @if(! $bom->isManual() && $bom->bom_file)
                     <a href="{{ route('merchandising-trace.boms.file.download', $bom) }}" class="btn btn-outline-primary btn-sm me-1"><i class="fa-solid fa-download"></i> Download</a>
                 @endif
                 <a href="{{ route('merchandising-trace.boms.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
@@ -39,26 +40,57 @@
                 <div class="col-md-4"><strong>Approved By:</strong> {{ $bom->approver->name ?? '-' }}</div>
             </div>
             @if($bom->remarks)
-                <div class="mt-2"><strong>Remarks:</strong> {{ $bom->remarks }}</div>
+                <div class="mt-2"><strong>Remarks:</strong> @richtext($bom->remarks)</div>
             @endif
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header"><h6 class="mb-0">BOM Document</h6></div>
-        <div class="card-body">
-            @if($bom->bom_file)
-                <div class="bom-viewer border rounded">
-                    <iframe src="{{ route('merchandising-trace.boms.file.view', $bom) }}" title="BOM PDF"></iframe>
-                </div>
-            @else
-                <div class="text-center text-muted py-5">
-                    <i class="fa-solid fa-file-pdf fa-2x mb-2 d-block"></i>
-                    No BOM uploaded yet. Upload the buyer's PDF via Edit BOM.
-                </div>
-            @endif
+    @if($bom->isManual())
+        <div class="card">
+            <div class="card-header"><h6 class="mb-0">BOM Lines <small class="text-muted">(per piece)</small></h6></div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm mb-0">
+                    <thead>
+                        <tr><th>Item</th><th>Type</th><th>Color</th><th>Size</th><th>Part</th><th class="text-end">Consumption</th><th class="text-end">Wastage %</th><th class="text-end">Net Consumption</th><th class="text-end">Rate</th><th>Supplier</th></tr>
+                    </thead>
+                    <tbody>
+                        @forelse($bom->items as $line)
+                            <tr>
+                                <td>{{ $line->item->name ?? '-' }}</td>
+                                <td>{{ ucfirst($line->item_type) }}</td>
+                                <td>{{ $line->color->name ?? '-' }}</td>
+                                <td>{{ $line->size->name ?? '-' }}</td>
+                                <td>{{ $line->part_name ?? '-' }}</td>
+                                <td class="text-end">{{ rtrim(rtrim(number_format((float) $line->consumption, 4), '0'), '.') }} {{ $line->uom->name ?? '' }}</td>
+                                <td class="text-end">{{ $line->wastage_percent }}%</td>
+                                <td class="text-end fw-bold">{{ number_format($line->netConsumption(), 4) }}</td>
+                                <td class="text-end">{{ $line->rate !== null ? number_format((float) $line->rate, 4) : '-' }}</td>
+                                <td>{{ $line->supplier->name ?? '-' }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="10" class="text-center text-muted">No lines.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    @else
+        <div class="card">
+            <div class="card-header"><h6 class="mb-0">BOM Document</h6></div>
+            <div class="card-body">
+                @if($bom->bom_file)
+                    <div class="bom-viewer border rounded">
+                        <iframe src="{{ route('merchandising-trace.boms.file.view', $bom) }}" title="BOM PDF"></iframe>
+                    </div>
+                @else
+                    <div class="text-center text-muted py-5">
+                        <i class="fa-solid fa-file-pdf fa-2x mb-2 d-block"></i>
+                        No BOM uploaded yet. Upload the buyer's PDF via Edit BOM.
+                    </div>
+                @endif
+            </div>
+        </div>
+    @endif
 </div>
 
 <style>

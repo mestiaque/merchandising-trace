@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ME\MerchandisingTrace\Support\Scopes\ScopedToMerchandiser;
 use App\Traits\HasAudit;
@@ -20,23 +21,36 @@ class Inquiry extends Model
 
     public const STATUSES = ['open', 'quoted', 'confirmed', 'lost', 'cancelled'];
 
-    protected static function booted(): void
-    {
-        static::addGlobalScope(new ScopedToMerchandiser());
-    }
-
     protected $fillable = [
         'inquiry_no', 'inquiry_given_date', 'buyer_id', 'season_id', 'merchandiser_id', 'factory_id',
-        'order_confirmation_due_date', 'product_type_id', 'description', 'target_qty', 'target_price',
-        'target_ship_date', 'status', 'lost_reason', 'remarks', 'created_by',
+        'order_confirmation_due_date', 'product_type_id', 'style_ref', 'color_ref', 'description',
+        'target_qty', 'target_price', 'total_value', 'target_ship_date', 'extended_ship_date',
+        'status', 'lost_reason', 'remarks', 'created_by',
     ];
 
     protected $casts = [
         'inquiry_given_date' => 'date',
         'order_confirmation_due_date' => 'date',
         'target_ship_date' => 'date',
+        'extended_ship_date' => 'date',
         'target_price' => 'decimal:4',
+        'total_value' => 'decimal:4',
     ];
+
+    /**
+     * One inquiry = one item. target_qty / target_price are labelled
+     * "Order Qty" / "Unit Price"; total_value is always derived from them.
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ScopedToMerchandiser());
+
+        static::saving(function (Inquiry $inquiry) {
+            $inquiry->total_value = $inquiry->target_qty !== null && $inquiry->target_price !== null
+                ? (float) $inquiry->target_qty * (float) $inquiry->target_price
+                : null;
+        });
+    }
 
     public function scopeStatus(Builder $query, string $status): Builder
     {
@@ -68,6 +82,10 @@ class Inquiry extends Model
         return $this->belongsTo(ProductType::class, 'product_type_id');
     }
 
+    /**
+     * Legacy multi-line items (pre one-inquiry-one-item). Kept read-only so
+     * old data stays reachable; new inquiries never write here.
+     */
     public function items(): HasMany
     {
         return $this->hasMany(InquiryItem::class, 'inquiry_id');
@@ -76,6 +94,23 @@ class Inquiry extends Model
     public function styles(): HasMany
     {
         return $this->hasMany(Style::class, 'inquiry_id');
+    }
+
+    /** The tech pack (style) created from this inquiry, if any. */
+    public function techPack(): HasOne
+    {
+        return $this->hasOne(Style::class, 'inquiry_id')->oldestOfMany();
+    }
+
+    public function costSheets(): HasMany
+    {
+        return $this->hasMany(CostSheet::class, 'inquiry_id');
+    }
+
+    /** The ship date that currently applies — an extension overrides the original. */
+    public function effectiveShipDate(): ?\Illuminate\Support\Carbon
+    {
+        return $this->extended_ship_date ?? $this->target_ship_date;
     }
 
     /**

@@ -19,7 +19,7 @@
         <div class="card-body">
             <form method="GET" class="row g-2 mb-3">
                 <div class="col-md-3">
-                    <input type="text" name="search" class="form-control" placeholder="Search cost sheet no" value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control" placeholder="Search cost sheet no / style" value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2">
                     <select name="status" class="form-control merch-select2">
@@ -40,17 +40,18 @@
             <div class="table-responsive">
                 <table class="table table-bordered table-striped align-middle">
                     <thead>
-                        <tr><th>#</th><th>Cost Sheet No</th><th>Style</th><th>Buyer</th><th>Total Cost</th><th>Offer Price</th><th>Status</th><th class="text-end">Actions</th></tr>
+                        <tr><th>#</th><th>Cost Sheet No</th><th>Style</th><th>Inquiry</th><th>Buyer</th><th class="text-end">FOB / Dz</th><th class="text-end">FOB / Pc</th><th>Status</th><th class="text-end">Actions</th></tr>
                     </thead>
                     <tbody>
                         @forelse($costSheets as $cs)
                             <tr>
                                 <td>{{ $loop->iteration + $costSheets->firstItem() - 1 }}</td>
                                 <td>{{ $cs->cost_sheet_no }}</td>
-                                <td>{{ $cs->style->style_no ?? '-' }}</td>
+                                <td>{{ $cs->styleLabel() }}</td>
+                                <td>{{ $cs->inquiry->inquiry_no ?? '-' }}</td>
                                 <td>{{ $cs->buyer->name ?? '-' }}</td>
-                                <td>{{ number_format($cs->total_cost, 4) }}</td>
-                                <td>{{ number_format($cs->offer_price, 4) }}</td>
+                                <td class="text-end">{{ number_format((float) $cs->total_cost * 12, 2) }}</td>
+                                <td class="text-end">{{ number_format((float) $cs->total_cost, 2) }}</td>
                                 <td><span class="badge bg-secondary">{{ ucfirst($cs->status) }}</span></td>
                                 <td class="text-end">
                                     <a href="{{ route('merchandising-trace.cost-sheets.show', $cs) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></a>
@@ -63,7 +64,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="text-center text-muted">No cost sheets found.</td></tr>
+                            <tr><td colspan="9" class="text-center text-muted">No cost sheets found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

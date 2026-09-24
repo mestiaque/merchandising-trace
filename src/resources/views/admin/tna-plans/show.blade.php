@@ -59,7 +59,7 @@
         </div>
         @if($tnaPlan->pcd_result === 'fail')
             <div class="card-body">
-                <div><strong>Reason:</strong> {{ $tnaPlan->pcd_fail_reason }}</div>
+                <div><strong>Reason:</strong> @richtext($tnaPlan->pcd_fail_reason)</div>
                 <div><strong>Responsible Dept:</strong> {{ $tnaPlan->responsibleDept->name ?? '-' }}</div>
                 <div><strong>Responsible Person:</strong> {{ $tnaPlan->responsiblePerson->name ?? '-' }}</div>
             </div>

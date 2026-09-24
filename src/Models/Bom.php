@@ -6,13 +6,15 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\HasAudit;
 
 /**
- * The BOM is buyer-provided — we don't build it line-by-line, we just store
- * and serve the PDF the buyer hands over (bom_file, on Storage's public
- * disk, same convention as Style::tech_pack_file / sales_contract_file).
+ * Two kinds of BOM (bom_type):
+ *  - file:   buyer-provided — we store and serve their PDF (bom_file, on
+ *            Storage's public disk, same convention as Style::tech_pack_file);
+ *  - manual: built here line by line (items()).
  */
 class Bom extends Model
 {
@@ -22,8 +24,9 @@ class Bom extends Model
     protected $table = 'mer_boms';
 
     public const STATUSES = ['draft', 'submitted', 'approved', 'revised'];
+    public const TYPES = ['file' => 'Upload Buyer PDF', 'manual' => 'Create BOM'];
 
-    protected $fillable = ['bom_no', 'style_id', 'version', 'status', 'approved_by', 'approved_at', 'remarks', 'bom_file', 'created_by'];
+    protected $fillable = ['bom_no', 'style_id', 'version', 'bom_type', 'status', 'approved_by', 'approved_at', 'remarks', 'bom_file', 'created_by'];
 
     protected $casts = ['approved_at' => 'datetime'];
 
@@ -40,5 +43,15 @@ class Bom extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(BomItem::class, 'bom_id');
+    }
+
+    public function isManual(): bool
+    {
+        return $this->bom_type === 'manual';
     }
 }

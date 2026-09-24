@@ -42,6 +42,20 @@
                     <div class="style-meta-label"><i class="fa-solid fa-stopwatch"></i> SMV</div>
                     <div class="style-meta-value">{{ $style->smv ?? '—' }}</div>
                 </div>
+                <div class="style-meta-item">
+                    <div class="style-meta-label"><i class="fa-solid fa-handshake"></i> Confirm CM / Dz</div>
+                    <div class="style-meta-value">{{ $style->confirm_cm !== null ? number_format((float) $style->confirm_cm, 2) : '—' }}</div>
+                </div>
+                <div class="style-meta-item">
+                    <div class="style-meta-label"><i class="fa-solid fa-magnifying-glass-dollar"></i> Inquiry</div>
+                    <div class="style-meta-value">
+                        @if($style->inquiry)
+                            <a href="{{ route('merchandising-trace.inquiries.show', $style->inquiry) }}">{{ $style->inquiry->inquiry_no }}</a>
+                        @else
+                            —
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>

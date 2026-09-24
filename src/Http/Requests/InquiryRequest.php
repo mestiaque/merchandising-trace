@@ -25,20 +25,26 @@ class InquiryRequest extends FormRequest
             'factory_id' => ['nullable', 'integer', 'exists:mer_factories,id'],
             'order_confirmation_due_date' => ['nullable', 'date'],
             'product_type_id' => ['nullable', 'integer', 'exists:mer_product_types,id'],
+            'style_ref' => ['nullable', 'string', 'max:150'],
+            'color_ref' => ['nullable', 'string', 'max:150'],
             'description' => ['nullable', 'string'],
             'target_qty' => ['nullable', 'integer', 'min:0'],
             'target_price' => ['nullable', 'numeric', 'min:0'],
             'target_ship_date' => ['nullable', 'date'],
+            'extended_ship_date' => ['nullable', 'date', 'after_or_equal:target_ship_date'],
             'status' => ['required', 'string', Rule::in(Inquiry::STATUSES)],
             'lost_reason' => ['nullable', 'string', 'max:255', 'required_if:status,lost'],
             'remarks' => ['nullable', 'string'],
-            'items' => ['nullable', 'array'],
-            'items.*.style_ref' => ['nullable', 'string', 'max:150'],
-            'items.*.product_type_id' => ['nullable', 'integer', 'exists:mer_product_types,id'],
-            'items.*.color_ref' => ['nullable', 'string', 'max:150'],
-            'items.*.qty' => ['nullable', 'integer', 'min:0'],
-            'items.*.target_price' => ['nullable', 'numeric', 'min:0'],
-            'items.*.remarks' => ['nullable', 'string'],
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'target_qty' => 'order qty',
+            'target_price' => 'unit price',
+            'target_ship_date' => 'ship date',
+            'extended_ship_date' => 'extended ship date',
         ];
     }
 }

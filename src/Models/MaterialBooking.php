@@ -19,9 +19,10 @@ class MaterialBooking extends Model
     public const TYPES = ['fabric', 'trims', 'accessory', 'packing'];
     public const STATUSES = ['draft', 'booked', 'pi_issued', 'lc_opened', 'in_transit', 'partial_received', 'received', 'closed', 'cancelled'];
     public const LC_TYPES = ['LC', 'TT', 'FOC', 'Consignment'];
+    public const BOOKING_AGAINST = ['sales_contract' => 'Sales Contract', 'lc' => 'LC'];
 
     protected $fillable = [
-        'booking_no', 'type', 'sales_contract_id', 'sales_contract_po_id', 'style_id', 'supplier_id',
+        'booking_no', 'type', 'booking_against', 'sales_contract_id', 'sales_contract_po_id', 'style_id', 'supplier_id',
         'mill_country', 'booking_date', 'pi_no', 'pi_date', 'pi_value', 'currency_id', 'lc_no', 'lc_date',
         'lc_value', 'lc_type', 'x_mill_date', 'expected_inhouse_date', 'status', 'remarks', 'attachment', 'created_by',
     ];
@@ -37,6 +38,19 @@ class MaterialBooking extends Model
     public function salesContract(): BelongsTo
     {
         return $this->belongsTo(SalesContract::class, 'sales_contract_id');
+    }
+
+    /** "SC-000012" or "LC 1234/26" — the document this booking was raised against. */
+    public function againstReference(): string
+    {
+        $contract = $this->salesContract;
+        if (! $contract) {
+            return '-';
+        }
+
+        return $this->booking_against === 'lc' && $contract->lc_no
+            ? "LC {$contract->lc_no} ({$contract->contract_no})"
+            : "SC {$contract->contract_no}";
     }
 
     public function salesContractPo(): BelongsTo

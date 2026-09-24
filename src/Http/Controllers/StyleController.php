@@ -10,6 +10,7 @@ use Illuminate\View\View;
 use ME\MerchandisingTrace\Http\Requests\StyleRequest;
 use ME\MerchandisingTrace\Models\Bridge\TrcPart;
 use ME\MerchandisingTrace\Models\Buyer;
+use ME\MerchandisingTrace\Models\Inquiry;
 use ME\MerchandisingTrace\Models\ProductType;
 use ME\MerchandisingTrace\Models\Season;
 use ME\MerchandisingTrace\Models\Size;
@@ -41,7 +42,7 @@ class StyleController extends Controller
     {
         $this->authorize('merch_style.view');
 
-        $style->load(['images', 'measurements.sizes', 'parts', 'operations', 'buyer', 'season']);
+        $style->load(['images', 'measurements.sizes', 'parts', 'operations', 'buyer', 'season', 'inquiry']);
 
         return view('merchandising-trace::admin.styles.show', [
             'style' => $style,
@@ -111,6 +112,14 @@ class StyleController extends Controller
             'merchandisersOptions' => User::query()->orderBy('name')->get(),
             'washTypesOptions' => WashType::query()->active()->orderBy('name')->get(),
             'productTypesOptions' => ProductType::query()->active()->orderBy('name')->get(),
+            // tech_pack_id: the style already made from the inquiry (one inquiry = one tech pack).
+            'inquiriesOptions' => Inquiry::query()
+                ->with(['buyer', 'productType'])
+                ->whereNotIn('status', ['lost', 'cancelled'])
+                ->addSelect(['tech_pack_id' => Style::query()->select('id')
+                    ->whereColumn('mer_styles.inquiry_id', 'mer_inquiries.id')->whereNull('deleted_at')->limit(1)])
+                ->latest('id')
+                ->get(),
         ];
     }
 }

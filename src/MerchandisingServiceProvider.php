@@ -3,6 +3,7 @@
 namespace ME\MerchandisingTrace;
 
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
@@ -18,6 +19,9 @@ class MerchandisingServiceProvider extends ServiceProvider
 
         $this->mergeSidebar();
         $this->mergePermissions();
+
+        // Summernote HTML fields: @richtext($model->remarks) echoes sanitized HTML.
+        Blade::directive('richtext', fn (string $expression) => "<?php echo \\ME\\MerchandisingTrace\\Support\\RichText::clean({$expression}); ?>");
 
         if ($this->app->runningInConsole()) {
             $this->commands([

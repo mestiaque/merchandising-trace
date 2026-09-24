@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use ME\MerchandisingTrace\Http\Requests\InquiryRequest;
 use ME\MerchandisingTrace\Models\Buyer;
+use ME\MerchandisingTrace\Models\CostSheet;
 use ME\MerchandisingTrace\Models\Factory;
 use ME\MerchandisingTrace\Models\Inquiry;
 use ME\MerchandisingTrace\Models\ProductType;
@@ -24,7 +25,9 @@ class InquiryController extends Controller
 
         $inquiries = Inquiry::query()
             ->with(['buyer', 'merchandiser', 'productType'])
-            ->when($request->filled('search'), fn ($q) => $q->where('inquiry_no', 'like', '%' . $request->search . '%'))
+            ->when($request->filled('search'), fn ($q) => $q->where(fn ($w) => $w
+                ->where('inquiry_no', 'like', '%' . $request->search . '%')
+                ->orWhere('style_ref', 'like', '%' . $request->search . '%')))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status))
             ->latest('id')
             ->paginate(20)
@@ -44,35 +47,10 @@ class InquiryController extends Controller
     {
         $data = $request->validated();
 
-        $inquiry = DB::transaction(function () use ($data, $numbers) {
-            $inquiry = Inquiry::create([
-                'inquiry_no' => $numbers->next(Inquiry::class, 'inquiry_no', config('merchandising-trace.document_prefixes.inquiry')),
-                'inquiry_given_date' => $data['inquiry_given_date'],
-                'buyer_id' => $data['buyer_id'],
-                'season_id' => $data['season_id'] ?? null,
-                'merchandiser_id' => $data['merchandiser_id'] ?? null,
-                'factory_id' => $data['factory_id'] ?? null,
-                'order_confirmation_due_date' => $data['order_confirmation_due_date'] ?? null,
-                'product_type_id' => $data['product_type_id'] ?? null,
-                'description' => $data['description'] ?? null,
-                'target_qty' => $data['target_qty'] ?? null,
-                'target_price' => $data['target_price'] ?? null,
-                'target_ship_date' => $data['target_ship_date'] ?? null,
-                'status' => $data['status'],
-                'lost_reason' => $data['lost_reason'] ?? null,
-                'remarks' => $data['remarks'] ?? null,
-                'created_by' => auth()->id(),
-            ]);
-
-            foreach ($data['items'] ?? [] as $line) {
-                if (empty(array_filter($line))) {
-                    continue;
-                }
-                $inquiry->items()->create($line);
-            }
-
-            return $inquiry;
-        });
+        $inquiry = Inquiry::create($data + [
+            'inquiry_no' => $numbers->next(Inquiry::class, 'inquiry_no', config('merchandising-trace.document_prefixes.inquiry')),
+            'created_by' => auth()->id(),
+        ]);
 
         return redirect()->route('merchandising-trace.inquiries.show', $inquiry)->with('success', "Inquiry {$inquiry->inquiry_no} created successfully.");
     }
@@ -81,7 +59,7 @@ class InquiryController extends Controller
     {
         $this->authorize('merch_inquiry.view');
 
-        $inquiry->load(['buyer', 'season', 'merchandiser', 'factory', 'productType', 'items.productType', 'styles']);
+        $inquiry->load(['buyer', 'season', 'merchandiser', 'factory', 'productType', 'items.productType', 'techPack', 'costSheets']);
 
         return view('merchandising-trace::admin.inquiries.show', ['inquiry' => $inquiry]);
     }
@@ -90,41 +68,15 @@ class InquiryController extends Controller
     {
         $this->authorize('merch_inquiry.edit');
 
-        $inquiry->load('items');
-
         return view('merchandising-trace::admin.inquiries.edit', ['inquiry' => $inquiry] + $this->formOptions());
     }
 
     public function update(InquiryRequest $request, Inquiry $inquiry): RedirectResponse
     {
         $data = $request->validated();
+        $data['lost_reason'] = $data['status'] === 'lost' ? ($data['lost_reason'] ?? null) : null;
 
-        DB::transaction(function () use ($data, $inquiry) {
-            $inquiry->update([
-                'inquiry_given_date' => $data['inquiry_given_date'],
-                'buyer_id' => $data['buyer_id'],
-                'season_id' => $data['season_id'] ?? null,
-                'merchandiser_id' => $data['merchandiser_id'] ?? null,
-                'factory_id' => $data['factory_id'] ?? null,
-                'order_confirmation_due_date' => $data['order_confirmation_due_date'] ?? null,
-                'product_type_id' => $data['product_type_id'] ?? null,
-                'description' => $data['description'] ?? null,
-                'target_qty' => $data['target_qty'] ?? null,
-                'target_price' => $data['target_price'] ?? null,
-                'target_ship_date' => $data['target_ship_date'] ?? null,
-                'status' => $data['status'],
-                'lost_reason' => $data['status'] === 'lost' ? ($data['lost_reason'] ?? null) : null,
-                'remarks' => $data['remarks'] ?? null,
-            ]);
-
-            $inquiry->items()->delete();
-            foreach ($data['items'] ?? [] as $line) {
-                if (empty(array_filter($line))) {
-                    continue;
-                }
-                $inquiry->items()->create($line);
-            }
-        });
+        $inquiry->update($data);
 
         return redirect()->route('merchandising-trace.inquiries.show', $inquiry)->with('success', 'Inquiry updated successfully.');
     }
@@ -139,13 +91,19 @@ class InquiryController extends Controller
     }
 
     /**
-     * §M02 AC: converting an inquiry auto-creates the Style (development
-     * status = new) and carries buyer/season/merchandiser/product type
-     * forward — no re-typing.
+     * §M02 AC: an inquiry becomes its Tech Pack (Style) with everything the
+     * inquiry already knows carried forward — no re-typing. One inquiry is
+     * one item, so it gets exactly one tech pack; cost sheets costed against
+     * the inquiry before the style existed are linked to it here.
      */
     public function convertToStyle(Request $request, Inquiry $inquiry): RedirectResponse
     {
         $this->authorize('merch_inquiry.edit');
+
+        if ($existing = $inquiry->techPack) {
+            return redirect()->route('merchandising-trace.styles.show', $existing)
+                ->with('error', "Inquiry {$inquiry->inquiry_no} already has tech pack {$existing->style_no}.");
+        }
 
         $request->validate([
             'style_no' => ['required', 'string', 'max:150', 'unique:mer_styles,style_no'],
@@ -156,6 +114,7 @@ class InquiryController extends Controller
             $style = Style::create([
                 'style_no' => $request->style_no,
                 'name' => $request->name,
+                'description' => $inquiry->description,
                 'buyer_id' => $inquiry->buyer_id,
                 'inquiry_id' => $inquiry->id,
                 'season_id' => $inquiry->season_id,
@@ -166,6 +125,8 @@ class InquiryController extends Controller
                 'created_by' => auth()->id(),
             ]);
 
+            CostSheet::query()->where('inquiry_id', $inquiry->id)->whereNull('style_id')->update(['style_id' => $style->id]);
+
             if ($inquiry->status === 'open') {
                 $inquiry->update(['status' => 'quoted']);
             }
@@ -173,7 +134,7 @@ class InquiryController extends Controller
             return $style;
         });
 
-        return redirect()->route('merchandising-trace.styles.index')->with('success', "Style {$style->style_no} created from inquiry {$inquiry->inquiry_no}.");
+        return redirect()->route('merchandising-trace.styles.index')->with('success', "Tech pack {$style->style_no} created from inquiry {$inquiry->inquiry_no}.");
     }
 
     private function formOptions(): array

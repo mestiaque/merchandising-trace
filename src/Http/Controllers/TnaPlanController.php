@@ -4,16 +4,32 @@ namespace ME\MerchandisingTrace\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use ME\MerchandisingTrace\Exports\GenericArrayExport;
+use ME\MerchandisingTrace\Http\Requests\TnaPlanCreateRequest;
 use ME\MerchandisingTrace\Imports\TnaGridImport;
 use ME\MerchandisingTrace\Models\Buyer;
+use ME\MerchandisingTrace\Models\Color;
+use ME\MerchandisingTrace\Models\Factory;
+use ME\MerchandisingTrace\Models\ProductType;
+use ME\MerchandisingTrace\Models\SalesContract;
+use ME\MerchandisingTrace\Models\SalesContractPo;
+use ME\MerchandisingTrace\Models\Season;
+use ME\MerchandisingTrace\Models\ShipMode;
+use ME\MerchandisingTrace\Models\Size;
+use ME\MerchandisingTrace\Models\Style;
 use ME\MerchandisingTrace\Models\TnaPlan;
 use ME\MerchandisingTrace\Models\TnaTask;
 use ME\MerchandisingTrace\Models\TnaTemplate;
+use ME\MerchandisingTrace\Models\WashType;
+use App\Models\User;
+use ME\MerchandisingTrace\Services\DocumentChecklistService;
+use ME\MerchandisingTrace\Services\DocumentNumberService;
 use ME\MerchandisingTrace\Services\PcdGateService;
 use ME\MerchandisingTrace\Services\TnaGridExportService;
 use ME\MerchandisingTrace\Services\TnaGridImportService;
+use ME\MerchandisingTrace\Services\TnaPlanGenerationService;
 
 class TnaPlanController extends Controller
 {
@@ -50,6 +66,87 @@ class TnaPlanController extends Controller
             'stats' => $stats,
             'buyersOptions' => Buyer::query()->active()->orderBy('name')->get(),
         ]);
+    }
+
+    /**
+     * "Add T&A Plan" shortcut — gathers Buyer + Style + PO on one screen
+     * instead of requiring the Sales Contract → PO → Confirm flow first.
+     */
+    public function create(): View
+    {
+        $this->authorize('merch_tna.add');
+
+        return view('merchandising-trace::admin.tna-plans.create', $this->createFormOptions());
+    }
+
+    public function store(TnaPlanCreateRequest $request, DocumentNumberService $numbers, TnaPlanGenerationService $tnaGenerator, DocumentChecklistService $documents): RedirectResponse
+    {
+        $data = $request->validated();
+
+        $plan = DB::transaction(function () use ($data, $numbers, $tnaGenerator, $documents) {
+            $contract = SalesContract::create([
+                'contract_no' => $numbers->next(SalesContract::class, 'contract_no', 'SC'),
+                'buyer_id' => $data['buyer_id'],
+                'season_id' => $data['season_id'] ?? null,
+                'merchandiser_id' => $data['merchandiser_id'] ?? null,
+                'factory_id' => $data['factory_id'] ?? null,
+                'contract_date' => $data['contract_date'],
+                'status' => 'confirmed',
+                'created_by' => auth()->id(),
+            ]);
+
+            $po = SalesContractPo::create([
+                'sales_contract_id' => $contract->id,
+                'style_id' => $data['style_id'],
+                'product_type_id' => $data['product_type_id'] ?? null,
+                'color_id' => $data['color_id'],
+                'wash_type_id' => $data['wash_type_id'] ?? null,
+                'po_no' => $data['po_no'],
+                'po_due_date' => $data['po_due_date'] ?? null,
+                'po_qty' => $data['po_qty'],
+                'unit_price' => $data['unit_price'] ?? null,
+                'total_value' => ($data['unit_price'] ?? 0) * $data['po_qty'],
+                'price_type' => $data['price_type'] ?? null,
+                'pcd_date' => $data['pcd_date'] ?? null,
+                'shipment_date' => $data['shipment_date'] ?? null,
+                'ship_mode_id' => $data['ship_mode_id'] ?? null,
+                'print_emb' => $data['print_emb'] ?? 'na',
+                'emb_applique_ih' => $data['emb_applique_ih'] ?? 'na',
+                'studs_stones_ih' => $data['studs_stones_ih'] ?? 'na',
+                'heat_seal_ih' => $data['heat_seal_ih'] ?? 'na',
+                'status' => 'pending',
+            ]);
+
+            foreach ($data['sizes'] as $line) {
+                $po->sizes()->create(['size_id' => $line['size_id'], 'qty' => $line['qty']]);
+            }
+
+            $contract->refreshTotals();
+
+            $plan = $tnaGenerator->generateFor($po);
+            $po->update(['status' => 'tna_created']);
+            $documents->generateFor($contract);
+
+            return $plan;
+        });
+
+        return redirect()->route('merchandising-trace.tna-plans.show', $plan)->with('success', "T&A plan {$plan->tna_no} created for PO {$data['po_no']}.");
+    }
+
+    private function createFormOptions(): array
+    {
+        return [
+            'buyersOptions' => Buyer::query()->active()->orderBy('name')->get(),
+            'seasonsOptions' => Season::query()->active()->orderBy('name')->get(),
+            'merchandisersOptions' => User::query()->orderBy('name')->get(),
+            'factoriesOptions' => Factory::query()->active()->orderBy('name')->get(),
+            'stylesOptions' => Style::query()->active()->orderBy('style_no')->get(),
+            'colorsOptions' => Color::query()->active()->orderBy('name')->get(),
+            'productTypesOptions' => ProductType::query()->active()->orderBy('name')->get(),
+            'washTypesOptions' => WashType::query()->active()->orderBy('name')->get(),
+            'shipModesOptions' => ShipMode::query()->active()->orderBy('name')->get(),
+            'sizesOptions' => Size::query()->active()->orderBy('sort_order')->get(),
+        ];
     }
 
     /**

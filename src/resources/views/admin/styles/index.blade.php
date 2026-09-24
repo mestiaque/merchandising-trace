@@ -1,5 +1,5 @@
 @include('merchandising-trace::admin.partials.simple-master-index', [
-    'title' => 'Styles',
+    'title' => 'Tech Packs / Styles',
     'routeBase' => 'merchandising-trace.styles',
     'permPrefix' => 'merch_style',
     'items' => $styles,
@@ -9,7 +9,7 @@
     'fieldsExtra' => [
         'buyersOptions' => $buyersOptions, 'seasonsOptions' => $seasonsOptions,
         'merchandisersOptions' => $merchandisersOptions, 'washTypesOptions' => $washTypesOptions,
-        'productTypesOptions' => $productTypesOptions,
+        'productTypesOptions' => $productTypesOptions, 'inquiriesOptions' => $inquiriesOptions,
     ],
     'modalLabel' => 'Style',
     'viewRouteName' => 'merchandising-trace.styles.show',
