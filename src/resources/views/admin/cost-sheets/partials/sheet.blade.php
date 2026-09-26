@@ -45,22 +45,23 @@
 
 <style>
     .cs-sheet { width: 100%; font-family: {!! $forPdf ? "'DejaVu Sans', sans-serif" : "Calibri, 'Segoe UI', Arial, sans-serif" !!}; font-size: {{ $forPdf ? '8px' : '12px' }}; color: #111; }
-    .cs-sheet table { width: 100%; border-collapse: collapse; }
-    .cs-sheet td, .cs-sheet th { padding: {{ $forPdf ? '1px 3px' : '2px 5px' }}; vertical-align: middle; }
+    /* Scoped resets: the print master styles every table/th/td globally. */
+    .cs-sheet table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+    .cs-sheet td, .cs-sheet th { padding: {{ $forPdf ? '1px 3px' : '2px 5px' }}; vertical-align: middle; border: 0; font-size: inherit; text-align: left; }
     .cs-sheet .b td, .cs-sheet .b th { border: 1px solid #555; }
     .cs-sheet .co-name { color: #d99a00; font-size: {{ $forPdf ? '17px' : '24px' }}; font-weight: bold; letter-spacing: 1px; text-align: center; }
     .cs-sheet .co-title { color: #1f4ea0; font-weight: bold; font-size: {{ $forPdf ? '10px' : '14px' }}; text-align: center; }
-    .cs-sheet .logo { width: {{ $forPdf ? '38px' : '52px' }}; height: {{ $forPdf ? '25px' : '35px' }}; padding-top: {{ $forPdf ? '13px' : '17px' }}; border: 2px solid #1f4ea0; border-radius: 50%; color: #1f4ea0; font-weight: bold; text-align: center; line-height: 1; font-size: {{ $forPdf ? '11px' : '15px' }}; }
+    .cs-sheet .logo { width: {{ $forPdf ? '38px' : '52px' }}; height: {{ $forPdf ? '25px' : '35px' }}; padding-top: {{ $forPdf ? '13px' : '17px' }}; box-sizing: content-box; border: 2px solid #1f4ea0; border-radius: 50%; color: #1f4ea0; font-weight: bold; text-align: center; line-height: 1; font-size: {{ $forPdf ? '11px' : '15px' }}; }
     .cs-sheet .hk { font-weight: bold; width: 80px; background: #f2f2f2; }
-    .cs-sheet th { background: #f2f2f2; font-weight: bold; text-transform: uppercase; text-align: center; }
-    .cs-sheet .r { text-align: right; white-space: nowrap; }
-    .cs-sheet .c { text-align: center; }
-    .cs-sheet .unit { color: #1f4ea0; text-align: center; }
+    .cs-sheet th { background: #f2f2f2 !important; font-weight: bold; text-transform: uppercase; text-align: center; }
+    .cs-sheet .r, .cs-sheet td.r { text-align: right; white-space: nowrap; }
+    .cs-sheet .c, .cs-sheet td.c { text-align: center; }
+    .cs-sheet td.unit { color: #1f4ea0; text-align: center; }
     .cs-sheet .tot td { background: #fff4b8; color: #1f4ea0; font-weight: bold; }
     .cs-sheet .gap td { border: 0; height: {{ $forPdf ? '5px' : '8px' }}; padding: 0; }
     .cs-sheet .sum-h { background: #f4c542; font-weight: bold; text-align: center; }
     .cs-sheet .blue { color: #1f4ea0; font-weight: bold; }
-    .cs-sheet .hl { background: #ffff00; font-weight: bold; }
+    .cs-sheet .hl { background: #ffff00 !important; font-weight: bold; }
     .cs-sheet .pics img { max-height: {{ $forPdf ? '70px' : '110px' }}; max-width: 100%; }
     .cs-sheet .sketch img { max-width: 100%; max-height: {{ $forPdf ? '150px' : '240px' }}; }
     .cs-sheet .strip th { font-size: {{ $forPdf ? '6.5px' : '10px' }}; text-transform: none; }

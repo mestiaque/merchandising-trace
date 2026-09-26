@@ -7,36 +7,35 @@
 @section('contents')
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
+    @include('merchandising-trace::admin.partials.ui-kit')
 
     <div class="card mb-3">
         <div class="card-header">
-            <h5 class="mb-0"><i class="fa-solid fa-timeline"></i> 360° History</h5>
+            <h4 class="mb-0"><i class="fa-solid fa-timeline"></i> 360° History</h4>
             <p class="text-muted small mb-0 mt-1">Search by PO No, Style No/Name, or Buyer to see everything that happened — Merchandising, Production and Inventory — in one timeline.</p>
         </div>
         <div class="card-body">
-            <form method="GET" class="row g-2">
-                <div class="col-md-8">
-                    <input type="text" name="q" class="form-control" placeholder="PO no, style no/name, or buyer name…" value="{{ $q }}" autofocus>
+            <form method="GET" class="row align-items-end">
+                <div class="col-md-3 mb-2">
+                    <input type="text" name="q" class="form-control form-control-sm" placeholder="PO no, style no/name, or buyer name…" value="{{ $q }}" autofocus>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-search"></i> Search</button>
-                </div>
-                <div class="col-md-2">
-                    <a href="{{ route('merchandising-trace.history.index') }}" class="btn btn-light w-100">Reset</a>
+                <div class="col-md-3 mb-2 d-flex align-items-end flex-wrap gap-1">
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-search"></i> Search</button>
+                    <a href="{{ route('merchandising-trace.history.index') }}" class="btn btn-light btn-sm">Reset</a>
                 </div>
             </form>
         </div>
     </div>
 
     @if($q !== '')
-        <div class="row g-3">
+        <div class="row">
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-header"><strong>POs</strong> <span class="text-muted small">({{ $pos->count() }})</span></div>
                     <div class="list-group list-group-flush">
                         @forelse($pos as $po)
                             <a href="{{ route('merchandising-trace.history.po', $po) }}" class="list-group-item list-group-item-action">
-                                <div class="fw-bold">{{ $po->po_no }}</div>
+                                <div class="font-weight-bold">{{ $po->po_no }}</div>
                                 <div class="small text-muted">{{ $po->style->style_no ?? '-' }} — {{ $po->salesContract->buyer->name ?? '-' }}</div>
                             </a>
                         @empty
@@ -51,7 +50,7 @@
                     <div class="list-group list-group-flush">
                         @forelse($styles as $style)
                             <a href="{{ route('merchandising-trace.history.style', $style) }}" class="list-group-item list-group-item-action">
-                                <div class="fw-bold">{{ $style->style_no }}</div>
+                                <div class="font-weight-bold">{{ $style->style_no }}</div>
                                 <div class="small text-muted">{{ $style->name }} — {{ $style->buyer->name ?? '-' }}</div>
                             </a>
                         @empty
@@ -66,7 +65,7 @@
                     <div class="list-group list-group-flush">
                         @forelse($buyers as $buyer)
                             <a href="{{ route('merchandising-trace.styles.index', ['search' => $buyer->name]) }}" class="list-group-item list-group-item-action">
-                                <div class="fw-bold">{{ $buyer->name }}</div>
+                                <div class="font-weight-bold">{{ $buyer->name }}</div>
                                 <div class="small text-muted">Pick a style or PO of theirs above for its full timeline</div>
                             </a>
                         @empty

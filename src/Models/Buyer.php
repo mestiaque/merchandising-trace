@@ -9,13 +9,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\HasAudit;
+use ME\MerchandisingTrace\Models\Concerns\RequiresApproval;
 
 class Buyer extends Model
 {
     use HasAudit;
+    use RequiresApproval;
     use SoftDeletes;
 
     protected $table = 'mer_buyers';
+
+    /** Central approval registration — see Models\Concerns\RequiresApproval. */
+    public const APPROVAL_MODULE = 'merchandising.buyer';
+    public const APPROVAL_PERMISSION = 'merch_buyer';
 
     protected $fillable = [
         'code', 'name', 'merchandiser_id', 'region', 'agent_name', 'address', 'contact_person', 'phone', 'email',
@@ -25,12 +31,19 @@ class Buyer extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'approved_at' => 'datetime',
         'default_aql' => 'decimal:2',
     ];
 
+    /** Pickable in forms: active AND approved. */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('is_active', true);
+        return $query->where('is_active', true)->approved();
+    }
+
+    protected function approvalRouteName(): string
+    {
+        return 'merchandising-trace.buyers.index';
     }
 
     public function merchandiser(): BelongsTo

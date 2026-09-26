@@ -11,7 +11,7 @@
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Edit Cost Sheet — {{ $costSheet->cost_sheet_no }}</h5>
+            <h4 class="mb-0">Edit Cost Sheet — {{ $costSheet->cost_sheet_no }}</h4>
             <a href="{{ route('merchandising-trace.cost-sheets.show', $costSheet) }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body">
@@ -19,8 +19,8 @@
                 @csrf
                 @method('PUT')
                 @include('merchandising-trace::admin.cost-sheets.partials.form')
-                <button type="submit" class="btn btn-primary mt-3">Update Cost Sheet</button>
-                <a href="{{ route('merchandising-trace.cost-sheets.show', $costSheet) }}" class="btn btn-light mt-3">Cancel</a>
+                <button type="submit" class="btn btn-primary mt-3 btn-sm">Update Cost Sheet</button>
+                <a href="{{ route('merchandising-trace.cost-sheets.show', $costSheet) }}" class="btn btn-light mt-3 btn-sm">Cancel</a>
             </form>
         </div>
     </div>

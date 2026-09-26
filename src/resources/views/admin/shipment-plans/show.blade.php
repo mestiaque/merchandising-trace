@@ -7,10 +7,11 @@
 @section('contents')
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
+    @include('merchandising-trace::admin.partials.ui-kit')
 
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">{{ $po->po_no }} — {{ $po->style->style_no ?? '-' }}</h5>
+            <h4 class="mb-0">{{ $po->po_no }} — {{ $po->style->style_no ?? '-' }}</h4>
             <a href="{{ route('merchandising-trace.shipment-plans.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body row">
@@ -44,20 +45,20 @@
         </div>
         @can('merch_shipment_plan.edit')
             <div class="card-body">
-                <form method="POST" action="{{ route('merchandising-trace.shipment-plans.bookings.store', $po) }}" class="row g-2">
+                <form method="POST" action="{{ route('merchandising-trace.shipment-plans.bookings.store', $po) }}" class="row">
                     @csrf
-                    <div class="col-md-2"><input type="date" name="planned_ship_date" class="form-control" placeholder="Planned Date"></div>
-                    <div class="col-md-2"><input type="text" name="forwarder_name" class="form-control" placeholder="Forwarder"></div>
-                    <div class="col-md-2"><input type="text" name="booking_no" class="form-control" placeholder="Booking No"></div>
-                    <div class="col-md-2"><input type="text" name="vessel_flight" class="form-control" placeholder="Vessel/Flight"></div>
-                    <div class="col-md-2">
-                        <select name="is_short" class="form-control">
+                    <div class="col-md-3"><input type="date" name="planned_ship_date" class="form-control form-control-sm" placeholder="Planned Date"></div>
+                    <div class="col-md-3"><input type="text" name="forwarder_name" class="form-control form-control-sm" placeholder="Forwarder"></div>
+                    <div class="col-md-3"><input type="text" name="booking_no" class="form-control form-control-sm" placeholder="Booking No"></div>
+                    <div class="col-md-3"><input type="text" name="vessel_flight" class="form-control form-control-sm" placeholder="Vessel/Flight"></div>
+                    <div class="col-md-3">
+                        <select name="is_short" class="form-control form-control-sm">
                             <option value="0">Not short</option>
                             <option value="1">Short shipment</option>
                         </select>
                     </div>
-                    <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Save</button></div>
-                    <div class="col-md-12"><input type="text" name="short_reason" class="form-control" placeholder="Short-ship reason (required if short)"></div>
+                    <div class="col-md-2"><button type="submit" class="btn btn-primary w-100 btn-sm">Save</button></div>
+                    <div class="col-md-12"><input type="text" name="short_reason" class="form-control form-control-sm" placeholder="Short-ship reason (required if short)"></div>
                 </form>
             </div>
         @endcan

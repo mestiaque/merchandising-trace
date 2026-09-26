@@ -16,7 +16,11 @@ class BuyerController extends Controller
         $this->authorize('merch_buyer.list');
 
         $buyers = Buyer::query()
-            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%')->orWhere('code', 'like', '%' . $request->search . '%'))
+            ->with(['merchandiser', 'approver', 'pendingApproval'])
+            ->when($request->filled('approval_status'), fn ($q) => $q->where('approval_status', $request->approval_status))
+            ->when($request->filled('search'), fn ($q) => $q->where(fn ($w) => $w
+                ->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('code', 'like', '%' . $request->search . '%')))
             ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
@@ -31,14 +35,21 @@ class BuyerController extends Controller
     {
         $data = $request->validated();
         $data['created_by'] = auth()->id();
-        Buyer::create($data);
+        Buyer::create($data)->submitForApproval();
 
-        return back()->with('success', 'Buyer created successfully.');
+        return back()->with('success', 'Buyer created and sent for approval — it can be used once approved.');
     }
 
     public function update(BuyerRequest $request, Buyer $buyer): RedirectResponse
     {
         $buyer->update($request->validated());
+
+        // Editing a rejected buyer is how it gets corrected and re-submitted.
+        if ($buyer->approval_status === 'rejected') {
+            $buyer->submitForApproval();
+
+            return back()->with('success', 'Buyer updated and re-submitted for approval.');
+        }
 
         return back()->with('success', 'Buyer updated successfully.');
     }

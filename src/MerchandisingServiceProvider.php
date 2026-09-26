@@ -19,6 +19,7 @@ class MerchandisingServiceProvider extends ServiceProvider
 
         $this->mergeSidebar();
         $this->mergePermissions();
+        $this->registerApprovalModules();
 
         // Summernote HTML fields: @richtext($model->remarks) echoes sanitized HTML.
         Blade::directive('richtext', fn (string $expression) => "<?php echo \\ME\\MerchandisingTrace\\Support\\RichText::clean({$expression}); ?>");
@@ -61,6 +62,24 @@ class MerchandisingServiceProvider extends ServiceProvider
             config('sidebar', []),
             require $sidebar
         ));
+    }
+
+    /**
+     * Buyers / suppliers go through the host's central Approvals page. The
+     * handlers are registered here (not in the host's config/approval.php)
+     * so the package brings its own approval modules along.
+     */
+    private function registerApprovalModules(): void
+    {
+        if (! interface_exists(\App\Contracts\ApprovalHandlerInterface::class)) {
+            return;
+        }
+
+        Config::set('approval.modules', array_merge([
+            Models\Buyer::APPROVAL_MODULE => Approvals\MasterApprovalHandler::class,
+            Models\Supplier::APPROVAL_MODULE => Approvals\MasterApprovalHandler::class,
+            Services\SampleApprovalService::MODULE => Approvals\SampleApprovalHandler::class,
+        ], config('approval.modules', [])));
     }
 
     private function mergePermissions(): void

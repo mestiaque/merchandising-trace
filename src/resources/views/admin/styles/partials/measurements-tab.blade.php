@@ -37,7 +37,7 @@
                         @can('merch_style.edit')
                             <form method="POST" action="{{ route('merchandising-trace.styles.measurements.destroy', [$style, $m]) }}" onsubmit="return confirm('Remove this row?');">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                <button type="submit" class="btn-custom danger" title="Remove"><i class="fa-solid fa-trash"></i></button>
                             </form>
                         @endcan
                     </td>
@@ -50,15 +50,15 @@
 </div>
 
 @can('merch_style.edit')
-    <form method="POST" action="{{ route('merchandising-trace.styles.measurements.store', $style) }}" class="row g-2">
+    <form method="POST" action="{{ route('merchandising-trace.styles.measurements.store', $style) }}" class="row">
         @csrf
-        <div class="col-md-2"><input type="text" name="pom_code" class="form-control" placeholder="POM Code" required></div>
-        <div class="col-md-3"><input type="text" name="pom_name" class="form-control" placeholder="POM Name" required></div>
-        <div class="col-md-1"><input type="number" step="0.01" name="tolerance_plus" class="form-control" placeholder="Tol+"></div>
-        <div class="col-md-1"><input type="number" step="0.01" name="tolerance_minus" class="form-control" placeholder="Tol-"></div>
+        <div class="col-md-3"><input type="text" name="pom_code" class="form-control form-control-sm" placeholder="POM Code" required></div>
+        <div class="col-md-3"><input type="text" name="pom_name" class="form-control form-control-sm" placeholder="POM Name" required></div>
+        <div class="col-md-3"><input type="number" step="0.01" name="tolerance_plus" class="form-control form-control-sm" placeholder="Tol+"></div>
+        <div class="col-md-3"><input type="number" step="0.01" name="tolerance_minus" class="form-control form-control-sm" placeholder="Tol-"></div>
         @foreach($sizesOptions as $size)
-            <div class="col-md-1"><input type="number" step="0.01" name="values[{{ $size->id }}]" class="form-control" placeholder="{{ $size->name }}"></div>
+            <div class="col-md-3"><input type="number" step="0.01" name="values[{{ $size->id }}]" class="form-control form-control-sm" placeholder="{{ $size->name }}"></div>
         @endforeach
-        <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Add Row</button></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-primary w-100 btn-sm">Add Row</button></div>
     </form>
 @endcan

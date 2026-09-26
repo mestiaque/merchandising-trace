@@ -26,18 +26,18 @@
 <div class="csf">
     {{-- Costing basis: pick the tech pack and/or inquiry — the rest fills in --}}
     <div class="row">
-        <div class="col-md-6 mb-3">
+        <div class="col-md-3 mb-3">
             <label class="form-label">Tech Pack / Style</label>
-            <select name="style_id" id="csStyle" class="form-control merch-select2">
+            <select name="style_id" id="csStyle" class="form-control form-control-sm merch-select2">
                 <option value="">— None (style not created yet) —</option>
                 @foreach($stylesOptions as $s)
                     <option value="{{ $s->id }}" @selected($val('style_id') == $s->id)>{{ $s->style_no }} — {{ $s->name }}</option>
                 @endforeach
             </select>
         </div>
-        <div class="col-md-6 mb-3">
+        <div class="col-md-3 mb-3">
             <label class="form-label">Inquiry</label>
-            <select name="inquiry_id" id="csInquiry" class="form-control merch-select2">
+            <select name="inquiry_id" id="csInquiry" class="form-control form-control-sm merch-select2">
                 <option value="">— None —</option>
                 @foreach($inquiriesOptions as $inq)
                     <option value="{{ $inq->id }}" @selected($val('inquiry_id') == $inq->id)>{{ $inq->inquiry_no }}{{ $inq->style_ref ? ' — ' . $inq->style_ref : '' }} ({{ $inq->buyer->name ?? '' }})</option>
@@ -58,7 +58,7 @@
                 <tr>
                     <th>Buyer <span class="text-danger">*</span></th>
                     <td>
-                        <select name="buyer_id" id="csBuyer" class="form-control merch-select2" required>
+                        <select name="buyer_id" id="csBuyer" class="form-control form-control-sm merch-select2" required>
                             <option value="">— Select —</option>
                             @foreach($buyersOptions as $b)
                                 <option value="{{ $b->id }}" @selected($val('buyer_id') == $b->id)>{{ $b->name }}</option>
@@ -66,18 +66,18 @@
                         </select>
                     </td>
                 </tr>
-                <tr><th>Description</th><td><input type="text" name="garment_description" id="csDescription" class="form-control" maxlength="255" placeholder="e.g. DENIM JACKET" value="{{ $val('garment_description') }}"></td></tr>
-                <tr><th>Style <span class="text-danger">*</span></th><td><input type="text" name="style_ref" id="csStyleRef" class="form-control" maxlength="150" value="{{ $val('style_ref') }}"></td></tr>
-                <tr><th>Size</th><td><input type="text" name="size_range" class="form-control" maxlength="100" placeholder="e.g. S-XL" value="{{ $val('size_range') }}"></td></tr>
+                <tr><th>Description</th><td><input type="text" name="garment_description" id="csDescription" class="form-control form-control-sm" maxlength="255" placeholder="e.g. DENIM JACKET" value="{{ $val('garment_description') }}"></td></tr>
+                <tr><th>Style <span class="text-danger">*</span></th><td><input type="text" name="style_ref" id="csStyleRef" class="form-control form-control-sm" maxlength="150" value="{{ $val('style_ref') }}"></td></tr>
+                <tr><th>Size</th><td><input type="text" name="size_range" class="form-control form-control-sm" maxlength="100" placeholder="e.g. S-XL" value="{{ $val('size_range') }}"></td></tr>
                 <tr>
                     <th>Order</th>
-                    <td><div class="input-group"><input type="number" min="0" name="order_qty" id="csOrderQty" class="form-control" value="{{ $val('order_qty') }}"><span class="input-group-text">Pcs</span></div></td>
+                    <td><div class="input-group input-group-sm"><input type="number" min="0" name="order_qty" id="csOrderQty" class="form-control form-control-sm" value="{{ $val('order_qty') }}"><div class="input-group-append"><span class="input-group-text">Pcs</span></div></div></td>
                 </tr>
             </table>
         </div>
         <div class="col-lg-5">
             <table class="table table-bordered table-sm csf-head">
-                <tr><th>Date</th><td><input type="date" name="costing_date" class="form-control" value="{{ optional($val('costing_date') ? \Illuminate\Support\Carbon::parse($val('costing_date')) : now())->format('Y-m-d') }}"></td></tr>
+                <tr><th>Date</th><td><input type="date" name="costing_date" class="form-control form-control-sm" value="{{ optional($val('costing_date') ? \Illuminate\Support\Carbon::parse($val('costing_date')) : now())->format('Y-m-d') }}"></td></tr>
                 @foreach(['front_image' => 'Front Picture', 'back_image' => 'Back Picture', 'sketch_image' => 'Tech Sketch'] as $field => $label)
                     <tr>
                         <th>{{ $label }}</th>
@@ -117,7 +117,7 @@
                             <th style="width:110px">Consumption <small class="text-muted">/Dz</small></th>
                             <th style="min-width:110px">Units</th>
                             <th style="width:120px">Unit Price{{ $group === 'fabric' ? ' (YD)' : '' }}</th>
-                            <th style="width:120px" class="text-end">Total /Dz</th>
+                            <th style="width:120px" class="text-right">Total /Dz</th>
                             <th style="width:40px"></th>
                         </tr>
                     </thead>
@@ -128,8 +128,8 @@
                     </tbody>
                     <tfoot>
                         <tr class="csf-total">
-                            <td colspan="7" class="text-end">{{ $letter }}. {{ strtoupper($totalLabel) }}</td>
-                            <td class="text-end" data-group-total="{{ $group }}">0.00</td>
+                            <td colspan="7" class="text-right">{{ $letter }}. {{ strtoupper($totalLabel) }}</td>
+                            <td class="text-right" data-group-total="{{ $group }}">0.00</td>
                             <td></td>
                         </tr>
                     </tfoot>
@@ -142,21 +142,21 @@
         {{-- CM & commercial inputs --}}
         <div class="col-lg-5">
             <table class="table table-bordered table-sm csf-head">
-                <tr><th>SMV</th><td><input type="number" step="0.01" min="0" name="smv" id="csSmv" class="form-control" value="{{ $val('smv') }}"></td></tr>
-                <tr><th>CPM <small class="text-muted">(cost / minute)</small></th><td><input type="number" step="0.0001" min="0" name="cm_minute_rate" id="csCpm" class="form-control" value="{{ $val('cm_minute_rate') }}"></td></tr>
-                <tr><th>Efficiency %</th><td><input type="number" step="0.01" min="1" max="200" name="efficiency_percent" id="csEff" class="form-control" value="{{ $val('efficiency_percent', 100) }}"></td></tr>
+                <tr><th>SMV</th><td><input type="number" step="0.01" min="0" name="smv" id="csSmv" class="form-control form-control-sm" value="{{ $val('smv') }}"></td></tr>
+                <tr><th>CPM <small class="text-muted">(cost / minute)</small></th><td><input type="number" step="0.0001" min="0" name="cm_minute_rate" id="csCpm" class="form-control form-control-sm" value="{{ $val('cm_minute_rate') }}"></td></tr>
+                <tr><th>Efficiency %</th><td><input type="number" step="0.01" min="1" max="200" name="efficiency_percent" id="csEff" class="form-control form-control-sm" value="{{ $val('efficiency_percent', 100) }}"></td></tr>
                 <tr>
                     <th>CM / Dz</th>
                     <td>
-                        <input type="number" step="0.0001" min="0" name="cm_per_dozen" id="csCm" class="form-control" value="{{ $cmPerDozen }}" data-manual="{{ $cmManual ? 1 : 0 }}">
+                        <input type="number" step="0.0001" min="0" name="cm_per_dozen" id="csCm" class="form-control form-control-sm" value="{{ $cmPerDozen }}" data-manual="{{ $cmManual ? 1 : 0 }}">
                         <span class="form-text" id="csCmHint">Auto = SMV ÷ efficiency × CPM × 12. Type a value (e.g. the tech pack's Confirm CM) to override.</span>
                     </td>
                 </tr>
-                <tr><th>Commercial %</th><td><input type="number" step="0.01" min="0" max="100" name="commercial_percent" id="csCommercial" class="form-control" value="{{ $val('commercial_percent', 5) }}"></td></tr>
+                <tr><th>Commercial %</th><td><input type="number" step="0.01" min="0" max="100" name="commercial_percent" id="csCommercial" class="form-control form-control-sm" value="{{ $val('commercial_percent', 5) }}"></td></tr>
                 <tr>
                     <th>Currency</th>
                     <td>
-                        <select name="currency_id" class="form-control merch-select2">
+                        <select name="currency_id" class="form-control form-control-sm merch-select2">
                             <option value="">— Select —</option>
                             @foreach($currenciesOptions as $c)
                                 <option value="{{ $c->id }}" @selected($val('currency_id') == $c->id)>{{ $c->code }}</option>
@@ -167,15 +167,15 @@
                 <tr>
                     <th>Price Type</th>
                     <td>
-                        <select name="price_type" class="form-control">
+                        <select name="price_type" class="form-control form-control-sm">
                             @foreach(\ME\MerchandisingTrace\Models\CostSheet::PRICE_TYPES as $pt)
                                 <option value="{{ $pt }}" @selected($val('price_type', 'FOB') === $pt)>{{ $pt }}</option>
                             @endforeach
                         </select>
                     </td>
                 </tr>
-                <tr><th>Buyer Target Price <small class="text-muted">/Pc</small></th><td><input type="number" step="0.0001" min="0" name="buyer_target_price" id="csTarget" class="form-control" value="{{ $val('buyer_target_price') }}"></td></tr>
-                <tr><th>Final Price <small class="text-muted">/Pc</small></th><td><input type="number" step="0.0001" min="0" name="final_price" class="form-control" value="{{ $val('final_price') }}"></td></tr>
+                <tr><th>Buyer Target Price <small class="text-muted">/Pc</small></th><td><input type="number" step="0.0001" min="0" name="buyer_target_price" id="csTarget" class="form-control form-control-sm" value="{{ $val('buyer_target_price') }}"></td></tr>
+                <tr><th>Final Price <small class="text-muted">/Pc</small></th><td><input type="number" step="0.0001" min="0" name="final_price" class="form-control form-control-sm" value="{{ $val('final_price') }}"></td></tr>
             </table>
         </div>
 
@@ -183,23 +183,23 @@
         <div class="col-lg-7">
             <table class="table table-bordered table-sm csf-summary">
                 <tr><td colspan="4" class="csf-sum-h">SUMMARY</td></tr>
-                <tr class="text-primary fw-bold text-center"><td></td><td>DZN</td><td>PC</td><td>%</td></tr>
+                <tr class="text-primary font-weight-bold text-center"><td></td><td>DZN</td><td>PC</td><td>%</td></tr>
                 @foreach($groupsMeta as $group => [$letter, , $totalLabel])
                     <tr>
                         <td>{{ $letter }}. {{ strtoupper($totalLabel) }}</td>
-                        <td class="text-end" data-sum="{{ $group }}-dz"></td>
-                        <td class="text-end" data-sum="{{ $group }}-pc"></td>
-                        <td class="text-end text-primary" data-sum="{{ $group }}-pct"></td>
+                        <td class="text-right" data-sum="{{ $group }}-dz"></td>
+                        <td class="text-right" data-sum="{{ $group }}-pc"></td>
+                        <td class="text-right text-primary" data-sum="{{ $group }}-pct"></td>
                     </tr>
                 @endforeach
-                <tr class="fw-bold"><td>TOTAL AMOUNT</td><td class="text-end" data-sum="mat-dz"></td><td class="text-end" data-sum="mat-pc"></td><td></td></tr>
-                <tr><td><strong>CM</strong> <span class="float-end">SMV <span data-sum="smv"></span></span></td><td class="text-end csf-hl" data-sum="cm-dz"></td><td class="text-end" data-sum="cm-pc"></td><td class="text-end text-primary" data-sum="cm-pct"></td></tr>
-                <tr class="fw-bold"><td>SUB TOTAL FOB PER</td><td class="text-end" data-sum="sub-dz"></td><td class="text-end" data-sum="sub-pc"></td><td></td></tr>
-                <tr><td><strong>COMMERCIAL COST</strong> <span class="float-end" data-sum="com-rate"></span></td><td class="text-end" data-sum="com-dz"></td><td class="text-end" data-sum="com-pc"></td><td class="text-end text-primary" data-sum="com-rate2"></td></tr>
-                <tr data-sum-row="other" hidden><td>OTHER COST <small class="text-muted">(freight / testing / overhead)</small></td><td class="text-end" data-sum="other-dz"></td><td class="text-end" data-sum="other-pc"></td><td></td></tr>
-                <tr data-sum-row="profit" hidden><td>PROFIT <span class="float-end" data-sum="profit-rate"></span></td><td class="text-end" data-sum="profit-dz"></td><td class="text-end" data-sum="profit-pc"></td><td></td></tr>
-                <tr class="fw-bold"><td>TOTAL FOB PER DOZ</td><td class="text-end" data-sum="fob-dz"></td><td></td><td></td></tr>
-                <tr class="fw-bold"><td>TOTAL FOB PER PCS</td><td class="text-end csf-hl" data-sum="fob-pc"></td><td class="text-center">TTL B2B</td><td class="text-end text-primary" data-sum="b2b"></td></tr>
+                <tr class="font-weight-bold"><td>TOTAL AMOUNT</td><td class="text-right" data-sum="mat-dz"></td><td class="text-right" data-sum="mat-pc"></td><td></td></tr>
+                <tr><td><strong>CM</strong> <span class="float-right">SMV <span data-sum="smv"></span></span></td><td class="text-right csf-hl" data-sum="cm-dz"></td><td class="text-right" data-sum="cm-pc"></td><td class="text-right text-primary" data-sum="cm-pct"></td></tr>
+                <tr class="font-weight-bold"><td>SUB TOTAL FOB PER</td><td class="text-right" data-sum="sub-dz"></td><td class="text-right" data-sum="sub-pc"></td><td></td></tr>
+                <tr><td><strong>COMMERCIAL COST</strong> <span class="float-right" data-sum="com-rate"></span></td><td class="text-right" data-sum="com-dz"></td><td class="text-right" data-sum="com-pc"></td><td class="text-right text-primary" data-sum="com-rate2"></td></tr>
+                <tr data-sum-row="other" hidden><td>OTHER COST <small class="text-muted">(freight / testing / overhead)</small></td><td class="text-right" data-sum="other-dz"></td><td class="text-right" data-sum="other-pc"></td><td></td></tr>
+                <tr data-sum-row="profit" hidden><td>PROFIT <span class="float-right" data-sum="profit-rate"></span></td><td class="text-right" data-sum="profit-dz"></td><td class="text-right" data-sum="profit-pc"></td><td></td></tr>
+                <tr class="font-weight-bold"><td>TOTAL FOB PER DOZ</td><td class="text-right" data-sum="fob-dz"></td><td></td><td></td></tr>
+                <tr class="font-weight-bold"><td>TOTAL FOB PER PCS</td><td class="text-right csf-hl" data-sum="fob-pc"></td><td class="text-center">TTL B2B</td><td class="text-right text-primary" data-sum="b2b"></td></tr>
                 <tr><td colspan="4" class="small" data-sum="target-note"></td></tr>
             </table>
         </div>
@@ -207,7 +207,7 @@
 
     <div class="mb-3">
         <label class="form-label">Remarks</label>
-        <textarea name="remarks" class="form-control" rows="2">{{ old('remarks', $cs->remarks ?? '') }}</textarea>
+        <textarea name="remarks" class="form-control form-control-sm" rows="2">{{ old('remarks', $cs->remarks ?? '') }}</textarea>
     </div>
 </div>
 

@@ -11,7 +11,7 @@
 
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">{{ $subPlan->sub_no }} — {{ ucfirst(str_replace('_', ' ', $subPlan->process_type)) }} <span class="badge bg-secondary">{{ ucfirst($subPlan->status) }}</span></h5>
+            <h4 class="mb-0">{{ $subPlan->sub_no }} — {{ ucfirst(str_replace('_', ' ', $subPlan->process_type)) }} <span class="badge badge-secondary">{{ ucfirst($subPlan->status) }}</span></h4>
             <a href="{{ route('merchandising-trace.tna-sub-plans.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body">
@@ -27,7 +27,7 @@
                 <div class="col-md-3"><strong>Required Qty/Day:</strong> {{ $subPlan->required_qty_per_day ?? '-' }}</div>
                 <div class="col-md-3">
                     <strong>Total Sent / Received / Balance:</strong> {{ $subPlan->totalSent() }} / {{ $subPlan->totalReceived() }} / {{ $subPlan->balanceQty() }}
-                    @if($subPlan->isBehindSchedule())<span class="badge bg-danger">Behind Schedule</span>@endif
+                    @if($subPlan->isBehindSchedule())<span class="badge badge-danger">Behind Schedule</span>@endif
                 </div>
             </div>
         </div>
@@ -64,13 +64,13 @@
     <div class="card">
         <div class="card-header"><h6 class="mb-0">Add / Update Today's Log</h6></div>
         <div class="card-body">
-            <form method="POST" action="{{ route('merchandising-trace.tna-sub-plans.logs.store', $subPlan) }}" class="row g-2">
+            <form method="POST" action="{{ route('merchandising-trace.tna-sub-plans.logs.store', $subPlan) }}" class="row">
                 @csrf
-                <div class="col-md-3"><input type="date" name="log_date" class="form-control" value="{{ now()->toDateString() }}" required></div>
-                <div class="col-md-2"><input type="number" min="0" name="sending_qty" class="form-control" placeholder="Sending Qty" required></div>
-                <div class="col-md-2"><input type="number" min="0" name="receiving_qty" class="form-control" placeholder="Receiving Qty" required></div>
-                <div class="col-md-3"><input type="text" name="remarks" class="form-control" placeholder="Remarks"></div>
-                <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Save</button></div>
+                <div class="col-md-3"><input type="date" name="log_date" class="form-control form-control-sm" value="{{ now()->toDateString() }}" required></div>
+                <div class="col-md-3"><input type="number" min="0" name="sending_qty" class="form-control form-control-sm" placeholder="Sending Qty" required></div>
+                <div class="col-md-3"><input type="number" min="0" name="receiving_qty" class="form-control form-control-sm" placeholder="Receiving Qty" required></div>
+                <div class="col-md-3"><input type="text" name="remarks" class="form-control form-control-sm" placeholder="Remarks"></div>
+                <div class="col-md-2"><button type="submit" class="btn btn-primary w-100 btn-sm">Save</button></div>
             </form>
         </div>
     </div>

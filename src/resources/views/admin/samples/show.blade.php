@@ -11,15 +11,20 @@
 
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
+            <h4 class="mb-0">
                 Sample — {{ $sample->sample_no }}
-                @if($sample->revision_no > 1)<span class="badge bg-dark">rev {{ $sample->revision_no }}</span>@endif
+                @if($sample->revision_no > 1)<span class="badge badge-dark">rev {{ $sample->revision_no }}</span>@endif
                 @php($statusColors = ['requested' => 'secondary', 'in_progress' => 'warning', 'submitted' => 'info', 'approved' => 'success', 'rejected' => 'danger', 'resubmit' => 'dark', 'cancelled' => 'secondary'])
-                <span class="badge bg-{{ $statusColors[$sample->status] ?? 'secondary' }} ms-1">{{ ucfirst(str_replace('_', ' ', $sample->status)) }}</span>
-            </h5>
+                <span class="badge badge-{{ $statusColors[$sample->status] ?? 'secondary' }} ml-1">{{ ucfirst(str_replace('_', ' ', $sample->status)) }}</span>
+                @php($centralApproval = app(\ME\MerchandisingTrace\Services\SampleApprovalService::class)->pending($sample))
+                @if($centralApproval)
+                    <a href="{{ Route::has('admin.approvals.index') ? route('admin.approvals.index', ['module' => \ME\MerchandisingTrace\Services\SampleApprovalService::MODULE, 'status' => 'pending']) : '#' }}"
+                        class="badge badge-warning ml-1" title="Requested {{ $centralApproval->created_at->diffForHumans() }}">Awaiting approval</a>
+                @endif
+            </h4>
             <div>
                 @can('merch_sample.edit')
-                    <a href="{{ route('merchandising-trace.samples.edit', $sample) }}" class="btn btn-outline-primary btn-sm me-1"><i class="fa-solid fa-pen"></i> Edit</a>
+                    <a href="{{ route('merchandising-trace.samples.edit', $sample) }}" class="btn btn-outline-primary btn-sm mr-1"><i class="fa-solid fa-pen"></i> Edit</a>
                 @endcan
                 <a href="{{ route('merchandising-trace.samples.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
             </div>
@@ -38,7 +43,7 @@
                 <div class="col-md-3 mb-2"><strong>Required Date:</strong> {{ optional($sample->required_date)->format('d M Y') ?? '-' }}</div>
                 <div class="col-md-3 mb-2">
                     <strong>Submit Date:</strong> {{ optional($sample->submit_date)->format('d M Y') ?? '-' }}
-                    @if($sample->isLateSubmission())<span class="badge bg-danger">Late</span>@endif
+                    @if($sample->isLateSubmission())<span class="badge badge-danger">Late</span>@endif
                 </div>
                 <div class="col-md-3 mb-2"><strong>Approval Date:</strong> {{ optional($sample->approval_date)->format('d M Y') ?? '-' }}</div>
                 @if($sample->courier_name || $sample->tracking_no)
@@ -62,8 +67,12 @@
                         <button type="button" class="btn btn-sm btn-info text-white" data-toggle="modal" data-target="#submitModal"><i class="fa-solid fa-paper-plane"></i> Submit</button>
                     @endif
                     @if(in_array($sample->status, ['submitted', 'in_progress']))
-                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#approveModal"><i class="fa-solid fa-check"></i> Approve</button>
-                        <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#rejectModal"><i class="fa-solid fa-xmark"></i> Reject (creates revision)</button>
+                        @can('merch_sample.approve')
+                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#approveModal"><i class="fa-solid fa-check"></i> Approve</button>
+                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#rejectModal"><i class="fa-solid fa-xmark"></i> Reject (creates revision)</button>
+                        @else
+                            <span class="text-muted small align-self-center"><i class="fa-solid fa-hourglass-half"></i> Waiting for an approver.</span>
+                        @endcan
                     @endif
                 </div>
             @endcan
@@ -76,7 +85,7 @@
             <div class="card-body">
                 @php($chain = collect([$sample])->when($sample->parentSample, fn($c) => $c->prepend($sample->parentSample))->merge($sample->revisions))
                 @foreach($chain->sortBy('revision_no') as $rev)
-                    <span class="badge {{ $rev->id === $sample->id ? 'bg-primary' : 'bg-secondary' }} me-1">rev {{ $rev->revision_no }} — {{ ucfirst(str_replace('_', ' ', $rev->status)) }}</span>
+                    <span class="badge {{ $rev->id === $sample->id ? 'bg-primary' : 'bg-secondary' }} mr-1">rev {{ $rev->revision_no }} — {{ ucfirst(str_replace('_', ' ', $rev->status)) }}</span>
                 @endforeach
             </div>
         </div>
@@ -89,7 +98,7 @@
                 <div class="border-bottom pb-2 mb-2">
                     <div class="small text-muted">
                         {{ $comment->commenter->name ?? 'System' }} — {{ $comment->comment_date->format('d M Y') }}
-                        @if($comment->is_buyer_comment)<span class="badge bg-info text-dark">Buyer</span>@endif
+                        @if($comment->is_buyer_comment)<span class="badge badge-info">Buyer</span>@endif
                     </div>
                     <div>@richtext($comment->comment)</div>
                 </div>
@@ -100,7 +109,7 @@
             @can('merch_sample.edit')
                 <form method="POST" action="{{ route('merchandising-trace.samples.comments.store', $sample) }}" class="mt-3">
                     @csrf
-                    <textarea name="comment" class="form-control mb-2" rows="2" placeholder="Add a comment..." required></textarea>
+                    <textarea name="comment" class="form-control form-control-sm mb-2" rows="2" placeholder="Add a comment..." required></textarea>
                     <div class="form-check mb-2">
                         <input type="checkbox" name="is_buyer_comment" value="1" class="form-check-input" id="isBuyerComment">
                         <label class="form-check-label" for="isBuyerComment">This is a buyer comment</label>
@@ -114,7 +123,7 @@
 
 @can('merch_sample.edit')
     <div class="modal fade" id="submitModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form method="POST" action="{{ route('merchandising-trace.samples.submit', $sample) }}">
                     @csrf
@@ -123,13 +132,15 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3"><label class="form-label">Submit Date <span class="text-danger">*</span></label><input type="date" name="submit_date" class="form-control" value="{{ now()->toDateString() }}" required></div>
-                        <div class="mb-3"><label class="form-label">Courier Name</label><input type="text" name="courier_name" class="form-control"></div>
-                        <div class="mb-3"><label class="form-label">Tracking No</label><input type="text" name="tracking_no" class="form-control"></div>
+                        <div class="row">
+<div class="col-md-3 mb-3"><label class="form-label">Submit Date <span class="text-danger">*</span></label><input type="date" name="submit_date" class="form-control form-control-sm" value="{{ now()->toDateString() }}" required></div>
+                        <div class="col-md-3 mb-3"><label class="form-label">Courier Name</label><input type="text" name="courier_name" class="form-control form-control-sm"></div>
+                        <div class="col-md-3 mb-3"><label class="form-label">Tracking No</label><input type="text" name="tracking_no" class="form-control form-control-sm"></div>
+</div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
                     </div>
                 </form>
             </div>
@@ -146,11 +157,11 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3"><label class="form-label">Buyer Comments</label><textarea name="buyer_comments" class="form-control" rows="2"></textarea></div>
+                        <div class="mb-3"><label class="form-label">Buyer Comments</label><textarea name="buyer_comments" class="form-control form-control-sm" rows="2"></textarea></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success">Approve</button>
+                        <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
                     </div>
                 </form>
             </div>
@@ -167,11 +178,11 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3"><label class="form-label">Buyer Comments <span class="text-danger">*</span></label><textarea name="buyer_comments" class="form-control" rows="2" required></textarea></div>
+                        <div class="mb-3"><label class="form-label">Buyer Comments <span class="text-danger">*</span></label><textarea name="buyer_comments" class="form-control form-control-sm" rows="2" required></textarea></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Reject & Create Revision</button>
+                        <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger btn-sm">Reject & Create Revision</button>
                     </div>
                 </form>
             </div>

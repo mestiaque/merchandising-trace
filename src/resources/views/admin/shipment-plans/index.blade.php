@@ -7,9 +7,10 @@
 @section('contents')
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
+    @include('merchandising-trace::admin.partials.ui-kit')
 
     <div class="card">
-        <div class="card-header"><h5 class="mb-0">Shipment Plan — Plan vs Actual</h5></div>
+        <div class="card-header"><h4 class="mb-0">Shipment Plan — Plan vs Actual</h4></div>
         <div class="table-responsive">
             <table class="table table-bordered table-sm mb-0">
                 <thead>

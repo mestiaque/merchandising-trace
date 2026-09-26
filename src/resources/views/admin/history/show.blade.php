@@ -7,6 +7,7 @@
 @section('contents')
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
+    @include('merchandising-trace::admin.partials.ui-kit')
 
     @php
         $moduleColors = ['Merchandising' => 'primary', 'Production' => 'success', 'Inventory' => 'warning'];
@@ -27,10 +28,10 @@
         </div>
         <div class="card-body py-2">
             <div class="d-flex gap-3 flex-wrap small">
-                <span><span class="badge bg-primary">&nbsp;</span> Merchandising</span>
-                <span><span class="badge bg-success">&nbsp;</span> Production</span>
-                <span><span class="badge bg-warning">&nbsp;</span> Inventory</span>
-                <span class="text-muted ms-auto">{{ $events->count() }} event(s)</span>
+                <span><span class="badge badge-primary">&nbsp;</span> Merchandising</span>
+                <span><span class="badge badge-success">&nbsp;</span> Production</span>
+                <span><span class="badge badge-warning">&nbsp;</span> Inventory</span>
+                <span class="text-muted ml-auto">{{ $events->count() }} event(s)</span>
             </div>
         </div>
     </div>
@@ -52,13 +53,13 @@
                             <div class="history-event-body">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <span class="badge bg-{{ $moduleColors[$event['module']] ?? 'secondary' }} me-1">{{ $event['module'] }}</span>
+                                        <span class="badge badge-{{ $moduleColors[$event['module']] ?? 'secondary' }} mr-1">{{ $event['module'] }}</span>
                                         <strong>{{ $event['title'] }}</strong>
                                         @if($event['detail'])
                                             <div class="text-muted small">{{ $event['detail'] }}</div>
                                         @endif
                                     </div>
-                                    <span class="text-muted small text-nowrap ms-2">{{ $event['date']->format('Y-m-d') }}</span>
+                                    <span class="text-muted small text-nowrap ml-2">{{ $event['date']->format('Y-m-d') }}</span>
                                 </div>
                             </div>
                         </div>

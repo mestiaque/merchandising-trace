@@ -8,4 +8,5 @@
     'fieldsView' => 'merchandising-trace::admin.buyers.partials.fields',
     'fieldsExtra' => ['merchandisersOptions' => $merchandisersOptions],
     'modalLabel' => 'Buyer',
+    'approval' => true,
 ])

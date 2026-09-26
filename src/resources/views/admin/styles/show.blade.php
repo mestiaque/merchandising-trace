@@ -7,6 +7,7 @@
 @section('contents')
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
+    @include('merchandising-trace::admin.partials.ui-kit')
 
     @php
         $devStatusColors = [
@@ -20,7 +21,7 @@
         <div class="card-header d-flex justify-content-between align-items-center bg-white">
             <div class="d-flex align-items-center gap-2">
                 <h5 class="mb-0">{{ $style->style_no }} <span class="text-muted">—</span> {{ $style->name }}</h5>
-                <span class="badge bg-{{ $devStatusColor }}">{{ ucfirst(str_replace('_', ' ', $style->development_status)) }}</span>
+                <span class="badge badge-{{ $devStatusColor }}">{{ ucfirst(str_replace('_', ' ', $style->development_status)) }}</span>
             </div>
             <a href="{{ route('merchandising-trace.styles.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
@@ -61,7 +62,7 @@
     </div>
 
     <ul class="nav nav-tabs" id="styleTabs" role="tablist">
-        <li class="nav-item"><button class="nav-link active" data-toggle="tab" data-target="#tab-tech-pack" type="button"><i class="fa-solid fa-file-pdf me-1"></i> Tech Pack</button></li>
+        <li class="nav-item"><button class="nav-link active" data-toggle="tab" data-target="#tab-tech-pack" type="button"><i class="fa-solid fa-file-pdf mr-1"></i> Tech Pack</button></li>
         {{-- <li class="nav-item"><button class="nav-link" data-toggle="tab" data-target="#tab-images" type="button">Images</button></li>
         <li class="nav-item"><button class="nav-link" data-toggle="tab" data-target="#tab-measurements" type="button">Measurement Chart</button></li>
         <li class="nav-item"><button class="nav-link" data-toggle="tab" data-target="#tab-parts" type="button">Parts &amp; Embellishment</button></li>

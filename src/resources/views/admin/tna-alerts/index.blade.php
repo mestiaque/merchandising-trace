@@ -11,20 +11,20 @@
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">T&amp;A Alerts</h5>
+            <h4 class="mb-0">T&amp;A Alerts</h4>
             <a href="{{ route('merchandising-trace.tna-alerts.index', ['unread_only' => request('unread_only') ? null : 1]) }}" class="btn btn-outline-secondary btn-sm">
                 {{ request('unread_only') ? 'Show All' : 'Unread Only' }}
             </a>
         </div>
         <div class="table-responsive">
-            <table class="table table-bordered table-striped align-middle mb-0">
+            <table class="table table-bordered table-sm align-middle mb-0">
                 <thead><tr><th>Date</th><th>Type</th><th>Task</th><th>PO</th><th></th></tr></thead>
                 <tbody>
                     @php($typeColors = ['due_soon' => 'warning', 'overdue' => 'danger', 'blocked_pcd' => 'dark'])
                     @forelse($alerts as $alert)
-                        <tr class="{{ $alert->is_read ? '' : 'fw-bold' }}">
+                        <tr class="{{ $alert->is_read ? '' : 'font-weight-bold' }}">
                             <td>{{ $alert->alert_date->format('Y-m-d') }}</td>
-                            <td><span class="badge bg-{{ $typeColors[$alert->alert_type] ?? 'secondary' }}">{{ ucfirst(str_replace('_', ' ', $alert->alert_type)) }}</span></td>
+                            <td><span class="badge badge-{{ $typeColors[$alert->alert_type] ?? 'secondary' }}">{{ ucfirst(str_replace('_', ' ', $alert->alert_type)) }}</span></td>
                             <td>{{ $alert->task->task_name ?? '-' }}</td>
                             <td>
                                 @if($alert->task?->plan)
@@ -33,7 +33,7 @@
                                     -
                                 @endif
                             </td>
-                            <td class="text-end">
+                            <td class="text-right">
                                 @unless($alert->is_read)
                                     <form method="POST" action="{{ route('merchandising-trace.tna-alerts.mark-read', $alert) }}">
                                         @csrf

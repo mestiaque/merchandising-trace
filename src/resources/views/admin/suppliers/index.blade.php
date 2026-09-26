@@ -7,4 +7,5 @@
     'columns' => ['code' => 'Code', 'name' => 'Name', 'type' => 'Type', 'country' => 'Country', 'lead_time_days' => 'Lead Time (days)'],
     'fieldsView' => 'merchandising-trace::admin.suppliers.partials.fields',
     'modalLabel' => 'Supplier',
+    'approval' => true,
 ])

@@ -18,6 +18,7 @@ use ME\MerchandisingTrace\Http\Controllers\LookupController;
 use ME\MerchandisingTrace\Http\Controllers\MasterExcelController;
 use ME\MerchandisingTrace\Http\Controllers\MaterialBookingController;
 use ME\MerchandisingTrace\Http\Controllers\OrderDocumentController;
+use ME\MerchandisingTrace\Http\Controllers\PostCostSheetController;
 use ME\MerchandisingTrace\Http\Controllers\ProductionHandoverController;
 use ME\MerchandisingTrace\Http\Controllers\ProductTypeController;
 use ME\MerchandisingTrace\Http\Controllers\ReportController;
@@ -123,6 +124,12 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::get('cost-sheets/{cost_sheet}/pdf', [CostSheetController::class, 'pdf'])->name('cost-sheets.pdf');
         Route::get('cost-sheets/{cost_sheet}/print', [CostSheetController::class, 'print'])->name('cost-sheets.print');
 
+        // Post Costing — budget (approved pre-cost) vs actual
+        Route::resource('post-cost-sheets', PostCostSheetController::class)->parameters(['post-cost-sheets' => 'post_cost_sheet']);
+        Route::post('post-cost-sheets/{post_cost_sheet}/refresh', [PostCostSheetController::class, 'refresh'])->name('post-cost-sheets.refresh');
+        Route::post('post-cost-sheets/{post_cost_sheet}/approve', [PostCostSheetController::class, 'approve'])->name('post-cost-sheets.approve');
+        Route::get('post-cost-sheets/{post_cost_sheet}/print', [PostCostSheetController::class, 'print'])->name('post-cost-sheets.print');
+
         // Form auto-fill (pick a style / inquiry / contract once, never re-type its data)
         Route::get('lookup/styles/{style}', [LookupController::class, 'style'])->name('lookup.style');
         Route::get('lookup/inquiries/{inquiry}', [LookupController::class, 'inquiry'])->name('lookup.inquiry');
@@ -202,6 +209,7 @@ Route::middleware($route['middleware'] ?? ['web', 'auth'])
         Route::get('reports/{key}', [ReportController::class, 'show'])->name('reports.show');
         Route::get('reports/{key}/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');
         Route::get('reports/{key}/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
+        Route::get('reports/{key}/print', [ReportController::class, 'print'])->name('reports.print');
 
         // 360° History (Merchandising + Production + Inventory, one timeline)
         Route::get('history', [HistoryController::class, 'index'])->name('history.index');

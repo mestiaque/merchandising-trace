@@ -11,13 +11,13 @@
 
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
+            <h4 class="mb-0">
                 Inquiry {{ $inquiry->inquiry_no }}
-                <span class="badge bg-{{ ['open' => 'primary', 'quoted' => 'info', 'confirmed' => 'success', 'lost' => 'danger', 'cancelled' => 'secondary'][$inquiry->status] ?? 'secondary' }} ms-2">{{ ucfirst($inquiry->status) }}</span>
+                <span class="badge badge-{{ ['open' => 'primary', 'quoted' => 'info', 'confirmed' => 'success', 'lost' => 'danger', 'cancelled' => 'secondary'][$inquiry->status] ?? 'secondary' }} ml-2">{{ ucfirst($inquiry->status) }}</span>
                 @if($inquiry->isOverdue())
-                    <span class="badge bg-warning text-dark ms-1">Overdue</span>
+                    <span class="badge badge-warning ml-1">Overdue</span>
                 @endif
-            </h5>
+            </h4>
             <div>
                 @can('merch_inquiry.edit')
                     <a href="{{ route('merchandising-trace.inquiries.edit', $inquiry) }}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-pen"></i> Edit</a>
@@ -49,7 +49,7 @@
                 <div class="col-md-3">
                     <strong>Extended Ship Date:</strong> {{ $inquiry->extended_ship_date?->format('Y-m-d') ?? '-' }}
                     @if($inquiry->extended_ship_date)
-                        <span class="badge bg-warning text-dark">Extended</span>
+                        <span class="badge badge-warning">Extended</span>
                     @endif
                 </div>
                 @if($inquiry->status === 'lost')
@@ -102,7 +102,7 @@
         </div>
         <div class="card-body">
             @if($inquiry->techPack)
-                <a href="{{ route('merchandising-trace.styles.show', $inquiry->techPack) }}" class="badge bg-secondary text-white me-1">
+                <a href="{{ route('merchandising-trace.styles.show', $inquiry->techPack) }}" class="badge badge-secondary mr-1">
                     {{ $inquiry->techPack->style_no }} — {{ $inquiry->techPack->name }}
                 </a>
             @else
@@ -122,7 +122,7 @@
         </div>
         <div class="card-body">
             @forelse($inquiry->costSheets as $cs)
-                <a href="{{ route('merchandising-trace.cost-sheets.show', $cs) }}" class="badge bg-info text-white me-1">{{ $cs->cost_sheet_no }} (v{{ $cs->version }}, {{ ucfirst($cs->status) }})</a>
+                <a href="{{ route('merchandising-trace.cost-sheets.show', $cs) }}" class="badge badge-info mr-1">{{ $cs->cost_sheet_no }} (v{{ $cs->version }}, {{ ucfirst($cs->status) }})</a>
             @empty
                 <span class="text-muted">No cost sheet yet.</span>
             @endforelse
@@ -142,18 +142,20 @@
                     </div>
                     <div class="modal-body">
                         <div class="alert alert-info">Buyer, Season, Merchant, Product Type and Description carry over from this inquiry automatically.</div>
-                        <div class="mb-3">
+                        <div class="row">
+<div class="col-md-3 mb-3">
                             <label class="form-label">Style No <span class="text-danger">*</span></label>
-                            <input type="text" name="style_no" class="form-control" value="{{ $inquiry->style_ref ?? '' }}" required>
+                            <input type="text" name="style_no" class="form-control form-control-sm" value="{{ $inquiry->style_ref ?? '' }}" required>
                         </div>
-                        <div class="mb-3">
+                        <div class="col-md-3 mb-3">
                             <label class="form-label">Style Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" value="{{ $inquiry->productType->name ?? $inquiry->style_ref ?? '' }}" required>
+                            <input type="text" name="name" class="form-control form-control-sm" value="{{ $inquiry->productType->name ?? $inquiry->style_ref ?? '' }}" required>
                         </div>
+</div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Create Tech Pack</button>
+                        <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Create Tech Pack</button>
                     </div>
                 </form>
             </div>

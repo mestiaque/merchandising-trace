@@ -11,15 +11,15 @@
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Add PO Line — {{ $salesContract->contract_no }}</h5>
+            <h4 class="mb-0">Add PO Line — {{ $salesContract->contract_no }}</h4>
             <a href="{{ route('merchandising-trace.sales-contracts.show', $salesContract) }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body">
             <form method="POST" action="{{ route('merchandising-trace.sales-contracts.pos.store', $salesContract) }}">
                 @csrf
                 @include('merchandising-trace::admin.sales-contracts.pos.partials.form')
-                <button type="submit" class="btn btn-primary mt-3">Save PO Line</button>
-                <a href="{{ route('merchandising-trace.sales-contracts.show', $salesContract) }}" class="btn btn-light mt-3">Cancel</a>
+                <button type="submit" class="btn btn-primary mt-3 btn-sm">Save PO Line</button>
+                <a href="{{ route('merchandising-trace.sales-contracts.show', $salesContract) }}" class="btn btn-light mt-3 btn-sm">Cancel</a>
             </form>
         </div>
     </div>

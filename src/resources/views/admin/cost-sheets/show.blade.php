@@ -11,23 +11,28 @@
 
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                Cost Sheet {{ $costSheet->cost_sheet_no }} <span class="badge bg-secondary">v{{ $costSheet->version }}</span>
+            <h4 class="mb-0">
+                Cost Sheet {{ $costSheet->cost_sheet_no }} <span class="badge badge-secondary">v{{ $costSheet->version }}</span>
                 @php($statusColors = ['draft' => 'secondary', 'submitted' => 'info', 'approved' => 'success', 'rejected' => 'danger', 'revised' => 'dark'])
-                <span class="badge bg-{{ $statusColors[$costSheet->status] ?? 'secondary' }} ms-1">{{ ucfirst($costSheet->status) }}</span>
-            </h5>
+                <span class="badge badge-{{ $statusColors[$costSheet->status] ?? 'secondary' }} ml-1">{{ ucfirst($costSheet->status) }}</span>
+            </h4>
             <div>
                 @can('merch_costing.edit')
                     @if($costSheet->status !== 'approved')
-                        <a href="{{ route('merchandising-trace.cost-sheets.edit', $costSheet) }}" class="btn btn-outline-primary btn-sm me-1"><i class="fa-solid fa-pen"></i> Edit</a>
+                        <a href="{{ route('merchandising-trace.cost-sheets.edit', $costSheet) }}" class="btn btn-outline-primary btn-sm mr-1"><i class="fa-solid fa-pen"></i> Edit</a>
                         <form method="POST" action="{{ route('merchandising-trace.cost-sheets.approve', $costSheet) }}" class="d-inline">
                             @csrf
-                            <button type="submit" class="btn btn-success btn-sm me-1"><i class="fa-solid fa-check"></i> Approve</button>
+                            <button type="submit" class="btn btn-success btn-sm mr-1"><i class="fa-solid fa-check"></i> Approve</button>
                         </form>
                     @endif
                 @endcan
-                <a href="{{ route('merchandising-trace.cost-sheets.print', $costSheet) }}" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm me-1"><i class="fa-solid fa-print"></i> Print</a>
-                <a href="{{ route('merchandising-trace.cost-sheets.pdf', $costSheet) }}" class="btn btn-outline-danger btn-sm me-1"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                @if($costSheet->status === 'approved')
+                    @can('merch_post_costing.add')
+                        <a href="{{ route('merchandising-trace.post-cost-sheets.create', ['cost_sheet_id' => $costSheet->id]) }}" class="btn btn-outline-primary btn-sm mr-1"><i class="fa-solid fa-scale-balanced"></i> Post Cost</a>
+                    @endcan
+                @endif
+                <a href="{{ route('merchandising-trace.cost-sheets.print', $costSheet) }}" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm mr-1"><i class="fa-solid fa-print"></i> Print</a>
+                <a href="{{ route('merchandising-trace.cost-sheets.pdf', $costSheet) }}" class="btn btn-outline-danger btn-sm mr-1"><i class="fa-solid fa-file-pdf"></i> PDF</a>
                 <a href="{{ route('merchandising-trace.cost-sheets.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
             </div>
         </div>

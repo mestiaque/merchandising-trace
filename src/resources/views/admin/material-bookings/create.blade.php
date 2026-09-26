@@ -11,7 +11,7 @@
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Add Material Booking</h5>
+            <h4 class="mb-0">Add Material Booking</h4>
             <a href="{{ route('merchandising-trace.material-bookings.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body">
@@ -22,35 +22,35 @@
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label class="form-label">Type <span class="text-danger">*</span></label>
-                        <select name="type" id="bookingType" class="form-control" required>
+                        <select name="type" id="bookingType" class="form-control form-control-sm" required>
                             @foreach(\ME\MerchandisingTrace\Models\MaterialBooking::TYPES as $t)
                                 <option value="{{ $t }}" @selected(request('type') === $t)>{{ ucfirst($t) }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-9 mb-3">
+                    <div class="col-md-3 mb-3">
                         @php($against = old('booking_against', request('booking_against', 'sales_contract')))
                         <label class="form-label d-block">Booking Against <span class="text-danger">*</span></label>
                         <div class="btn-group merch-btn-radio" role="group">
                             @foreach(\ME\MerchandisingTrace\Models\MaterialBooking::BOOKING_AGAINST as $value => $label)
                                 <input type="radio" name="booking_against" id="against_{{ $value }}" value="{{ $value }}" @checked($against === $value)>
-                                <label class="btn btn-outline-primary {{ $against === $value ? 'active' : '' }}" for="against_{{ $value }}">{{ $label }}</label>
+                                <label class="btn btn-outline-primary {{ $against === $value ? 'active' : '' }} btn-sm" for="against_{{ $value }}">{{ $label }}</label>
                             @endforeach
                         </div>
                     </div>
                     @php($selectedContract = old('sales_contract_id', request('sales_contract_id')))
-                    <div class="col-md-5 mb-3" data-against-panel="sales_contract">
+                    <div class="col-md-3 mb-3" data-against-panel="sales_contract">
                         <label class="form-label">Sales Contract <span class="text-danger">*</span></label>
-                        <select name="sales_contract_id" class="form-control merch-select2" data-contract-select required>
+                        <select name="sales_contract_id" class="form-control form-control-sm merch-select2" data-contract-select required>
                             <option value="">— Select —</option>
                             @foreach($salesContractsOptions as $sc)
                                 <option value="{{ $sc->id }}" @selected($selectedContract == $sc->id)>{{ $sc->contract_no }} — {{ $sc->buyer->name ?? '' }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-5 mb-3" data-against-panel="lc">
+                    <div class="col-md-3 mb-3" data-against-panel="lc">
                         <label class="form-label">LC <span class="text-danger">*</span></label>
-                        <select name="sales_contract_id" class="form-control merch-select2" data-contract-select required>
+                        <select name="sales_contract_id" class="form-control form-control-sm merch-select2" data-contract-select required>
                             <option value="">— Select —</option>
                             @foreach($salesContractsOptions->filter(fn ($sc) => filled($sc->lc_no)) as $sc)
                                 <option value="{{ $sc->id }}" @selected($selectedContract == $sc->id)>LC {{ $sc->lc_no }} — {{ $sc->contract_no }} ({{ $sc->buyer->name ?? '' }})</option>
@@ -58,9 +58,9 @@
                         </select>
                         <span class="form-text">Only contracts with an LC number are listed.</span>
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <label class="form-label">Style <span class="text-danger">*</span></label>
-                        <select name="style_id" id="bookingStyle" class="form-control merch-select2" required>
+                        <select name="style_id" id="bookingStyle" class="form-control form-control-sm merch-select2" required>
                             <option value="">— Select —</option>
                             @foreach($stylesOptions as $s)
                                 <option value="{{ $s->id }}" @selected(old('style_id') == $s->id)>{{ $s->style_no }} — {{ $s->name }}</option>
@@ -68,22 +68,22 @@
                         </select>
                         <span class="form-text" id="bookingStyleHint"></span>
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <label class="form-label">Supplier</label>
-                        <select name="supplier_id" class="form-control merch-select2">
+                        <select name="supplier_id" class="form-control form-control-sm merch-select2">
                             <option value="">— Select —</option>
                             @foreach($suppliersOptions as $s)
                                 <option value="{{ $s->id }}">{{ $s->name }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <label class="form-label">Mill / Country</label>
-                        <input type="text" name="mill_country" class="form-control">
+                        <input type="text" name="mill_country" class="form-control form-control-sm">
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <label class="form-label">Currency</label>
-                        <select name="currency_id" class="form-control merch-select2">
+                        <select name="currency_id" class="form-control form-control-sm merch-select2">
                             <option value="">— Select —</option>
                             @foreach($currenciesOptions as $c)
                                 <option value="{{ $c->id }}">{{ $c->code }}</option>
@@ -108,7 +108,7 @@
                         <tbody id="bookingItemsBody">
                             <tr>
                                 <td>
-                                    <select name="items[0][item_id]" class="form-control merch-select2">
+                                    <select name="items[0][item_id]" class="form-control form-control-sm merch-select2">
                                         <option value="">— Select —</option>
                                         @foreach($itemsOptions as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -116,23 +116,23 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <select name="items[0][color_id]" class="form-control merch-select2">
+                                    <select name="items[0][color_id]" class="form-control form-control-sm merch-select2">
                                         <option value="">—</option>
                                         @foreach($colorsOptions as $color)
                                             <option value="{{ $color->id }}">{{ $color->name }}</option>
                                         @endforeach
                                     </select>
                                 </td>
-                                <td><input type="number" step="0.0001" min="0" name="items[0][booked_qty]" class="form-control"></td>
+                                <td><input type="number" step="0.0001" min="0" name="items[0][booked_qty]" class="form-control form-control-sm"></td>
                                 <td>
-                                    <select name="items[0][uom_id]" class="form-control merch-select2">
+                                    <select name="items[0][uom_id]" class="form-control form-control-sm merch-select2">
                                         <option value="">—</option>
                                         @foreach($uomsOptions as $uom)
                                             <option value="{{ $uom->id }}">{{ $uom->name }}</option>
                                         @endforeach
                                     </select>
                                 </td>
-                                <td><input type="number" step="0.0001" min="0" name="items[0][rate]" class="form-control"></td>
+                                <td><input type="number" step="0.0001" min="0" name="items[0][rate]" class="form-control form-control-sm"></td>
                                 <td></td>
                             </tr>
                         </tbody>
@@ -142,7 +142,7 @@
                 <template id="bookingItemRowTemplate">
                     <tr>
                         <td>
-                            <select name="items[__INDEX__][item_id]" class="form-control merch-select2">
+                            <select name="items[__INDEX__][item_id]" class="form-control form-control-sm merch-select2">
                                 <option value="">— Select —</option>
                                 @foreach($itemsOptions as $item)
                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -150,29 +150,29 @@
                             </select>
                         </td>
                         <td>
-                            <select name="items[__INDEX__][color_id]" class="form-control merch-select2">
+                            <select name="items[__INDEX__][color_id]" class="form-control form-control-sm merch-select2">
                                 <option value="">—</option>
                                 @foreach($colorsOptions as $color)
                                     <option value="{{ $color->id }}">{{ $color->name }}</option>
                                 @endforeach
                             </select>
                         </td>
-                        <td><input type="number" step="0.0001" min="0" name="items[__INDEX__][booked_qty]" class="form-control"></td>
+                        <td><input type="number" step="0.0001" min="0" name="items[__INDEX__][booked_qty]" class="form-control form-control-sm"></td>
                         <td>
-                            <select name="items[__INDEX__][uom_id]" class="form-control merch-select2">
+                            <select name="items[__INDEX__][uom_id]" class="form-control form-control-sm merch-select2">
                                 <option value="">—</option>
                                 @foreach($uomsOptions as $uom)
                                     <option value="{{ $uom->id }}">{{ $uom->name }}</option>
                                 @endforeach
                             </select>
                         </td>
-                        <td><input type="number" step="0.0001" min="0" name="items[__INDEX__][rate]" class="form-control"></td>
-                        <td><button type="button" class="btn btn-sm btn-outline-danger" data-remove-row><i class="fa-solid fa-xmark"></i></button></td>
+                        <td><input type="number" step="0.0001" min="0" name="items[__INDEX__][rate]" class="form-control form-control-sm"></td>
+                        <td><button type="button" class="btn-custom danger" data-remove-row><i class="fa-solid fa-xmark"></i></button></td>
                     </tr>
                 </template>
 
-                <button type="submit" class="btn btn-primary">Save Booking</button>
-                <a href="{{ route('merchandising-trace.material-bookings.index') }}" class="btn btn-light">Cancel</a>
+                <button type="submit" class="btn btn-primary btn-sm">Save Booking</button>
+                <a href="{{ route('merchandising-trace.material-bookings.index') }}" class="btn btn-light btn-sm">Cancel</a>
             </form>
         </div>
     </div>

@@ -11,30 +11,30 @@
 
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
+            <h4 class="mb-0">
                 Sales Contract {{ $salesContract->contract_no }}
                 @php($statusColors = ['draft' => 'secondary', 'confirmed' => 'success', 'in_production' => 'info', 'shipped' => 'primary', 'closed' => 'dark', 'cancelled' => 'danger'])
-                <span class="badge bg-{{ $statusColors[$salesContract->status] ?? 'secondary' }} ms-1">{{ ucfirst(str_replace('_', ' ', $salesContract->status)) }}</span>
-            </h5>
+                <span class="badge badge-{{ $statusColors[$salesContract->status] ?? 'secondary' }} ml-1">{{ ucfirst(str_replace('_', ' ', $salesContract->status)) }}</span>
+            </h4>
             <div>
                 @can('merch_sales_contract.edit')
                     @if($salesContract->status === 'draft')
-                        <a href="{{ route('merchandising-trace.sales-contracts.edit', $salesContract) }}" class="btn btn-outline-primary btn-sm me-1"><i class="fa-solid fa-pen"></i> Edit</a>
+                        <a href="{{ route('merchandising-trace.sales-contracts.edit', $salesContract) }}" class="btn btn-outline-primary btn-sm mr-1"><i class="fa-solid fa-pen"></i> Edit</a>
                         <form method="POST" action="{{ route('merchandising-trace.sales-contracts.confirm', $salesContract) }}" class="d-inline">
                             @csrf
-                            <button type="submit" class="btn btn-success btn-sm me-1" @if($salesContract->pos->isEmpty()) disabled title="Add at least one PO first" @endif><i class="fa-solid fa-check"></i> Confirm</button>
+                            <button type="submit" class="btn btn-success btn-sm mr-1" @if($salesContract->pos->isEmpty()) disabled title="Add at least one PO first" @endif><i class="fa-solid fa-check"></i> Confirm</button>
                         </form>
                     @endif
                 @endcan
                 @can('merch_documentation.list')
                     @if($salesContract->status !== 'draft')
-                        <a href="{{ route('merchandising-trace.order-documents.index', $salesContract) }}" class="btn btn-outline-secondary btn-sm me-1"><i class="fa-solid fa-file-lines"></i> Documents</a>
+                        <a href="{{ route('merchandising-trace.order-documents.index', $salesContract) }}" class="btn btn-outline-secondary btn-sm mr-1"><i class="fa-solid fa-file-lines"></i> Documents</a>
                     @endif
                 @endcan
                 @can('merch_material_booking.add')
-                    <a href="{{ route('merchandising-trace.material-bookings.create', ['sales_contract_id' => $salesContract->id, 'booking_against' => 'sales_contract']) }}" class="btn btn-outline-secondary btn-sm me-1"><i class="fa-solid fa-boxes-packing"></i> Book vs SC</a>
+                    <a href="{{ route('merchandising-trace.material-bookings.create', ['sales_contract_id' => $salesContract->id, 'booking_against' => 'sales_contract']) }}" class="btn btn-outline-secondary btn-sm mr-1"><i class="fa-solid fa-boxes-packing"></i> Book vs SC</a>
                     @if(filled($salesContract->lc_no))
-                        <a href="{{ route('merchandising-trace.material-bookings.create', ['sales_contract_id' => $salesContract->id, 'booking_against' => 'lc']) }}" class="btn btn-outline-secondary btn-sm me-1"><i class="fa-solid fa-boxes-packing"></i> Book vs LC</a>
+                        <a href="{{ route('merchandising-trace.material-bookings.create', ['sales_contract_id' => $salesContract->id, 'booking_against' => 'lc']) }}" class="btn btn-outline-secondary btn-sm mr-1"><i class="fa-solid fa-boxes-packing"></i> Book vs LC</a>
                     @endif
                 @endcan
                 <a href="{{ route('merchandising-trace.sales-contracts.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
@@ -69,19 +69,19 @@
         </div>
         <div class="table-responsive">
             <table class="table table-bordered table-sm mb-0">
-                <thead><tr><th>File</th><th>Uploaded</th><th class="text-end">Actions</th></tr></thead>
+                <thead><tr><th>File</th><th>Uploaded</th><th class="text-right">Actions</th></tr></thead>
                 <tbody>
                     @forelse($salesContract->files as $file)
                         <tr>
                             <td>{{ $file->original_name }}</td>
                             <td>{{ $file->created_at->format('Y-m-d H:i') }} @if($file->uploader) — {{ $file->uploader->name }} @endif</td>
-                            <td class="text-end">
-                                <a href="{{ route('merchandising-trace.sales-contracts.files.view', [$salesContract, $file]) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></a>
-                                <a href="{{ route('merchandising-trace.sales-contracts.files.download', [$salesContract, $file]) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-download"></i></a>
+                            <td class="text-right">
+                                <a href="{{ route('merchandising-trace.sales-contracts.files.view', [$salesContract, $file]) }}" target="_blank" rel="noopener" class="btn-custom success"><i class="fa-solid fa-eye"></i></a>
+                                <a href="{{ route('merchandising-trace.sales-contracts.files.download', [$salesContract, $file]) }}" class="btn-custom primary"><i class="fa-solid fa-download"></i></a>
                                 @can('merch_sales_contract.edit')
                                     <form method="POST" action="{{ route('merchandising-trace.sales-contracts.files.destroy', [$salesContract, $file]) }}" class="d-inline" onsubmit="return confirm('Remove this file?')">
                                         @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                                        <button type="submit" class="btn-custom danger"><i class="fa-solid fa-trash"></i></button>
                                     </form>
                                 @endcan
                             </td>
@@ -111,7 +111,7 @@
         <div class="table-responsive">
             <table class="table table-bordered table-sm mb-0">
                 <thead>
-                    <tr><th>PO No</th><th>Style</th><th>Color</th><th>Eff. Qty</th><th>Eff. PCD</th><th>Eff. Shipment</th><th>Status</th><th class="text-end">Actions</th></tr>
+                    <tr><th>PO No</th><th>Style</th><th>Color</th><th>Eff. Qty</th><th>Eff. PCD</th><th>Eff. Shipment</th><th>Status</th><th class="text-right">Actions</th></tr>
                 </thead>
                 <tbody>
                     @forelse($salesContract->pos as $po)
@@ -119,19 +119,19 @@
                             <td>{{ $po->po_no }}</td>
                             <td>{{ $po->style->style_no ?? '-' }}</td>
                             <td>{{ $po->color->name ?? '-' }}</td>
-                            <td>{{ $po->effectiveQty() }} @if(!$po->sizeQtyMatchesEffectiveQty())<span class="badge bg-warning text-dark" title="Size breakdown does not match effective qty">mismatch</span>@endif</td>
+                            <td>{{ $po->effectiveQty() }} @if(!$po->sizeQtyMatchesEffectiveQty())<span class="badge badge-warning" title="Size breakdown does not match effective qty">mismatch</span>@endif</td>
                             <td>{{ $po->effectivePcd()?->format('Y-m-d') ?? '-' }}</td>
                             <td>{{ $po->effectiveShipment()?->format('Y-m-d') ?? '-' }}</td>
-                            <td><span class="badge bg-secondary">{{ ucfirst(str_replace('_', ' ', $po->status)) }}</span></td>
-                            <td class="text-end">
-                                <a href="{{ route('merchandising-trace.sales-contracts.pos.pdf', [$salesContract, $po]) }}" class="btn btn-sm btn-outline-secondary" title="Download PO"><i class="fa-solid fa-file-pdf"></i></a>
+                            <td><span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $po->status)) }}</span></td>
+                            <td class="text-right">
+                                <a href="{{ route('merchandising-trace.sales-contracts.pos.pdf', [$salesContract, $po]) }}" class="btn-custom primary" title="Download PO"><i class="fa-solid fa-file-pdf"></i></a>
                                 @can('merch_sales_contract.edit')
-                                    <a href="{{ route('merchandising-trace.sales-contracts.pos.edit', [$salesContract, $po]) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
+                                    <a href="{{ route('merchandising-trace.sales-contracts.pos.edit', [$salesContract, $po]) }}" class="btn-custom yellow"><i class="fa-solid fa-pen"></i></a>
                                 @endcan
                                 @can('merch_sales_contract.delete')
                                     <form method="POST" action="{{ route('merchandising-trace.sales-contracts.pos.destroy', [$salesContract, $po]) }}" class="d-inline" onsubmit="return confirm('Delete this PO line?')">
                                         @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                                        <button type="submit" class="btn-custom danger"><i class="fa-solid fa-trash"></i></button>
                                     </form>
                                 @endcan
                             </td>

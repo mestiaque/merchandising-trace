@@ -5,7 +5,6 @@ namespace ME\MerchandisingTrace\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use ME\MerchandisingTrace\Http\Requests\SampleRequest;
 use ME\MerchandisingTrace\Models\Buyer;
@@ -14,6 +13,7 @@ use ME\MerchandisingTrace\Models\SampleType;
 use ME\MerchandisingTrace\Models\Season;
 use ME\MerchandisingTrace\Models\Style;
 use ME\MerchandisingTrace\Services\DocumentNumberService;
+use ME\MerchandisingTrace\Services\SampleApprovalService;
 
 class SampleController extends Controller
 {
@@ -82,6 +82,7 @@ class SampleController extends Controller
     {
         $this->authorize('merch_sample.delete');
 
+        app(SampleApprovalService::class)->closeCentral($sample, 'cancelled', 'Sample deleted', auth()->id());
         $sample->delete();
 
         return back()->with('success', 'Sample deleted successfully.');
@@ -90,7 +91,7 @@ class SampleController extends Controller
     /**
      * §M04: submit form (courier + tracking).
      */
-    public function submit(Request $request, Sample $sample): RedirectResponse
+    public function submit(Request $request, Sample $sample, SampleApprovalService $approvals): RedirectResponse
     {
         $this->authorize('merch_sample.edit');
 
@@ -108,8 +109,9 @@ class SampleController extends Controller
         ]);
 
         app(\ME\MerchandisingTrace\Services\SampleTnaSyncService::class)->syncFromSample($sample);
+        $approvals->requestApproval($sample);
 
-        return back()->with('success', 'Sample marked as submitted.');
+        return back()->with('success', 'Sample marked as submitted and sent for approval.');
     }
 
     /**
@@ -117,19 +119,14 @@ class SampleController extends Controller
      * matching T&A task (e.g. "1st PP Approval") via SampleTnaSyncService —
      * those cells are read-only in the grid once auto-filled.
      */
-    public function approve(Request $request, Sample $sample): RedirectResponse
+    public function approve(Request $request, Sample $sample, SampleApprovalService $approvals): RedirectResponse
     {
-        $this->authorize('merch_sample.edit');
+        $this->authorize('merch_sample.approve');
 
         $request->validate(['buyer_comments' => ['nullable', 'string']]);
 
-        $sample->update([
-            'status' => 'approved',
-            'approval_date' => now(),
-            'buyer_comments' => $request->buyer_comments,
-        ]);
-
-        $synced = app(\ME\MerchandisingTrace\Services\SampleTnaSyncService::class)->syncFromSample($sample);
+        $synced = $approvals->approve($sample, $request->buyer_comments);
+        $approvals->closeCentral($sample, 'approved', $request->buyer_comments, auth()->id());
 
         return back()->with('success', 'Sample approved.' . ($synced ? " {$synced} T&A task(s) auto-updated." : ''));
     }
@@ -137,34 +134,14 @@ class SampleController extends Controller
     /**
      * §M04: rejection auto-creates the next revision request.
      */
-    public function reject(Request $request, Sample $sample): RedirectResponse
+    public function reject(Request $request, Sample $sample, SampleApprovalService $approvals): RedirectResponse
     {
-        $this->authorize('merch_sample.edit');
+        $this->authorize('merch_sample.approve');
 
         $request->validate(['buyer_comments' => ['required', 'string']]);
 
-        $revision = DB::transaction(function () use ($request, $sample) {
-            $sample->update(['status' => 'rejected', 'buyer_comments' => $request->buyer_comments]);
-
-            return Sample::create([
-                'sample_no' => app(DocumentNumberService::class)->next(Sample::class, 'sample_no', config('merchandising-trace.document_prefixes.sample')),
-                'style_id' => $sample->style_id,
-                'buyer_id' => $sample->buyer_id,
-                'season_id' => $sample->season_id,
-                'sample_type_id' => $sample->sample_type_id,
-                'merchandiser_id' => $sample->merchandiser_id,
-                'order_id' => $sample->order_id,
-                'qty' => $sample->qty,
-                'size_ref' => $sample->size_ref,
-                'color_ref' => $sample->color_ref,
-                'request_date' => now(),
-                'required_date' => $sample->required_date,
-                'status' => 'requested',
-                'revision_no' => $sample->revision_no + 1,
-                'parent_sample_id' => $sample->id,
-                'created_by' => auth()->id(),
-            ]);
-        });
+        $revision = $approvals->reject($sample, $request->buyer_comments, auth()->id());
+        $approvals->closeCentral($sample, 'rejected', $request->buyer_comments, auth()->id());
 
         return redirect()->route('merchandising-trace.samples.show', $revision)->with('success', "Revision {$revision->sample_no} (rev {$revision->revision_no}) created.");
     }

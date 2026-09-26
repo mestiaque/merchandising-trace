@@ -34,17 +34,17 @@
 {{-- ── Section Header ── --}}
 <div class="d-flex align-items-center justify-content-between mb-3 mt-1">
     <h4 class="mb-0" style="font-size:17px;font-weight:700;">
-        <i class="fa-solid fa-shirt me-2" style="color:#b45309;"></i> Merchandising Overview
+        <i class="fa-solid fa-shirt mr-2" style="color:#b45309;"></i> Merchandising Overview
     </h4>
     @if(\Illuminate\Support\Facades\Route::has('merchandising-trace.dashboard'))
         <a href="{{ route('merchandising-trace.dashboard') }}" class="btn btn-sm btn-outline-secondary" style="font-size:12px;">
-            <i class="fa-solid fa-gauge me-1"></i> Full Dashboard
+            <i class="fa-solid fa-gauge mr-1"></i> Full Dashboard
         </a>
     @endif
 </div>
 
 {{-- ── Stat Cards ── --}}
-<div class="row g-3 mb-4">
+<div class="row mb-4">
     <div class="col-6 col-md-4 col-lg">
         <div class="mtw-stat-card">
             <div class="mtw-stat-icon" style="background:#eef2f9;"><i class="fa-solid fa-file-signature" style="color:#2a4b7c;"></i></div>
@@ -102,7 +102,7 @@
 </div>
 
 {{-- ── Trend + Pending Approvals ── --}}
-<div class="row g-3 mb-4">
+<div class="row mb-4">
     <div class="col-lg-8">
         <div class="mtw-chart-card">
             <div class="mtw-section-title">T&amp;A Tasks vs Completed – Last 30 Days</div>
@@ -112,7 +112,7 @@
     <div class="col-lg-4">
         <div class="mtw-chart-card h-100">
             <div class="mtw-section-title">Pending Approvals</div>
-            <div class="row g-2 text-center">
+            <div class="row text-center">
                 <div class="col-6">
                     <div class="mtw-stat-val" style="color:#7c3aed;font-size:20px;">{{ $s['samples_pending_approval'] }}</div>
                     <div class="mtw-stat-lbl">Samples Pending</div>
@@ -135,7 +135,7 @@
 </div>
 
 {{-- ── WIP + Plan Status Donut + Top Buyers ── --}}
-<div class="row g-3 mb-4">
+<div class="row mb-4">
     <div class="col-lg-4">
         <div class="mtw-chart-card h-100">
             <div class="mtw-section-title">WIP by Stage</div>
@@ -168,19 +168,19 @@
 </div>
 
 {{-- ── Top Styles + Quick Links ── --}}
-<div class="row g-3 mb-4">
+<div class="row mb-4">
     <div class="col-lg-8">
         <div class="mtw-chart-card h-100">
             <div class="mtw-section-title">Top Styles (by Order Qty)</div>
             <div class="table-responsive">
                 <table class="table table-sm mb-0">
-                    <thead><tr><th>Style</th><th>Style No</th><th class="text-end">Order Qty</th></tr></thead>
+                    <thead><tr><th>Style</th><th>Style No</th><th class="text-right">Order Qty</th></tr></thead>
                     <tbody>
                         @forelse($s['top_styles_by_qty'] as $row)
                             <tr>
                                 <td>{{ $row['name'] }}</td>
                                 <td>{{ $row['style_no'] }}</td>
-                                <td class="text-end">{{ number_format($row['qty']) }}</td>
+                                <td class="text-right">{{ number_format($row['qty']) }}</td>
                             </tr>
                         @empty
                             <tr><td colspan="3" class="text-center text-muted py-3">No data yet</td></tr>

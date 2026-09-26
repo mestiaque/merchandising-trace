@@ -7,6 +7,7 @@
 @section('contents')
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
+    @include('merchandising-trace::admin.partials.ui-kit')
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -55,10 +56,10 @@
                             <td>{{ $booking->totalBookedQty() }}</td>
                             <td>{{ $booking->totalReceivedQty() }}</td>
                             <td>{{ $booking->balanceQty() }}</td>
-                            <td><span class="badge bg-secondary">{{ ucfirst(str_replace('_', ' ', $booking->status)) }}</span></td>
+                            <td><span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $booking->status)) }}</span></td>
                             <td>
                                 @can('merch_material_booking.view')
-                                    <a href="{{ route('merchandising-trace.material-bookings.show', $booking) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-eye"></i></a>
+                                    <a href="{{ route('merchandising-trace.material-bookings.show', $booking) }}" class="btn-custom success"><i class="fa-solid fa-eye"></i></a>
                                 @endcan
                             </td>
                         </tr>

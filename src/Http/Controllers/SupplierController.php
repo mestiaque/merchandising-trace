@@ -15,7 +15,11 @@ class SupplierController extends Controller
         $this->authorize('merch_supplier.list');
 
         $suppliers = Supplier::query()
-            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
+            ->with(['approver', 'pendingApproval'])
+            ->when($request->filled('approval_status'), fn ($q) => $q->where('approval_status', $request->approval_status))
+            ->when($request->filled('search'), fn ($q) => $q->where(fn ($w) => $w
+                ->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('code', 'like', '%' . $request->search . '%')))
             ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
@@ -25,14 +29,21 @@ class SupplierController extends Controller
 
     public function store(SupplierRequest $request): RedirectResponse
     {
-        Supplier::create($request->validated());
+        Supplier::create($request->validated())->submitForApproval();
 
-        return back()->with('success', 'Supplier created successfully.');
+        return back()->with('success', 'Supplier created and sent for approval — it can be used once approved.');
     }
 
     public function update(SupplierRequest $request, Supplier $supplier): RedirectResponse
     {
         $supplier->update($request->validated());
+
+        // Editing a rejected supplier is how it gets corrected and re-submitted.
+        if ($supplier->approval_status === 'rejected') {
+            $supplier->submitForApproval();
+
+            return back()->with('success', 'Supplier updated and re-submitted for approval.');
+        }
 
         return back()->with('success', 'Supplier updated successfully.');
     }

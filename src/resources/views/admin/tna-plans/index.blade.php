@@ -10,7 +10,7 @@
     @include('merchandising-trace::admin.partials.ui-kit')
     @include('merchandising-trace::admin.partials.stat-card-styles')
 
-    <div class="row g-3 mb-3">
+    <div class="row mb-3">
         <div class="col-6 col-md-4 col-lg-2">
             <div class="merch-stat-card">
                 <div class="merch-stat-icon" style="background:#eef2f9;"><i class="fa-solid fa-calendar-check" style="color:#2a4b7c;"></i></div>
@@ -45,7 +45,7 @@
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">T&amp;A Plans</h5>
+            <h4 class="mb-0">T&amp;A Plans</h4>
             <div class="d-flex gap-2 align-items-center">
                 @can('merch_tna.add')
                     <a href="{{ route('merchandising-trace.tna-plans.create') }}" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i> Add T&amp;A Plan</a>
@@ -65,45 +65,43 @@
             </div>
         </div>
         <div class="card-body">
-            <form method="GET" class="row g-2 mb-3">
-                <div class="col-md-3">
-                    <select name="buyer_id" class="form-control merch-select2">
+            <form method="GET" class="row mb-3 align-items-end">
+                <div class="col-md-3 mb-2">
+                    <select name="buyer_id" class="form-control form-control-sm merch-select2">
                         <option value="">All Buyers</option>
                         @foreach($buyersOptions as $b)
                             <option value="{{ $b->id }}" @selected(request('buyer_id') == $b->id)>{{ $b->name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <select name="pcd_result" class="form-control merch-select2">
+                <div class="col-md-3 mb-2">
+                    <select name="pcd_result" class="form-control form-control-sm merch-select2">
                         <option value="">PCD: All</option>
                         @foreach(\ME\MerchandisingTrace\Models\TnaPlan::PCD_RESULTS as $r)
                             <option value="{{ $r }}" @selected(request('pcd_result') === $r)>{{ ucfirst($r) }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <select name="overall_status" class="form-control merch-select2">
+                <div class="col-md-3 mb-2">
+                    <select name="overall_status" class="form-control form-control-sm merch-select2">
                         <option value="">Status: All</option>
                         @foreach(\ME\MerchandisingTrace\Models\TnaPlan::OVERALL_STATUSES as $s)
                             <option value="{{ $s }}" @selected(request('overall_status') === $s)>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2 form-check mt-2">
+                <div class="col-md-3 form-check mb-2">
                     <input type="checkbox" name="my_orders" value="1" class="form-check-input" id="myOrders" @checked(request('my_orders')) onchange="this.form.submit()">
                     <label class="form-check-label" for="myOrders">My Orders Only</label>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-secondary w-100">Filter</button>
-                </div>
-                <div class="col-md-1">
-                    <a href="{{ route('merchandising-trace.tna-plans.index') }}" class="btn btn-light w-100">Reset</a>
+                <div class="col-md-3 mb-2 d-flex align-items-end flex-wrap gap-1">
+                    <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+                    <a href="{{ route('merchandising-trace.tna-plans.index') }}" class="btn btn-light btn-sm">Reset</a>
                 </div>
             </form>
 
             <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle">
+                <table class="table table-bordered table-sm align-middle">
                     <thead>
                         <tr><th>TNA No</th><th>Buyer</th><th>Style</th><th>PO No</th><th>Ship Date</th><th>Completion</th><th>Status</th><th>PCD</th><th></th></tr>
                     </thead>
@@ -118,9 +116,9 @@
                                 <td>{{ $plan->salesContractPo->po_no ?? '-' }}</td>
                                 <td>{{ $plan->salesContractPo->effectiveShipment()?->format('Y-m-d') ?? '-' }}</td>
                                 <td>{{ $plan->completion_percent }}%</td>
-                                <td><span class="badge bg-{{ $ovColors[$plan->overall_status] ?? 'secondary' }}">{{ ucfirst(str_replace('_', ' ', $plan->overall_status)) }}</span></td>
-                                <td><span class="badge bg-{{ $pcdColors[$plan->pcd_result] ?? 'secondary' }}">{{ ucfirst($plan->pcd_result) }}</span></td>
-                                <td class="text-end"><a href="{{ route('merchandising-trace.tna-plans.show', $plan) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></a></td>
+                                <td><span class="badge badge-{{ $ovColors[$plan->overall_status] ?? 'secondary' }}">{{ ucfirst(str_replace('_', ' ', $plan->overall_status)) }}</span></td>
+                                <td><span class="badge badge-{{ $pcdColors[$plan->pcd_result] ?? 'secondary' }}">{{ ucfirst($plan->pcd_result) }}</span></td>
+                                <td class="text-right"><a href="{{ route('merchandising-trace.tna-plans.show', $plan) }}" class="btn-custom success"><i class="fa-solid fa-eye"></i></a></td>
                             </tr>
                         @empty
                             <tr><td colspan="9" class="text-center text-muted">No T&amp;A plans found. Confirm a Sales Contract to generate one.</td></tr>

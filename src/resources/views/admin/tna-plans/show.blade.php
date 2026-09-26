@@ -12,7 +12,7 @@
     @php($po = $tnaPlan->salesContractPo)
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">T&amp;A {{ $tnaPlan->tna_no }} <span class="badge bg-secondary">{{ $tnaPlan->completion_percent }}% complete</span></h5>
+            <h4 class="mb-0">T&amp;A {{ $tnaPlan->tna_no }} <span class="badge badge-secondary">{{ $tnaPlan->completion_percent }}% complete</span></h4>
             <a href="{{ route('merchandising-trace.tna-plans.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
         <div class="card-body">
@@ -43,7 +43,7 @@
             <h6 class="mb-0">
                 PCD Result:
                 @php($pcdColors = ['pending' => 'secondary', 'pass' => 'success', 'fail' => 'danger'])
-                <span class="badge bg-{{ $pcdColors[$tnaPlan->pcd_result] ?? 'secondary' }}">{{ strtoupper($tnaPlan->pcd_result) }}</span>
+                <span class="badge badge-{{ $pcdColors[$tnaPlan->pcd_result] ?? 'secondary' }}">{{ strtoupper($tnaPlan->pcd_result) }}</span>
             </h6>
             <div>
                 <form method="POST" action="{{ route('merchandising-trace.tna-plans.evaluate-pcd', $tnaPlan) }}" class="d-inline">
@@ -77,7 +77,7 @@
                             @php($color = $task->boardColor())
                             @php($rowClass = ['green' => 'table-success', 'amber' => 'table-warning', 'red' => 'table-danger', 'grey' => 'table-secondary', 'blue' => 'table-info'][$color] ?? '')
                             <tr class="{{ $rowClass }}">
-                                <td>{{ $task->task_name }} @if($task->blocks_pcd)<span class="badge bg-dark">blocks PCD</span>@endif</td>
+                                <td>{{ $task->task_name }} @if($task->blocks_pcd)<span class="badge badge-dark">blocks PCD</span>@endif</td>
                                 <td>{{ $task->plan_date?->format('Y-m-d') ?? '-' }}</td>
                                 <td>{{ $task->revised_date?->format('Y-m-d') ?? '-' }}</td>
                                 <td>{{ $task->actual_date?->format('Y-m-d') ?? '-' }}</td>
@@ -126,11 +126,11 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3"><label class="form-label">Reason <span class="text-danger">*</span></label><textarea name="reason" class="form-control" rows="2" required></textarea></div>
+                        <div class="mb-3"><label class="form-label">Reason <span class="text-danger">*</span></label><textarea name="reason" class="form-control form-control-sm" rows="2" required></textarea></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-warning">Override</button>
+                        <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning btn-sm">Override</button>
                     </div>
                 </form>
             </div>

@@ -71,4 +71,21 @@ class ReportController extends Controller
 
         return $pdf->download("{$key}.pdf");
     }
+
+    /** Browser-printable report on the host's print master (same as HR's print pages). */
+    public function print(Request $request, string $key, ReportService $reports): View
+    {
+        $this->authorize('merch_reports.view');
+
+        abort_unless(array_key_exists($key, ReportService::REPORTS), 404);
+
+        $filters = array_filter($request->only(['buyer_id', 'merchandiser_id', 'style_id', 'po_no', 'date_from', 'date_to']));
+        $data = $reports->run($key, $filters);
+
+        return view('merchandising-trace::admin.reports.print', [
+            'title' => ReportService::REPORTS[$key],
+            'headers' => $data['headers'],
+            'rows' => $data['rows'],
+        ]);
+    }
 }

@@ -7,9 +7,10 @@
 @section('contents')
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
+    @include('merchandising-trace::admin.partials.ui-kit')
 
     <div class="card mb-3">
-        <div class="card-header"><h5 class="mb-0">Order Documents — {{ $salesContract->contract_no }}</h5></div>
+        <div class="card-header"><h4 class="mb-0">Order Documents — {{ $salesContract->contract_no }}</h4></div>
         <div class="table-responsive">
             <table class="table table-bordered table-sm mb-0">
                 <thead><tr><th>Document</th><th>Reference</th><th></th></tr></thead>
@@ -48,7 +49,7 @@
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">{{ $salesContract->contract_no }} — Document Checklist</h5>
+            <h4 class="mb-0">{{ $salesContract->contract_no }} — Document Checklist</h4>
             @if(!$salesContract->hasOutstandingMandatoryDocuments() && $salesContract->status !== 'closed')
                 @can('merch_sales_contract.edit')
                     <form method="POST" action="{{ route('merchandising-trace.sales-contracts.close', $salesContract) }}" onsubmit="return confirm('Close this order?');">
@@ -57,7 +58,7 @@
                     </form>
                 @endcan
             @elseif($salesContract->status !== 'closed')
-                <span class="badge bg-danger">Mandatory documents missing — cannot close</span>
+                <span class="badge badge-danger">Mandatory documents missing — cannot close</span>
             @endif
         </div>
         <div class="table-responsive">
@@ -68,8 +69,8 @@
                         <tr class="{{ $doc->isOverdue() ? 'table-danger' : '' }}">
                             <td>{{ $doc->name }}</td>
                             <td>{{ $doc->is_mandatory ? 'Yes' : 'No' }}</td>
-                            <td>{{ optional($doc->due_date)->format('Y-m-d') ?? '-' }} @if($doc->isOverdue())<span class="badge bg-danger">Overdue</span>@endif</td>
-                            <td><span class="badge bg-secondary">{{ ucfirst($doc->status) }}</span></td>
+                            <td>{{ optional($doc->due_date)->format('Y-m-d') ?? '-' }} @if($doc->isOverdue())<span class="badge badge-danger">Overdue</span>@endif</td>
+                            <td><span class="badge badge-secondary">{{ ucfirst($doc->status) }}</span></td>
                             <td>
                                 @can('merch_documentation.edit')
                                     <form method="POST" action="{{ route('merchandising-trace.order-documents.upload', [$salesContract, $doc]) }}" enctype="multipart/form-data" class="d-inline-flex gap-1">

@@ -1,9 +1,9 @@
 {{-- props: bom (optional, for edit), stylesOptions, itemsOptions, uomsOptions, suppliersOptions, colorsOptions, sizesOptions --}}
 @php($bomType = old('bom_type', $bom->bom_type ?? 'file'))
 <div class="row">
-    <div class="col-md-6 mb-3">
+    <div class="col-md-3 mb-3">
         <label class="form-label">Style <span class="text-danger">*</span></label>
-        <select name="style_id" id="bomStyle" class="form-control merch-select2" required {{ isset($bom) ? 'disabled' : '' }}>
+        <select name="style_id" id="bomStyle" class="form-control form-control-sm merch-select2" required {{ isset($bom) ? 'disabled' : '' }}>
             <option value="">— Select —</option>
             @foreach($stylesOptions as $style)
                 <option value="{{ $style->id }}" data-buyer="{{ $style->buyer->name ?? '' }}" @selected(old('style_id', $bom->style_id ?? '') == $style->id)>{{ $style->style_no }} — {{ $style->name }}</option>
@@ -14,9 +14,9 @@
             <span class="form-text">A new version keeps the same style — create a fresh BOM to target a different style.</span>
         @endif
     </div>
-    <div class="col-md-6 mb-3">
+    <div class="col-md-3 mb-3">
         <label class="form-label">Buyer</label>
-        <input type="text" id="bomBuyer" class="form-control bg-light" readonly tabindex="-1">
+        <input type="text" id="bomBuyer" class="form-control form-control-sm bg-light" readonly tabindex="-1">
     </div>
 
     <div class="col-12 mb-3">
@@ -24,7 +24,7 @@
         <div class="btn-group merch-btn-radio" role="group">
             @foreach(\ME\MerchandisingTrace\Models\Bom::TYPES as $value => $label)
                 <input type="radio" name="bom_type" id="bomType_{{ $value }}" value="{{ $value }}" autocomplete="off" @checked($bomType === $value)>
-                <label class="btn btn-outline-primary {{ $bomType === $value ? 'active' : '' }}" for="bomType_{{ $value }}">
+                <label class="btn btn-outline-primary {{ $bomType === $value ? 'active' : '' }} btn-sm" for="bomType_{{ $value }}">
                     <i class="fa-solid {{ $value === 'file' ? 'fa-file-arrow-up' : 'fa-list-check' }}"></i> {{ $label }}
                 </label>
             @endforeach
@@ -35,7 +35,7 @@
 
 <div data-bom-panel="file" class="mb-3">
     <label class="form-label">BOM (PDF) <span class="text-danger">*</span></label>
-    <input type="file" name="bom_file" class="form-control" accept="application/pdf">
+    <input type="file" name="bom_file" class="form-control form-control-sm" accept="application/pdf">
     @if(!empty($bom?->bom_file))
         <div class="mt-1 small">
             Current file:
@@ -78,7 +78,7 @@
 
 <div class="mb-3">
     <label class="form-label">Remarks</label>
-    <textarea name="remarks" class="form-control" rows="2">{{ old('remarks', $bom->remarks ?? '') }}</textarea>
+    <textarea name="remarks" class="form-control form-control-sm" rows="2">{{ old('remarks', $bom->remarks ?? '') }}</textarea>
 </div>
 
 <template id="bomRowTemplate">

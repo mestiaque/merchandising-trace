@@ -29,4 +29,15 @@ return [
         'short' => env('MERCH_COMPANY_SHORT', 'SFL'),
         'logo' => env('MERCH_COMPANY_LOGO'),
     ],
+
+    // Who is emailed when a new buyer / supplier / submitted sample needs approval. Leave a list
+    // empty to notify every user holding that master's '.approve' permission
+    // (merch_buyer.approve / merch_supplier.approve); fill it in to notify
+    // exactly these addresses instead.
+    'approval_recipients' => [
+        'merchandising.buyer' => [],
+        'merchandising.supplier' => [],
+        // Samples: notified when a sample is submitted (default: holders of merch_sample.approve).
+        'merchandising.sample' => [],
+    ],
 ];

@@ -15,7 +15,7 @@ return [
         ],
 
         // Masters
-        'merch_buyer' => ['label' => 'Buyers', 'permissions' => $crud],
+        'merch_buyer' => ['label' => 'Buyers', 'permissions' => $crud + ['approve' => 'Approve']],
         'merch_season' => ['label' => 'Seasons', 'permissions' => $crud],
         'merch_product_type' => ['label' => 'Product Types', 'permissions' => $crud],
         'merch_color' => ['label' => 'Colors', 'permissions' => $crud],
@@ -23,7 +23,7 @@ return [
         'merch_wash_type' => ['label' => 'Wash Types', 'permissions' => $crud],
         'merch_ship_mode' => ['label' => 'Ship Modes', 'permissions' => $crud],
         'merch_factory' => ['label' => 'Factories', 'permissions' => $crud],
-        'merch_supplier' => ['label' => 'Suppliers', 'permissions' => $crud],
+        'merch_supplier' => ['label' => 'Suppliers', 'permissions' => $crud + ['approve' => 'Approve']],
         'merch_currency' => ['label' => 'Currencies', 'permissions' => $crud],
         'merch_item_category' => ['label' => 'Item Categories', 'permissions' => $crud],
         'merch_item' => ['label' => 'Items (BOM Library)', 'permissions' => $crud],
@@ -37,7 +37,7 @@ return [
         'merch_risk_assessment' => ['label' => 'Risk Assessment', 'permissions' => $crud],
 
         // Sample Management
-        'merch_sample' => ['label' => 'Samples', 'permissions' => $crud],
+        'merch_sample' => ['label' => 'Samples', 'permissions' => $crud + ['approve' => 'Approve / Reject']],
         'merch_sample_type' => ['label' => 'Sample Types', 'permissions' => $crud],
 
         // BOM & Consumption
@@ -45,6 +45,7 @@ return [
 
         // Costing
         'merch_costing' => ['label' => 'Costing', 'permissions' => $crud],
+        'merch_post_costing' => ['label' => 'Post Costing', 'permissions' => $crud],
 
         // Sales Contract
         'merch_sales_contract' => ['label' => 'Sales Contracts', 'permissions' => $crud],

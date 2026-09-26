@@ -60,6 +60,7 @@ return [
                         ['title' => 'Tech Pack / Styles', 'icon' => 'fa-solid fa-vest-patches', 'icon_color' => 'text-warning', 'permission' => 'merch_style', 'route' => "$base/styles"],
                         ['title' => 'Risk Assessment', 'icon' => 'fa-solid fa-triangle-exclamation', 'icon_color' => 'text-warning', 'permission' => 'merch_risk_assessment', 'route' => "$base/risk-assessments"],
                         ['title' => 'Costing (Pre-order)', 'icon' => 'fa-solid fa-calculator', 'icon_color' => 'text-warning', 'permission' => 'merch_costing', 'route' => "$base/cost-sheets"],
+                        ['title' => 'Post Cost Sheet', 'icon' => 'fa-solid fa-scale-balanced', 'icon_color' => 'text-warning', 'permission' => 'merch_post_costing', 'route' => "$base/post-cost-sheets"],
                     ],
                 ],
                 [

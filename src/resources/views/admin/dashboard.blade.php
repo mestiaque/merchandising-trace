@@ -14,12 +14,12 @@
     {{-- ── Section Header ── --}}
     <div class="d-flex align-items-center justify-content-between mb-3 mt-1">
         <h4 class="mb-0" style="font-size:17px;font-weight:700;">
-            <i class="fa-solid fa-shirt me-2" style="color:#b45309;"></i> Merchandising Dashboard
+            <i class="fa-solid fa-shirt mr-2" style="color:#b45309;"></i> Merchandising Dashboard
         </h4>
     </div>
 
     {{-- ── My Stat Cards ── --}}
-    <div class="row g-3 mb-4">
+    <div class="row mb-4">
         <div class="col-6 col-md-4 col-lg">
             <div class="merch-stat-card">
                 <div class="merch-stat-icon" style="background:#eef2f9;"><i class="fa-solid fa-calendar-day" style="color:#2a4b7c;"></i></div>
@@ -53,7 +53,7 @@
     </div>
 
     {{-- ── T&amp;A Trend + Pending Approvals ── --}}
-    <div class="row g-3 mb-4">
+    <div class="row mb-4">
         <div class="col-lg-8">
             <div class="merch-chart-card h-100">
                 <div class="merch-section-title">T&amp;A Tasks vs Completed — Last 30 Days</div>
@@ -67,7 +67,7 @@
         <div class="col-lg-4">
             <div class="merch-chart-card h-100">
                 <div class="merch-section-title">Pending Approvals</div>
-                <div class="row g-3 text-center">
+                <div class="row text-center">
                     <div class="col-6">
                         <div class="merch-stat-val" style="color:#7c3aed;font-size:20px;">{{ $mine['samples_pending_approval'] }}</div>
                         <div class="merch-stat-lbl">Samples Pending</div>
@@ -90,7 +90,7 @@
     </div>
 
     {{-- ── WIP by Stage + Plans by Status + Shipment Trend ── --}}
-    <div class="row g-3 mb-4">
+    <div class="row mb-4">
         <div class="col-lg-4">
             <div class="merch-chart-card h-100">
                 <div class="merch-section-title">WIP by Stage</div>
@@ -124,7 +124,7 @@
     </div>
 
     {{-- ── Top Delay Reasons + Top Buyers + Quick Links ── --}}
-    <div class="row g-3 mb-4">
+    <div class="row mb-4">
         <div class="col-lg-4">
             <div class="merch-chart-card h-100">
                 <div class="merch-section-title">Top Delay Reasons</div>
@@ -159,19 +159,19 @@
     </div>
 
     {{-- ── Top Styles + Orders at Risk ── --}}
-    <div class="row g-3 mb-4">
+    <div class="row mb-4">
         <div class="col-lg-6">
             <div class="merch-chart-card h-100">
                 <div class="merch-section-title">Top Styles (by Order Qty)</div>
                 <div class="table-responsive">
                     <table class="table table-sm merch-recent-table mb-0">
-                        <thead><tr><th>Style</th><th>Style No</th><th class="text-end">Order Qty</th></tr></thead>
+                        <thead><tr><th>Style</th><th>Style No</th><th class="text-right">Order Qty</th></tr></thead>
                         <tbody>
                             @forelse($mine['top_styles_by_qty'] as $s)
                                 <tr>
                                     <td>{{ $s['name'] }}</td>
                                     <td>{{ $s['style_no'] }}</td>
-                                    <td class="text-end">{{ number_format($s['qty']) }}</td>
+                                    <td class="text-right">{{ number_format($s['qty']) }}</td>
                                 </tr>
                             @empty
                                 <tr><td colspan="3" class="text-center text-muted py-3">No data yet</td></tr>
@@ -192,7 +192,7 @@
                                 <tr>
                                     <td>{{ $o['style_po'] }}</td>
                                     <td>{{ $o['shipment_date'] }}</td>
-                                    <td><span class="badge bg-danger-subtle text-danger">{{ ucwords(str_replace('_', ' ', $o['status'])) }}</span></td>
+                                    <td><span class="badge badge-danger text-danger">{{ ucwords(str_replace('_', ' ', $o['status'])) }}</span></td>
                                 </tr>
                             @empty
                                 <tr><td colspan="3" class="text-center text-muted py-3">No orders at risk</td></tr>
@@ -232,11 +232,11 @@
         <hr class="my-4">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h4 class="mb-0" style="font-size:17px;font-weight:700;">
-                <i class="fa-solid fa-chart-line me-2" style="color:#2a4b7c;"></i> Management Overview
+                <i class="fa-solid fa-chart-line mr-2" style="color:#2a4b7c;"></i> Management Overview
             </h4>
         </div>
 
-        <div class="row g-3 mb-3">
+        <div class="row mb-3">
             <div class="col-6 col-md-4">
                 <div class="merch-stat-card">
                     <div class="merch-stat-icon" style="background:{{ $management['on_time_pcd_percent'] >= 80 ? '#ecfdf5' : '#fff1f2' }};"><i class="fa-solid fa-flag-checkered" style="color:{{ $management['on_time_pcd_percent'] >= 80 ? '#10b981' : '#f43f5e' }};"></i></div>
@@ -257,7 +257,7 @@
             </div>
         </div>
 
-        <div class="row g-3 mb-3">
+        <div class="row mb-3">
             <div class="col-lg-6">
                 <div class="merch-chart-card h-100">
                     <div class="merch-section-title">Order Book Value by Buyer</div>
@@ -280,7 +280,7 @@
             </div>
         </div>
 
-        <div class="row g-3">
+        <div class="row">
             <div class="col-lg-6">
                 <div class="merch-chart-card h-100">
                     <div class="merch-section-title">Delay Reasons Pareto (top 10)</div>

@@ -34,7 +34,7 @@
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="mb-0">T&amp;A Grid</h5>
+            <h4 class="mb-0">T&amp;A Grid</h4>
             <div class="tna-legend small text-muted">
                 <span class="tna-legend-item"><span class="tna-legend-swatch tna-color-green"></span>Done on time</span>
                 <span class="tna-legend-item"><span class="tna-legend-swatch tna-color-amber"></span>Due soon</span>
@@ -44,40 +44,38 @@
             </div>
         </div>
         <div class="card-body">
-            <form method="GET" class="row g-2 mb-3">
-                <div class="col-md-3">
-                    <select name="buyer_id" class="form-control merch-select2">
+            <form method="GET" class="row mb-3 align-items-end">
+                <div class="col-md-3 mb-2">
+                    <select name="buyer_id" class="form-control form-control-sm merch-select2">
                         <option value="">All Buyers</option>
                         @foreach($buyersOptions as $b)
                             <option value="{{ $b->id }}" @selected(request('buyer_id') == $b->id)>{{ $b->name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <select name="pcd_result" class="form-control merch-select2">
+                <div class="col-md-3 mb-2">
+                    <select name="pcd_result" class="form-control form-control-sm merch-select2">
                         <option value="">PCD: All</option>
                         @foreach(\ME\MerchandisingTrace\Models\TnaPlan::PCD_RESULTS as $r)
                             <option value="{{ $r }}" @selected(request('pcd_result') === $r)>{{ ucfirst($r) }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <select name="overall_status" class="form-control merch-select2">
+                <div class="col-md-3 mb-2">
+                    <select name="overall_status" class="form-control form-control-sm merch-select2">
                         <option value="">Status: All</option>
                         @foreach(\ME\MerchandisingTrace\Models\TnaPlan::OVERALL_STATUSES as $s)
                             <option value="{{ $s }}" @selected(request('overall_status') === $s)>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2 form-check mt-2">
+                <div class="col-md-3 form-check mb-2">
                     <input type="checkbox" name="my_orders" value="1" class="form-check-input" id="myOrders" @checked(request('my_orders')) onchange="this.form.submit()">
                     <label class="form-check-label" for="myOrders">My Orders Only</label>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-secondary w-100">Filter</button>
-                </div>
-                <div class="col-md-1">
-                    <a href="{{ route('merchandising-trace.tna-plans.grid') }}" class="btn btn-light w-100">Reset</a>
+                <div class="col-md-3 mb-2 d-flex align-items-end flex-wrap gap-1">
+                    <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+                    <a href="{{ route('merchandising-trace.tna-plans.grid') }}" class="btn btn-light btn-sm">Reset</a>
                 </div>
             </form>
 
@@ -132,9 +130,9 @@
                                 <td class="tna-sticky-col" style="left:{{ $frozenCols[2]['left'] }}px;">{{ $plan->salesContractPo->style->style_no ?? '-' }}</td>
                                 <td class="tna-sticky-col" style="left:{{ $frozenCols[3]['left'] }}px;">{{ $plan->salesContractPo->po_no ?? '-' }}</td>
                                 <td class="tna-sticky-col" style="left:{{ $frozenCols[4]['left'] }}px;">{{ $plan->salesContractPo->color->name ?? '-' }}</td>
-                                <td class="tna-sticky-col text-end" style="left:{{ $frozenCols[5]['left'] }}px;">{{ $plan->salesContractPo?->effectiveQty() }}</td>
+                                <td class="tna-sticky-col text-right" style="left:{{ $frozenCols[5]['left'] }}px;">{{ $plan->salesContractPo?->effectiveQty() }}</td>
                                 <td class="tna-sticky-col" style="left:{{ $frozenCols[6]['left'] }}px;">{{ $plan->salesContractPo?->effectiveShipment()?->format('d-M-y') ?? '-' }}</td>
-                                <td class="tna-sticky-col" style="left:{{ $frozenCols[7]['left'] }}px;"><span class="badge p-1 px-2 text-white bg-{{ $pcdColors[$plan->pcd_result] ?? 'secondary' }}">{{ ucfirst($plan->pcd_result) }}</span></td>
+                                <td class="tna-sticky-col" style="left:{{ $frozenCols[7]['left'] }}px;"><span class="badge px-2 badge-{{ $pcdColors[$plan->pcd_result] ?? 'secondary' }}">{{ ucfirst($plan->pcd_result) }}</span></td>
 
                                 @foreach($columnGroups as $tasks)
                                     @foreach($tasks as $col)

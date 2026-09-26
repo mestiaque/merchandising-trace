@@ -1,4 +1,4 @@
-<div class="row g-3 mb-3">
+<div class="row mb-3">
     @forelse($style->images as $image)
         <div class="col-md-3">
             <div class="card">
@@ -9,7 +9,7 @@
                     @can('merch_style.edit')
                         <form method="POST" action="{{ route('merchandising-trace.styles.images.destroy', [$style, $image]) }}" onsubmit="return confirm('Remove this image?');">
                             @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger mt-1">Remove</button>
+                            <button type="submit" class="btn-custom danger" title="Remove"><i class="fa-solid fa-trash"></i></button>
                         </form>
                     @endcan
                 </div>
@@ -21,17 +21,17 @@
 </div>
 
 @can('merch_style.edit')
-    <form method="POST" action="{{ route('merchandising-trace.styles.images.store', $style) }}" enctype="multipart/form-data" class="row g-2">
+    <form method="POST" action="{{ route('merchandising-trace.styles.images.store', $style) }}" enctype="multipart/form-data" class="row">
         @csrf
         <div class="col-md-3">
-            <select name="type" class="form-control" required>
+            <select name="type" class="form-control form-control-sm" required>
                 @foreach($imageTypesOptions as $t)
                     <option value="{{ $t->code }}">{{ $t->name }}</option>
                 @endforeach
             </select>
         </div>
-        <div class="col-md-4"><input type="text" name="caption" class="form-control" placeholder="Caption"></div>
-        <div class="col-md-3"><input type="file" name="file" class="form-control" accept="image/*" required></div>
-        <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Upload</button></div>
+        <div class="col-md-3"><input type="text" name="caption" class="form-control form-control-sm" placeholder="Caption"></div>
+        <div class="col-md-3"><input type="file" name="file" class="form-control form-control-sm" accept="image/*" required></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-primary w-100 btn-sm">Upload</button></div>
     </form>
 @endcan

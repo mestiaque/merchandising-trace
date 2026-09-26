@@ -12,7 +12,7 @@
                         @can('merch_style.edit')
                             <form method="POST" action="{{ route('merchandising-trace.styles.operations.destroy', [$style, $op]) }}" onsubmit="return confirm('Remove this operation?');">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                <button type="submit" class="btn-custom danger" title="Remove"><i class="fa-solid fa-trash"></i></button>
                             </form>
                         @endcan
                     </td>
@@ -22,17 +22,17 @@
             @endforelse
         </tbody>
         <tfoot>
-            <tr><th colspan="3" class="text-end">Total SMV</th><th>{{ number_format($style->operations->sum('smv'), 4) }}</th><th></th></tr>
+            <tr><th colspan="3" class="text-right">Total SMV</th><th>{{ number_format($style->operations->sum('smv'), 4) }}</th><th></th></tr>
         </tfoot>
     </table>
 </div>
 
 @can('merch_style.edit')
-    <form method="POST" action="{{ route('merchandising-trace.styles.operations.store', $style) }}" class="row g-2">
+    <form method="POST" action="{{ route('merchandising-trace.styles.operations.store', $style) }}" class="row">
         @csrf
-        <div class="col-md-4"><input type="text" name="operation_name" class="form-control" placeholder="Operation Name" required></div>
-        <div class="col-md-3"><input type="text" name="machine_type" class="form-control" placeholder="Machine Type"></div>
-        <div class="col-md-2"><input type="number" step="0.0001" name="smv" class="form-control" placeholder="SMV" required></div>
-        <div class="col-md-3"><button type="submit" class="btn btn-primary w-100">Add Operation</button></div>
+        <div class="col-md-3"><input type="text" name="operation_name" class="form-control form-control-sm" placeholder="Operation Name" required></div>
+        <div class="col-md-3"><input type="text" name="machine_type" class="form-control form-control-sm" placeholder="Machine Type"></div>
+        <div class="col-md-3"><input type="number" step="0.0001" name="smv" class="form-control form-control-sm" placeholder="SMV" required></div>
+        <div class="col-md-3"><button type="submit" class="btn btn-primary w-100 btn-sm">Add Operation</button></div>
     </form>
 @endcan

@@ -54,6 +54,7 @@ class MasterExcelController extends Controller
 
         $created = 0;
         $updated = 0;
+        $pending = 0;
 
         foreach ($sheet as $row) {
             $uniqueValue = $row[$uniqueCol] ?? null;
@@ -73,11 +74,19 @@ class MasterExcelController extends Controller
             }
 
             $existing = $def['model']::where($def['unique'], $uniqueValue)->first();
-            $def['model']::updateOrCreate([$def['unique'] => $uniqueValue], $attributes);
+            $record = $def['model']::updateOrCreate([$def['unique'] => $uniqueValue], $attributes);
             $existing ? $updated++ : $created++;
+
+            // Masters that need approval (buyers, suppliers): imported new rows go
+            // through the same central approval as ones added by hand.
+            if (! $existing && method_exists($record, 'submitForApproval')) {
+                $record->submitForApproval();
+                $pending++;
+            }
         }
 
-        return back()->with('success', "Import complete: {$created} created, {$updated} updated.");
+        return back()->with('success', "Import complete: {$created} created, {$updated} updated."
+            . ($pending ? " {$pending} sent for approval." : ''));
     }
 
     private function definition(string $master): array

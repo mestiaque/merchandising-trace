@@ -7,9 +7,10 @@
 @section('contents')
 <div class="flex-grow-1 merch-module">
     @include('merchandising-trace::admin.partials.alerts')
+    @include('merchandising-trace::admin.partials.ui-kit')
     @include('merchandising-trace::admin.partials.stat-card-styles')
 
-    <div class="row g-3 mb-3">
+    <div class="row mb-3">
         <div class="col-6 col-md-3">
             <div class="merch-stat-card">
                 <div class="merch-stat-icon" style="background:#f0f9ff;"><i class="fa-solid fa-clipboard-list" style="color:#0ea5e9;"></i></div>
@@ -37,7 +38,7 @@
     </div>
 
     <div class="card">
-        <div class="card-header"><h5 class="mb-0">Handover to Production — POs ready to push</h5></div>
+        <div class="card-header"><h4 class="mb-0">Handover to Production — POs ready to push</h4></div>
         <div class="table-responsive">
             <table class="table table-bordered table-sm mb-0">
                 <thead>
@@ -61,9 +62,9 @@
                             <td>{{ $po->effectiveQty() }}</td>
                             <td>
                                 @if($checks['all_passed'])
-                                    <span class="badge bg-success">All checks passed</span>
+                                    <span class="badge badge-success">All checks passed</span>
                                 @else
-                                    <span class="badge bg-danger">{{ collect($checks)->except('all_passed')->reject(fn($c)=>$c['pass'])->count() }} check(s) failing</span>
+                                    <span class="badge badge-danger">{{ collect($checks)->except('all_passed')->reject(fn($c)=>$c['pass'])->count() }} check(s) failing</span>
                                 @endif
                             </td>
                             <td>

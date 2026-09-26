@@ -11,24 +11,24 @@
 
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                BOM {{ $bom->bom_no }} <span class="badge bg-secondary">v{{ $bom->version }}</span>
+            <h4 class="mb-0">
+                BOM {{ $bom->bom_no }} <span class="badge badge-secondary">v{{ $bom->version }}</span>
                 @php($statusColors = ['draft' => 'secondary', 'submitted' => 'info', 'approved' => 'success', 'revised' => 'dark'])
-                <span class="badge bg-{{ $statusColors[$bom->status] ?? 'secondary' }} ms-1">{{ ucfirst($bom->status) }}</span>
-                <span class="badge bg-light text-dark border ms-1">{{ \ME\MerchandisingTrace\Models\Bom::TYPES[$bom->bom_type] ?? $bom->bom_type }}</span>
-            </h5>
+                <span class="badge badge-{{ $statusColors[$bom->status] ?? 'secondary' }} ml-1">{{ ucfirst($bom->status) }}</span>
+                <span class="badge badge-light border ml-1">{{ \ME\MerchandisingTrace\Models\Bom::TYPES[$bom->bom_type] ?? $bom->bom_type }}</span>
+            </h4>
             <div>
                 @can('merch_bom.edit')
                     @if($bom->status !== 'approved')
-                        <a href="{{ route('merchandising-trace.boms.edit', $bom) }}" class="btn btn-outline-primary btn-sm me-1"><i class="fa-solid fa-pen"></i> Edit</a>
+                        <a href="{{ route('merchandising-trace.boms.edit', $bom) }}" class="btn btn-outline-primary btn-sm mr-1"><i class="fa-solid fa-pen"></i> Edit</a>
                         <form method="POST" action="{{ route('merchandising-trace.boms.approve', $bom) }}" class="d-inline">
                             @csrf
-                            <button type="submit" class="btn btn-success btn-sm me-1"><i class="fa-solid fa-check"></i> Approve</button>
+                            <button type="submit" class="btn btn-success btn-sm mr-1"><i class="fa-solid fa-check"></i> Approve</button>
                         </form>
                     @endif
                 @endcan
                 @if(! $bom->isManual() && $bom->bom_file)
-                    <a href="{{ route('merchandising-trace.boms.file.download', $bom) }}" class="btn btn-outline-primary btn-sm me-1"><i class="fa-solid fa-download"></i> Download</a>
+                    <a href="{{ route('merchandising-trace.boms.file.download', $bom) }}" class="btn btn-outline-primary btn-sm mr-1"><i class="fa-solid fa-download"></i> Download</a>
                 @endif
                 <a href="{{ route('merchandising-trace.boms.index') }}" class="btn btn-light btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a>
             </div>
@@ -51,7 +51,7 @@
             <div class="table-responsive">
                 <table class="table table-bordered table-sm mb-0">
                     <thead>
-                        <tr><th>Item</th><th>Type</th><th>Color</th><th>Size</th><th>Part</th><th class="text-end">Consumption</th><th class="text-end">Wastage %</th><th class="text-end">Net Consumption</th><th class="text-end">Rate</th><th>Supplier</th></tr>
+                        <tr><th>Item</th><th>Type</th><th>Color</th><th>Size</th><th>Part</th><th class="text-right">Consumption</th><th class="text-right">Wastage %</th><th class="text-right">Net Consumption</th><th class="text-right">Rate</th><th>Supplier</th></tr>
                     </thead>
                     <tbody>
                         @forelse($bom->items as $line)
@@ -61,10 +61,10 @@
                                 <td>{{ $line->color->name ?? '-' }}</td>
                                 <td>{{ $line->size->name ?? '-' }}</td>
                                 <td>{{ $line->part_name ?? '-' }}</td>
-                                <td class="text-end">{{ rtrim(rtrim(number_format((float) $line->consumption, 4), '0'), '.') }} {{ $line->uom->name ?? '' }}</td>
-                                <td class="text-end">{{ $line->wastage_percent }}%</td>
-                                <td class="text-end fw-bold">{{ number_format($line->netConsumption(), 4) }}</td>
-                                <td class="text-end">{{ $line->rate !== null ? number_format((float) $line->rate, 4) : '-' }}</td>
+                                <td class="text-right">{{ rtrim(rtrim(number_format((float) $line->consumption, 4), '0'), '.') }} {{ $line->uom->name ?? '' }}</td>
+                                <td class="text-right">{{ $line->wastage_percent }}%</td>
+                                <td class="text-right font-weight-bold">{{ number_format($line->netConsumption(), 4) }}</td>
+                                <td class="text-right">{{ $line->rate !== null ? number_format((float) $line->rate, 4) : '-' }}</td>
                                 <td>{{ $line->supplier->name ?? '-' }}</td>
                             </tr>
                         @empty

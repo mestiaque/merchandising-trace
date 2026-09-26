@@ -11,9 +11,9 @@
                     <td>{{ $part->qty_per_garment }}</td>
                     <td>
                         @if($part->embellishment_type === 'none')
-                            <span class="badge bg-secondary">None</span>
+                            <span class="badge badge-secondary">None</span>
                         @else
-                            <span class="badge bg-warning text-dark">{{ ucfirst(str_replace('_', ' ', $part->embellishment_type)) }}</span>
+                            <span class="badge badge-warning">{{ ucfirst(str_replace('_', ' ', $part->embellishment_type)) }}</span>
                         @endif
                     </td>
                     <td>{{ $part->placement }}</td>
@@ -22,7 +22,7 @@
                         @can('merch_style.edit')
                             <form method="POST" action="{{ route('merchandising-trace.styles.parts.destroy', [$style, $part]) }}" onsubmit="return confirm('Remove this part?');">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                <button type="submit" class="btn-custom danger" title="Remove"><i class="fa-solid fa-trash"></i></button>
                             </form>
                         @endcan
                     </td>
@@ -35,32 +35,32 @@
 </div>
 
 @can('merch_style.edit')
-    <form method="POST" action="{{ route('merchandising-trace.styles.parts.store', $style) }}" class="row g-2">
+    <form method="POST" action="{{ route('merchandising-trace.styles.parts.store', $style) }}" class="row">
         @csrf
         <div class="col-md-3">
-            <select name="trc_part_id" class="form-control merch-select2" required>
+            <select name="trc_part_id" class="form-control form-control-sm merch-select2" required>
                 <option value="">— Select Part —</option>
                 @foreach($trcPartsOptions as $p)
                     <option value="{{ $p->id }}">{{ $p->name }}</option>
                 @endforeach
             </select>
         </div>
-        <div class="col-md-2"><input type="number" name="qty_per_garment" class="form-control" value="1" min="1" required></div>
+        <div class="col-md-3"><input type="number" name="qty_per_garment" class="form-control form-control-sm" value="1" min="1" required></div>
         <div class="col-md-3">
-            <select name="embellishment_type" class="form-control" required>
+            <select name="embellishment_type" class="form-control form-control-sm" required>
                 @foreach(\ME\MerchandisingTrace\Models\StylePart::EMBELLISHMENT_TYPES as $t)
                     <option value="{{ $t }}">{{ ucfirst(str_replace('_', ' ', $t)) }}</option>
                 @endforeach
             </select>
         </div>
-        <div class="col-md-2"><input type="text" name="placement" class="form-control" placeholder="Placement"></div>
-        <div class="col-md-1 d-flex align-items-center">
+        <div class="col-md-3"><input type="text" name="placement" class="form-control form-control-sm" placeholder="Placement"></div>
+        <div class="col-md-3 d-flex align-items-center">
             <div class="form-check">
                 <input type="checkbox" name="is_critical" value="1" class="form-check-input" id="isCritical">
                 <label class="form-check-label" for="isCritical">Critical</label>
             </div>
         </div>
-        <div class="col-md-1"><button type="submit" class="btn btn-primary w-100">Add</button></div>
+        <div class="col-md-1"><button type="submit" class="btn btn-primary w-100 btn-sm">Add</button></div>
     </form>
 @endcan
 
